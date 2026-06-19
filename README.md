@@ -1,148 +1,290 @@
 # Brokerage Service API
 
-## Purpose
-A REST API and tile-enabled backend for spatial and temporal oceanographic data, built with FastAPI, PostgreSQL/PostGIS/TimescaleDB, Redis, and Martin.
+Brokerage Service API provides a federated api access to multiple services.
 
-## Scope in AtlantiS
-- Primary geospatial/time-series API backend.
-- OGC-compatible endpoint surface for standards-driven integrations.
-- Data/admin routes for ingestion, updates, and operations.
+## Requirements
 
-## Access
-- API docs: https://postgis-api-dev.atlantisvis.xyz/docs
-- Martin catalog: https://martin-dev.atlantisvis.xyz/
+### Runtime
 
-## Architecture Summary
-- FastAPI application exposes API and OGC routes.
-- PostgreSQL (with PostGIS + TimescaleDB) stores geospatial/time-series data.
-- Redis provides caching.
-- Martin serves vector tiles.
+* Docker
+* Docker Compose
 
-## Key Capabilities
-- Public OGC API under `/v1/ogc`
-- CRUD and bulk routes under `/v1/...`
-- Tile and map preview integration
-- Alembic migrations for schema versioning
-- Test suite with high coverage targets
+### Local development (without Docker)
 
-## Local Setup (Docker)
+* Python ≥ 3.13
+* Poetry
 
-### Prerequisites
-- Docker >= 24
-- Optional Docker network for local multi-container integration
+## Project Structure
 
-```bash
-docker network create postgisapi_network
+```text
+.
+├── api/                # Django app (API)
+├── config/             # Django project configuration
+├── docker/
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   └── scripts/
+│       └── wait-for-it.sh
+├── manage.py
+├── pyproject.toml      # Project metadata & dependencies (Poetry)
+├── poetry.lock         # Locked dependency versions
+├── tox.ini             # Test, lint, and format automation
+├── ruff.toml           # Ruff configuration
+├── README.md
+├── LICENSE
+└── .env.example
 ```
 
-### 1. Clone repository
+## Dependency Management
+
+This project uses **Poetry** for dependency management and packaging.
+
+Key points:
+
+* Dependencies are defined in `pyproject.toml`
+* Locked versions live in `poetry.lock`
+* Development tools (linting, formatting, testing) are installed via Poetry groups
+
+## Quick Start (Docker – Recommended)
+
+### 1. Create environment file
+
+Configuration is provided via environment variables defined in `.env`.
+
+Start from the example file:
 
 ```bash
-git clone https://gitlab.com/nocacuk/ocean-informatics/atlantis/services/postgis-api.git
-cd postgis-api
+cp .env.example .env
 ```
 
-### 2. Create `.env`
+Example contents:
 
-```env
+```bash
+# ENV APIS
+JNCC_URL=http://annotations-api1:8000/api
+BODC_URL=http://annotations-api2:8000/api
+
+
+DJANGO_SECRET_KEY=dev-secret-key-change-me
+DJANGO_DEBUG=1
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,worms-cache,192.168.134.132
+DJANGO_CORS_ALLOWED_ORIGINS=http://localhost:3000,https://paidiver.github.io
+DJANGO_CORS_ALLOW_ALL=1
+WORMS_API_BASE_URL=https://marinespecies.org/rest
+CACHED_WORMS_API_BASE_URL=http://worms-cache:8000/api
+TAXAMATCH_URL=http://taxamatch:8080
+INGEST_API_TOKEN=mysecrettoken
+CACHED_WORMS_API_TOKEN=mysecrettoken
+
 POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
-POSTGRES_DB=brokerage_service_api
 POSTGRES_PORT=5432
-POSTGRES_HOST=db
-REDIS_HOST=redis
-REDIS_PORT=6379
-DATABASE_URL=postgresql://myuser:mypassword@db:5432/brokerage_service_api
-CESIUM_ION_TOKEN=token
-MARTIN_PUBLIC_URL=http://localhost:3000
 ```
 
-### 3. Build and run stack
+
+### 2. Build and run the stack
+
+First, ensure you have a shared Docker network named `shared_services` (used for inter-container communication with the WoRMS cache API if necessary):
 
 ```bash
-docker compose -f dockerfiles/docker-compose.yml build
-docker compose -f dockerfiles/docker-compose.yml up -d
+docker network create shared_services
 ```
 
-### 4. Apply migrations
+Then run the stack:
 
 ```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run alembic upgrade head
+docker compose -f docker/docker-compose.yml up --build
 ```
 
-### 5. Optional: seed development data
+This will:
 
-```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run seed-dev-db --stations 20
+* Start PostgreSQL/PostGIS
+* Run Django migrations
+* Start the Django development server
+
+### 3. Test the API
+
+Health endpoint:
+
+```
+http://localhost:8000/api/health/
 ```
 
-### 6. Basic checks
+Expected response:
 
-```bash
-curl "http://localhost:8081/healthz"
-curl "http://localhost:8081/v1/ogc/collections"
-curl "http://localhost:3000/health"
-curl "http://localhost:3000/catalog"
+```json
+{"status": "ok"}
 ```
 
-## Development
+API schema and documentation:
 
-### Lint and format
+```
+http://localhost:8000/api/docs/
+```
+
+### 4. Worms cache API
+
+If you set the environment variable `CACHED_WORMS_API_BASE_URL` to point to a local instance of the WoRMS cache API, you may need to start that separately. Please follow the instructions in the [worms-cache repo](https://github.com/paidiver/worms-cache).
+
+
+## Running Locally Without Docker
+
+### 1. Install dependencies
 
 ```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run tox -e lint
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run tox -e format
+poetry install
+```
+
+### 2. Start only the database via Docker
+
+```bash
+docker compose -f docker/docker-compose.yml up -d db
+```
+
+### 3. Apply migrations
+
+```bash
+python manage.py migrate
+```
+
+### 4. Run the development server
+
+```bash
+python manage.py runserver
+```
+
+## Database Migrations
+
+Create new migrations after modifying models:
+
+```bash
+docker compose -f docker/docker-compose.yml exec api python manage.py makemigrations
+```
+
+To add some descriptive name to migration file that is going to generate, use `--name` flag while running migration command. And once the migration file is created, make sure to add some descriptive docstring on top of the file as well.
+
+```bash
+docker compose -f docker/docker-compose.yml exec api python manage.py makemigrations --name migration_description
+```
+
+Apply migrations:
+
+```bash
+docker compose -f docker/docker-compose.yml exec api python manage.py migrate
+```
+
+## Development Workflow
+
+### Formatting
+
+Format code using Ruff:
+
+```bash
+tox -e format
+
+# or using Docker
+docker compose -f docker/docker-compose.yml run --rm api tox -e format
+```
+
+### Linting
+
+Run lint checks:
+
+```bash
+tox -e lint
+
+# or using Docker
+docker compose -f docker/docker-compose.yml run --rm api tox -e lint
 ```
 
 ### Tests
 
-```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run tox -e py312
-```
-
-### Generate migration
+Run the test suite with coverage:
 
 ```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run alembic revision --autogenerate -m "Update schema"
+tox
 ```
 
-Apply migration:
+or explicitly:
 
 ```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run alembic upgrade head
+docker compose -f docker/docker-compose.yml run --rm api tox -e py313
 ```
 
-## OGC Validation
-The `/v1/ogc` surface is designed for OGC API compatibility checks.
+Coverage reports are written to `coverage_reports/`.
 
-### Team Engine (local)
+## API Token Generation
+
+This project is configured to use [TokenAuthentication](https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication)
+for any requests that modify data. Anonymous users may only use "safe" methods (`GET`, `HEAD` or `OPTIONS`).
+The project includes a management command to create a new user with an auth token:
+
 ```bash
-docker run -p 8082:8080 --network postgisapi_network ogccite/ets-ogcapi-features10
+python manage.py create_user_with_token <username> <password>
 ```
 
-### Custom validator
+The created API token is returned in the command output. Please ensure to store this token safely.
+Remove shell history to keep sensitive data like passwords safe.
+
+Example output:
+```
+User created: myUser. API token (please store this securely): 1fa4a1e49e43bad0b96bf26e8bbcde0379892374
+```
+
+Clearing shell history:
 ```bash
-docker compose -f dockerfiles/docker-compose.yml run --rm app poetry run validate-ogc-api --base-url http://app:8081/v1/ogc --timeout 30
+paidiver@annotations-api:/app$ python manage.py create_user_with_token <user> <password>
+User created: <user>. API token (please store this securely): <token>
+paidiver@annotations-api:/app$ history
+    1  python manage.py create_user_with_token <user> <password>
+    2  history
+paidiver@annotations-api-f45db94cc-p2fsm:/app$ history -d 1
+paidiver@annotations-api-f45db94cc-p2fsm:/app$ clear
+paidiver@annotations-api-f45db94cc-p2fsm:/app$ history
+    1  history
+    2  history -d 1
+    3  clear
+    4  history
 ```
 
-## Documentation
-- Database details: `docs/database.md`
-- API endpoints: `docs/api.md`
+## Fake Data Generation
 
-## CI
-Typical pipeline responsibilities include:
-- Linting and formatting validation.
-- Test execution against containerized dependencies.
-- Docker image build and publish.
-- On tag, Helm/Helmfile generation, linting, and release publication.
+For development and testing, the project includes a management command that seeds the database with realistic fake data:
 
-## Deployment
-- Deployment follows the shared AtlantiS model: release on tag, then manual deployment from the Kubernetes package.
-- Use the released tag produced by CI.
-- Select/update that tag in the Kubernetes package and deploy manually.
+```bash
+docker compose -f docker/docker-compose.yml run --rm api \
+  python manage.py seed_demo_data
+```
 
-## Runtime Troubleshooting
-- If API startup fails, verify database and Redis connectivity first.
-- If migrations fail, validate Alembic revision history and connection URL.
-- If OGC responses are slow, inspect query plans and index coverage.
-- If map preview is broken, verify Martin service health and public URL configuration.
+### Customising the amount of data
+
+```bash
+python manage.py seed_demo_data \
+  --image-annotation-sets 3 \
+  --images-per-image-set 15 \
+  --labels-per-annotation-set 25 \
+  --annotators 12 \
+  --annotations-per-image 3 \
+  --annotation-labels 150
+```
+
+⚠️ IMPORTANT: Development use only. Do not run against production databases.
+
+## Dumping All Data (JSON)
+
+To export **all database data as JSON** for inspection or debugging, use the endpoint:
+
+```
+http://localhost:8000/api/debug/db-dump/
+```
+
+This will return a JSON object containing all records from all tables, structured by model name.
+
+
+## API Examples
+
+A collection of example API requests and responses is available in the [API Examples](docs/API_EXAMPLES.md) document.
+
+## Acknowledgements
+
+This project was supported by the UK Natural Environment Research Council (NERC) through the *Tools for automating image analysis for biodiversity monitoring (AIAB)* Funding Opportunity, reference code **UKRI052**.
