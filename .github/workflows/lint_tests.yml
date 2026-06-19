@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (tox -e lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Configure Poetry (in-project venv)
+        run: |
+          poetry config virtualenvs.in-project true
+
+      - name: Install deps
+        run: |
+          poetry install --with dev,lint,test --no-interaction
+
+      - name: Run lint
+        run: |
+          poetry run tox -e lint
+
+  test:
+    name: Tests (tox)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Configure Poetry (in-project venv)
+        run: |
+          poetry config virtualenvs.in-project true
+
+      - name: Install deps
+        run: |
+          poetry install --with dev,lint,test --no-interaction
+
+      - name: Run tests
+        run: |
+          poetry run tox -e py313
