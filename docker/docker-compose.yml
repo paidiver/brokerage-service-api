@@ -17,10 +17,10 @@ services:
     ports:
       - "8020:8020"
     depends_on:
-      annotations_seed_data1:
+      annotations-seed-data-jncc:
         condition: service_completed_successfully
-      annotations_seed_data2:
-        condition: service_completed_successfully
+      # annotations-seed-data-bodc:
+      #   condition: service_completed_successfully
       worms-cache:
         condition: service_healthy
       taxamatch:
@@ -28,16 +28,17 @@ services:
     networks:
       - shared_services
 
-  annotations_api1:
+  annotations-api-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db1
+      POSTGRES_HOST: annotations-api-db-jncc
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,annotations-api-bodc,annotations-api-jncc
     restart: always
     depends_on:
-      annotations_migrate1:
+      annotations-migrate-jncc:
         condition: service_completed_successfully
     ports:
       - "8019:8000"
@@ -50,16 +51,17 @@ services:
     networks:
       - shared_services
 
-  annotations_api2:
+  annotations-api-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db2
+      POSTGRES_HOST: annotations-api-db-bodc
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,annotations-api-bodc,annotations-api-jncc
     restart: always
     depends_on:
-      annotations_migrate2:
+      annotations-migrate-bodc:
         condition: service_completed_successfully
     ports:
       - "8018:8000"
@@ -72,110 +74,152 @@ services:
     networks:
       - shared_services
 
-  annotations_migrate1:
+  annotations-migrate-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db1
+      POSTGRES_HOST: annotations-api-db-jncc
     restart: "no"
     depends_on:
-      annotations_api_db1:
+      annotations-api-db-jncc:
         condition: service_healthy
     command: python manage.py migrate
     networks:
       - shared_services
 
-  annotations_migrate2:
+  annotations-migrate-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db2
+      POSTGRES_HOST: annotations-api-db-bodc
     restart: "no"
     depends_on:
-      annotations_api_db2:
+      annotations-api-db-bodc:
         condition: service_healthy
     command: python manage.py migrate
     networks:
       - shared_services
 
-  annotations_seed_data1:
+  annotations-seed-data-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db1
+      POSTGRES_HOST: annotations-api-db-jncc
+      API_BASE_URL: http://annotations-api-jncc:8000
     restart: "no"
     depends_on:
-      annotations_api1:
+      annotations-api-jncc:
         condition: service_healthy
-      worms-cache-seed:
+      worms-cache-migrate:
         condition: service_completed_successfully
+    volumes:
+      - ../examples:/app/examples:ro
     command: >
-      bash -c '
-        python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"
-        status=$$?
-
-        if [ "$$status" -eq 0 ]; then
-          echo "Annotations database already has data; skipping seed_demo_data"
-        elif [ "$$status" -eq 42 ]; then
-          echo "Annotations database is empty; running seed_demo_data"
-          python manage.py seed_demo_data
+      bash -eu -o pipefail -c '
+        if python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"; then
+          echo "Annotations database already has data; skipping ingest seed"
         else
-          echo "Database check failed with status $$status"
-          exit "$$status"
+          status=$$?
+
+          if [ "$$status" -eq 42 ]; then
+            echo "Annotations database is empty; creating user/token and running ingest_data"
+            random_password=$$(openssl rand -base64 12)
+            random_username=$$(openssl rand -hex 6)
+            user_output=$$(python manage.py create_user_with_token "$$random_username" "$$random_password" 2>&1)
+            echo "$$user_output"
+
+            API_AUTH_TOKEN=$$(printf "%s\n" "$$user_output" | sed -n "s/.*API token.*: //p" | tail -n 1)
+
+            if [ -z "$$API_AUTH_TOKEN" ]; then
+              echo "Could not extract API token from create_user_with_token output"
+              exit 1
+            fi
+
+            export API_AUTH_TOKEN
+            export API_BASE_URL="http://annotations-api-jncc:8000"
+
+            python /app/examples/ingest_data.py \
+              /app/examples/sample_jncc.json \
+              /app/examples/sample_jncc_annotations.xlsx
+          else
+            echo "Database check failed with status $$status"
+            exit "$$status"
+          fi
         fi
       '
     networks:
       - shared_services
 
-  annotations_seed_data2:
+  annotations-seed-data-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
       - ../.env
     environment:
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db2
+      POSTGRES_HOST: annotations-api-db-bodc
+      API_BASE_URL: http://annotations-api-bodc:8000
     restart: "no"
     depends_on:
-      annotations_api2:
+      annotations-api-bodc:
         condition: service_healthy
-      worms-cache-seed:
+      worms-cache-migrate:
         condition: service_completed_successfully
+    volumes:
+      - ../examples:/app/examples:ro
     command: >
-      bash -c '
-        python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"
-        status=$$?
-
-        if [ "$$status" -eq 0 ]; then
-          echo "Annotations database already has data; skipping seed_demo_data"
-        elif [ "$$status" -eq 42 ]; then
-          echo "Annotations database is empty; running seed_demo_data"
-          python manage.py seed_demo_data
+      bash -eu -o pipefail -c '
+        if python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"; then
+          echo "Annotations database already has data; skipping ingest seed"
         else
-          echo "Database check failed with status $$status"
-          exit "$$status"
+          status=$$?
+
+          if [ "$$status" -eq 42 ]; then
+            echo "Annotations database is empty; creating user/token and running ingest_data"
+            random_password=$$(openssl rand -base64 12)
+            random_username=$$(openssl rand -hex 6)
+            user_output=$$(python manage.py create_user_with_token "$$random_username" "$$random_password" 2>&1)
+            echo "$$user_output"
+
+            API_AUTH_TOKEN=$$(printf "%s\n" "$$user_output" | sed -n "s/.*API token.*: //p" | tail -n 1)
+
+            if [ -z "$$API_AUTH_TOKEN" ]; then
+              echo "Could not extract API token from create_user_with_token output"
+              exit 1
+            fi
+
+            export API_AUTH_TOKEN
+            export API_BASE_URL="http://annotations-api-bodc:8000"
+
+            python /app/examples/ingest_data.py \
+              /app/examples/sample_bodc.json \
+              /app/examples/sample_bodc_annotations.xlsx
+          else
+            echo "Database check failed with status $$status"
+            exit "$$status"
+          fi
         fi
       '
     networks:
       - shared_services
 
-  annotations_api_db1:
+  annotations-api-db-jncc:
     image: postgis/postgis:16-3.5
-    container_name: annotations_api_db1
+    container_name: annotations-api-db-jncc
     restart: always
     env_file:
       - ../.env
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db1
+      POSTGRES_HOST: annotations-api-db-jncc
     volumes:
-      - annotations_pg_data1:/var/lib/postgresql/data
+      - annotations_pg_data_jncc:/var/lib/postgresql/data
     ports:
       - "5435:5432"
     healthcheck:
@@ -186,18 +230,18 @@ services:
     networks:
       - shared_services
 
-  annotations_api_db2:
+  annotations-api-db-bodc:
     image: postgis/postgis:16-3.5
-    container_name: annotations_api_db2
+    container_name: annotations-api-db-bodc
     restart: always
     env_file:
       - ../.env
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB: annotationsdb
-      POSTGRES_HOST: annotations_api_db2
+      POSTGRES_HOST: annotations-api-db-bodc
     volumes:
-      - annotations_pg_data2:/var/lib/postgresql/data
+      - annotations_pg_data_bodc:/var/lib/postgresql/data
     ports:
       - "5436:5432"
     healthcheck:
@@ -266,35 +310,6 @@ services:
     networks:
       - shared_services
 
-  worms-cache-seed:
-    image: ghcr.io/paidiver/worms-cache:latest
-    env_file:
-      - ../.env
-    environment:
-      POSTGRES_DB: worms-cache-db
-      POSTGRES_HOST: worms-db
-    restart: "no"
-    depends_on:
-      worms-cache:
-        condition: service_healthy
-    command: >
-      bash -c '
-        python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Taxon\"); raise SystemExit(0 if Model.objects.exists() else 42)"
-        status=$$?
-
-        if [ "$$status" -eq 0 ]; then
-          echo "Worms cache database already has data; skipping ingest_worms"
-        elif [ "$$status" -eq 42 ]; then
-          echo "Worms cache database is empty; running ingest_worms"
-          python manage.py ingest_worms --file initial_aphia_ids.txt --add-ranks
-        else
-          echo "Database check failed with status $$status"
-          exit "$$status"
-        fi
-      '
-    networks:
-      - shared_services
-
   taxamatch:
     image: ghcr.io/paidiver/worms-cache:rb-latest
     environment:
@@ -311,8 +326,8 @@ services:
       - shared_services
 
 volumes:
-  annotations_pg_data1:
-  annotations_pg_data2:
+  annotations_pg_data_jncc:
+  annotations_pg_data_bodc:
   worms_pg_data:
 
 networks:

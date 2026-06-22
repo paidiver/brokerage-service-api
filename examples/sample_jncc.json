@@ -1,0 +1,2701 @@
+{
+  "submission_id": "submission-002",
+  "image_set_uuid": "29f872da-5745-4525-a3a7-68d3283ba3b7",
+  "ifdo": {
+    "image-set-header": {
+      "image-set-name": "JNCC Offshore Benthic Images CEND0513",
+      "image-set-uuid": "29f872da-5745-4525-a3a7-68d3283ba3b7",
+      "image-abstract": "East of Haig Fras (MCZ) is part of a network of sites designed to meet conservation objectives under the Marine and Coastal Access Act (2009). These sites will also contribute to an ecologically coherent network of Marine Protected Areas (MPAs) across the North-east Atlantic, as agreed under the Oslo Paris (OSPAR) Convention and other international commitments to which the UK is signatory. The Joint Nature Conservation Committee (JNCC) and the Centre for Environment, Fisheries and Aquaculture Science (Cefas) have conducted three surveys aboard RV Cefas Endeavour (CEND0312, CEND0513 and CEND0915) to gather evidence and to monitor East of Haig Fras Marine Conservation Zone (MCZ) and to inform assessment of condition of the designated features of the sites.",
+      "image-event": {
+        "name": "CEND0513",
+        "uri": ""
+      },
+      "image-platform": {
+        "name": "Drop camera",
+        "uri": "https://jncc.gov.uk/our-work/data-collection-survey-methods-and-equipment/"
+      },
+      "image-sensor": {
+        "name": "Canon PowerShot G5",
+        "uri": ""
+      },
+      "image-set-handle": "https://jncc.resourcespace.com/pages/search.php?search=%21collection99",
+      "image-creators": [
+        {
+          "name": "JNCC",
+          "uri": ""
+        },
+        {
+          "name": "Cefas",
+          "uri": ""
+        }
+      ],
+      "image-pi": {
+        "name": "Graeme Duncan",
+        "uri": ""
+      },
+      "image-license": {
+        "name": "Open Government Licence v3.0",
+        "uri": "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      },
+      "image-copyright": "Joint Nature Conservation Committee and CEFAS",
+      "image-coordinate-reference-system": "",
+      "image-acquisition": "photo",
+      "image-quality": "product",
+      "image-deployment": "mapping",
+      "image-navigation": "",
+      "image-scale-reference": "laser marker",
+      "image-illumination": "mixed light",
+      "image-resolution": "mm",
+      "image-marine-zone": "seafloor",
+      "image-spectral-resolution": "rgb",
+      "image-capture-mode": "timer",
+      "image-spatial-constraints": "19 Stations at East of Haig Fras MCZ",
+      "image-temporal-constraints": "",
+      "image-target-environment": "",
+      "image-objective": "East of Haig Fras (MCZ) is part of a network of sites designed to meet conservation objectives under the Marine and Coastal Access Act (2009). These sites will also contribute to an ecologically coherent network of Marine Protected Areas (MPAs) across the North-east Atlantic, as agreed under the Oslo Paris (OSPAR) Convention and other international commitments to which the UK is signatory. The Joint Nature Conservation Committee (JNCC) and the Centre for Environment, Fisheries and Aquaculture Science (Cefas) have conducted three surveys aboard RV Cefas Endeavour (CEND0312, CEND0513 and CEND0915) to gather evidence and to monitor East of Haig Fras Marine Conservation Zone (MCZ) and to inform assessment of condition of the designated features of the sites",
+      "image-reference-calibration": "",
+      "image-time-synchronisation": "",
+      "image-item-identification-scheme": "<Location code EHGF=East of Greater Haig Fras>_<location ##>*STN*<Station number###>*A1*<image ###>.jpg",
+      "image-curation-protocol": "",
+      "image-acquisition-settings": {
+        "Camera model": "Canon PowerShot G5",
+        "Pixel dimensions": "2592 x 1944",
+        "Colour space": "RGB",
+        "Focal length": "7.1875 mm",
+        "Metering mode": "Pattern",
+        "F number": "f/8",
+        "Exposure program": "Aperture priority",
+        "Exposure time": "1/60"
+      },
+      "image-set-start-datetime": "2013-04-23 11:47:53",
+      "image-set-end-datetime": "2013-04-24 00:05:04",
+      "image-set-lat-min": 50.45791,
+      "image-set-lat-max": 50.53952,
+      "image-set-long-min": -6.609169,
+      "image-set-long-max": -6.520728,
+      "image-set-documentation": "https://data.jncc.gov.uk/data/a74dc2aa-e8e9-4f23-81a2-287eefa7a47d/JNCC-CEFAS-28-FINAL-WEB.pdf",
+      "image-set-funder": "JNCC",
+      "image-set-grant-number": ""
+    },
+    "image-set-items": [
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_017.jpg",
+        "image-datetime": "2013-04-23 17:24:00",
+        "image-longitude": -6.59865555555556,
+        "image-latitude": 50.4581222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8779/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_009.jpg",
+        "image-datetime": "2013-04-23 15:37:00",
+        "image-longitude": -6.5963,
+        "image-latitude": 50.4897333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8445/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_002.jpg",
+        "image-datetime": "2013-04-23 17:14:00",
+        "image-longitude": -6.59776666666667,
+        "image-latitude": 50.4587722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8794/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_014.jpg",
+        "image-datetime": "2013-04-23 16:46:00",
+        "image-longitude": -6.60908611111111,
+        "image-latitude": 50.4841,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8796/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_009.jpg",
+        "image-datetime": "2013-04-23 17:18:00",
+        "image-longitude": -6.59818055555556,
+        "image-latitude": 50.4584611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8787/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_007.jpg",
+        "image-datetime": "2013-04-23 17:17:00",
+        "image-longitude": -6.59808611111111,
+        "image-latitude": 50.4585333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8789/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_008.jpg",
+        "image-datetime": "2013-04-23 23:48:00",
+        "image-longitude": -6.57342777777778,
+        "image-latitude": 50.5385916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8578/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_008.jpg",
+        "image-datetime": "2013-04-23 18:24:00",
+        "image-longitude": -6.596475,
+        "image-latitude": 50.4669666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8750/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_003.jpg",
+        "image-datetime": "2013-04-23 18:20:00",
+        "image-longitude": -6.59691944444444,
+        "image-latitude": 50.4668388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8755/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_005.jpg",
+        "image-datetime": "2013-04-23 17:16:00",
+        "image-longitude": -6.597975,
+        "image-latitude": 50.4586138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8791/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_009.jpg",
+        "image-datetime": "2013-04-23 18:24:00",
+        "image-longitude": -6.59645,
+        "image-latitude": 50.4669722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8749/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_007.jpg",
+        "image-datetime": "2013-04-23 18:24:00",
+        "image-longitude": -6.59654166666667,
+        "image-latitude": 50.4669388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8751/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_002.jpg",
+        "image-datetime": "2013-04-23 18:19:00",
+        "image-longitude": -6.59699444444444,
+        "image-latitude": 50.4667944444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8756/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_013.jpg",
+        "image-datetime": "2013-04-23 17:56:00",
+        "image-longitude": -6.5979,
+        "image-latitude": 50.46085,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8764/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_020.jpg",
+        "image-datetime": "2013-04-23 17:27:00",
+        "image-longitude": -6.59896944444444,
+        "image-latitude": 50.4579055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8776/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_019.jpg",
+        "image-datetime": "2013-04-23 17:26:00",
+        "image-longitude": -6.59886111111111,
+        "image-latitude": 50.457975,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8777/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_018.jpg",
+        "image-datetime": "2013-04-23 17:24:00",
+        "image-longitude": -6.59869722222222,
+        "image-latitude": 50.4580805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8778/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_014.jpg",
+        "image-datetime": "2013-04-23 17:22:00",
+        "image-longitude": -6.59844444444444,
+        "image-latitude": 50.4582666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8782/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_006.jpg",
+        "image-datetime": "2013-04-23 17:17:00",
+        "image-longitude": -6.59803611111111,
+        "image-latitude": 50.4585722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8790/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_003.jpg",
+        "image-datetime": "2013-04-23 17:15:00",
+        "image-longitude": -6.59786944444444,
+        "image-latitude": 50.4586972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8793/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_006.jpg",
+        "image-datetime": "2013-04-23 18:22:00",
+        "image-longitude": -6.59666388888889,
+        "image-latitude": 50.4669138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8752/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_018.jpg",
+        "image-datetime": "2013-04-23 18:02:00",
+        "image-longitude": -6.598525,
+        "image-latitude": 50.4610777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8759/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_011.jpg",
+        "image-datetime": "2013-04-23 17:54:00",
+        "image-longitude": -6.59766388888889,
+        "image-latitude": 50.460775,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8766/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_008.jpg",
+        "image-datetime": "2013-04-23 17:51:00",
+        "image-longitude": -6.59729722222222,
+        "image-latitude": 50.4606444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8769/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_007.jpg",
+        "image-datetime": "2013-04-23 17:50:00",
+        "image-longitude": -6.59716388888889,
+        "image-latitude": 50.4605916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8770/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_004.jpg",
+        "image-datetime": "2013-04-23 17:47:00",
+        "image-longitude": -6.59683055555556,
+        "image-latitude": 50.4604694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8773/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_015.jpg",
+        "image-datetime": "2013-04-23 17:23:00",
+        "image-longitude": -6.59859444444444,
+        "image-latitude": 50.458175,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8781/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_013.jpg",
+        "image-datetime": "2013-04-23 17:21:00",
+        "image-longitude": -6.59839722222222,
+        "image-latitude": 50.4583222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8783/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_012.jpg",
+        "image-datetime": "2013-04-23 17:20:00",
+        "image-longitude": -6.59834166666667,
+        "image-latitude": 50.4583527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8784/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_011.jpg",
+        "image-datetime": "2013-04-23 17:20:00",
+        "image-longitude": -6.59830555555556,
+        "image-latitude": 50.4583777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8785/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_010.jpg",
+        "image-datetime": "2013-04-23 17:19:00",
+        "image-longitude": -6.59823611111111,
+        "image-latitude": 50.4584361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8786/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_015.jpg",
+        "image-datetime": "2013-04-23 16:47:00",
+        "image-longitude": -6.60916944444444,
+        "image-latitude": 50.4841472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8795/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_010.jpg",
+        "image-datetime": "2013-04-23 23:49:00",
+        "image-longitude": -6.57353611111111,
+        "image-latitude": 50.5386444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8576/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_011.jpg",
+        "image-datetime": "2013-04-23 21:09:00",
+        "image-longitude": -6.58345277777778,
+        "image-latitude": 50.5059694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8659/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_017.jpg",
+        "image-datetime": "2013-04-23 18:00:00",
+        "image-longitude": -6.59836666666667,
+        "image-latitude": 50.4610194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8760/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_012.jpg",
+        "image-datetime": "2013-04-23 17:56:00",
+        "image-longitude": -6.59782222222222,
+        "image-latitude": 50.4608222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8765/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_006.jpg",
+        "image-datetime": "2013-04-23 17:49:00",
+        "image-longitude": -6.59703888888889,
+        "image-latitude": 50.46055,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8771/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_002.jpg",
+        "image-datetime": "2013-04-23 17:45:00",
+        "image-longitude": -6.59661388888889,
+        "image-latitude": 50.4604,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8775/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_016.jpg",
+        "image-datetime": "2013-04-23 17:23:00",
+        "image-longitude": -6.59861666666667,
+        "image-latitude": 50.4581638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8780/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_008.jpg",
+        "image-datetime": "2013-04-23 17:18:00",
+        "image-longitude": -6.59814444444444,
+        "image-latitude": 50.4585,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8788/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_018.jpg",
+        "image-datetime": "2013-04-23 23:15:00",
+        "image-longitude": -6.57992222222222,
+        "image-latitude": 50.5293277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8594/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_005.jpg",
+        "image-datetime": "2013-04-23 18:21:00",
+        "image-longitude": -6.59679722222222,
+        "image-latitude": 50.4668805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8753/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_004.jpg",
+        "image-datetime": "2013-04-23 18:21:00",
+        "image-longitude": -6.59687222222222,
+        "image-latitude": 50.4668555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8754/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_020.jpg",
+        "image-datetime": "2013-04-23 18:02:00",
+        "image-longitude": -6.59857222222222,
+        "image-latitude": 50.4610972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8757/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_019.jpg",
+        "image-datetime": "2013-04-23 18:02:00",
+        "image-longitude": -6.59855555555556,
+        "image-latitude": 50.4610888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8758/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_016.jpg",
+        "image-datetime": "2013-04-23 17:59:00",
+        "image-longitude": -6.59824166666667,
+        "image-latitude": 50.4609777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8761/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_015.jpg",
+        "image-datetime": "2013-04-23 17:59:00",
+        "image-longitude": -6.59819166666667,
+        "image-latitude": 50.4609555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8762/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_010.jpg",
+        "image-datetime": "2013-04-23 17:53:00",
+        "image-longitude": -6.59756666666667,
+        "image-latitude": 50.4607333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8767/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_009.jpg",
+        "image-datetime": "2013-04-23 17:52:00",
+        "image-longitude": -6.59743333333333,
+        "image-latitude": 50.4606861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8768/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_005.jpg",
+        "image-datetime": "2013-04-23 17:48:00",
+        "image-longitude": -6.59694444444444,
+        "image-latitude": 50.4605083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8772/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_003.jpg",
+        "image-datetime": "2013-04-23 17:46:00",
+        "image-longitude": -6.59669166666667,
+        "image-latitude": 50.4604333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8774/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_01_STN_115_A1_004.jpg",
+        "image-datetime": "2013-04-23 17:15:00",
+        "image-longitude": -6.59791944444444,
+        "image-latitude": 50.4586416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8792/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_030.jpg",
+        "image-datetime": "2013-04-24 00:03:00",
+        "image-longitude": -6.57475833333333,
+        "image-latitude": 50.5394055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8556/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_010.jpg",
+        "image-datetime": "2013-04-23 23:12:00",
+        "image-longitude": -6.58008611111111,
+        "image-latitude": 50.5290527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8602/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_019.jpg",
+        "image-datetime": "2013-04-23 19:55:00",
+        "image-longitude": -6.58908333333333,
+        "image-latitude": 50.4899444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8703/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_016.jpg",
+        "image-datetime": "2013-04-23 19:04:00",
+        "image-longitude": -6.59347222222222,
+        "image-latitude": 50.4704277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8721/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_007.jpg",
+        "image-datetime": "2013-04-23 18:55:00",
+        "image-longitude": -6.59446111111111,
+        "image-latitude": 50.4699833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8730/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_02_STN_116_A1_014.jpg",
+        "image-datetime": "2013-04-23 17:58:00",
+        "image-longitude": -6.59809444444444,
+        "image-latitude": 50.460925,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8763/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_011.jpg",
+        "image-datetime": "2013-04-23 16:43:00",
+        "image-longitude": -6.60875555555556,
+        "image-latitude": 50.4839916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8425/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_010.jpg",
+        "image-datetime": "2013-04-23 15:06:00",
+        "image-longitude": -6.58733055555556,
+        "image-latitude": 50.4940388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8691/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_015.jpg",
+        "image-datetime": "2013-04-23 13:21:00",
+        "image-longitude": -6.54721388888889,
+        "image-latitude": 50.5116916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8494/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_013.jpg",
+        "image-datetime": "2013-04-23 13:19:00",
+        "image-longitude": -6.54705,
+        "image-latitude": 50.5117972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8496/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_005.jpg",
+        "image-datetime": "2013-04-23 12:27:00",
+        "image-longitude": -6.53253888888889,
+        "image-latitude": 50.5182027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8533/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_033.jpg",
+        "image-datetime": "2013-04-24 00:05:00",
+        "image-longitude": -6.57493333333333,
+        "image-latitude": 50.539525,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8553/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_032.jpg",
+        "image-datetime": "2013-04-24 00:04:00",
+        "image-longitude": -6.57484166666667,
+        "image-latitude": 50.5394666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8554/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_031.jpg",
+        "image-datetime": "2013-04-24 00:03:00",
+        "image-longitude": -6.57481388888889,
+        "image-latitude": 50.5394472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8555/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_029.jpg",
+        "image-datetime": "2013-04-24 00:02:00",
+        "image-longitude": -6.5747,
+        "image-latitude": 50.5393638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8557/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_028.jpg",
+        "image-datetime": "2013-04-24 00:02:00",
+        "image-longitude": -6.57465277777778,
+        "image-latitude": 50.5393416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8558/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_027.jpg",
+        "image-datetime": "2013-04-24 00:00:00",
+        "image-longitude": -6.57455277777778,
+        "image-latitude": 50.5392666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8559/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_026.jpg",
+        "image-datetime": "2013-04-23 23:59:00",
+        "image-longitude": -6.57446944444444,
+        "image-latitude": 50.5392027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8560/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_025.jpg",
+        "image-datetime": "2013-04-23 23:59:00",
+        "image-longitude": -6.57443888888889,
+        "image-latitude": 50.5391805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8561/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_024.jpg",
+        "image-datetime": "2013-04-23 23:58:00",
+        "image-longitude": -6.57439166666667,
+        "image-latitude": 50.53915,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8562/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_023.jpg",
+        "image-datetime": "2013-04-23 23:57:00",
+        "image-longitude": -6.57428333333333,
+        "image-latitude": 50.5390916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8563/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_022.jpg",
+        "image-datetime": "2013-04-23 23:56:00",
+        "image-longitude": -6.5742,
+        "image-latitude": 50.5390333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8564/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_021.jpg",
+        "image-datetime": "2013-04-23 23:56:00",
+        "image-longitude": -6.57414444444444,
+        "image-latitude": 50.5389972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8565/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_020.jpg",
+        "image-datetime": "2013-04-23 23:55:00",
+        "image-longitude": -6.57409722222222,
+        "image-latitude": 50.5389694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8566/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_019.jpg",
+        "image-datetime": "2013-04-23 23:54:00",
+        "image-longitude": -6.57401111111111,
+        "image-latitude": 50.5389194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8567/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_018.jpg",
+        "image-datetime": "2013-04-23 23:54:00",
+        "image-longitude": -6.573975,
+        "image-latitude": 50.5388944444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8568/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_017.jpg",
+        "image-datetime": "2013-04-23 23:54:00",
+        "image-longitude": -6.573925,
+        "image-latitude": 50.5388638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8569/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_016.jpg",
+        "image-datetime": "2013-04-23 23:52:00",
+        "image-longitude": -6.57381666666667,
+        "image-latitude": 50.5388,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8570/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_015.jpg",
+        "image-datetime": "2013-04-23 23:51:00",
+        "image-longitude": -6.57375555555556,
+        "image-latitude": 50.5387611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8571/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_014.jpg",
+        "image-datetime": "2013-04-23 23:51:00",
+        "image-longitude": -6.5737,
+        "image-latitude": 50.5387277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8572/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_013.jpg",
+        "image-datetime": "2013-04-23 23:51:00",
+        "image-longitude": -6.57368611111111,
+        "image-latitude": 50.5387222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8573/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_012.jpg",
+        "image-datetime": "2013-04-23 23:51:00",
+        "image-longitude": -6.57364166666667,
+        "image-latitude": 50.5387,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8574/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_011.jpg",
+        "image-datetime": "2013-04-23 23:50:00",
+        "image-longitude": -6.57355277777778,
+        "image-latitude": 50.5386555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8575/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_009.jpg",
+        "image-datetime": "2013-04-23 23:49:00",
+        "image-longitude": -6.57349166666667,
+        "image-latitude": 50.538625,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8577/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_007.jpg",
+        "image-datetime": "2013-04-23 23:48:00",
+        "image-longitude": -6.57338333333333,
+        "image-latitude": 50.5385722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8579/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_006.jpg",
+        "image-datetime": "2013-04-23 23:47:00",
+        "image-longitude": -6.57327777777778,
+        "image-latitude": 50.5385138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8580/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_005.jpg",
+        "image-datetime": "2013-04-23 23:47:00",
+        "image-longitude": -6.57325,
+        "image-latitude": 50.5384972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8581/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_004.jpg",
+        "image-datetime": "2013-04-23 23:46:00",
+        "image-longitude": -6.57318611111111,
+        "image-latitude": 50.5384694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8582/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_003.jpg",
+        "image-datetime": "2013-04-23 23:45:00",
+        "image-longitude": -6.573125,
+        "image-latitude": 50.5384388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8583/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_12_STN_125_A1_002.jpg",
+        "image-datetime": "2013-04-23 23:44:00",
+        "image-longitude": -6.57301944444444,
+        "image-latitude": 50.5383805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8584/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_027.jpg",
+        "image-datetime": "2013-04-23 23:22:00",
+        "image-longitude": -6.57957222222222,
+        "image-latitude": 50.5298638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8585/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_026.jpg",
+        "image-datetime": "2013-04-23 23:21:00",
+        "image-longitude": -6.57960555555556,
+        "image-latitude": 50.5297916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8586/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_025.jpg",
+        "image-datetime": "2013-04-23 23:20:00",
+        "image-longitude": -6.57968333333333,
+        "image-latitude": 50.5297194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8587/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_024.jpg",
+        "image-datetime": "2013-04-23 23:19:00",
+        "image-longitude": -6.57971388888889,
+        "image-latitude": 50.5296361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8588/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_023.jpg",
+        "image-datetime": "2013-04-23 23:18:00",
+        "image-longitude": -6.57975,
+        "image-latitude": 50.5295583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8589/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_022.jpg",
+        "image-datetime": "2013-04-23 23:18:00",
+        "image-longitude": -6.57977222222222,
+        "image-latitude": 50.5295083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8590/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_021.jpg",
+        "image-datetime": "2013-04-23 23:17:00",
+        "image-longitude": -6.5798,
+        "image-latitude": 50.5294888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8591/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_020.jpg",
+        "image-datetime": "2013-04-23 23:17:00",
+        "image-longitude": -6.57991111111111,
+        "image-latitude": 50.5293722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8592/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_019.jpg",
+        "image-datetime": "2013-04-23 23:16:00",
+        "image-longitude": -6.57991111111111,
+        "image-latitude": 50.5293722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8593/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_017.jpg",
+        "image-datetime": "2013-04-23 23:15:00",
+        "image-longitude": -6.57993611111111,
+        "image-latitude": 50.5293,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8595/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_016.jpg",
+        "image-datetime": "2013-04-23 23:14:00",
+        "image-longitude": -6.57995555555556,
+        "image-latitude": 50.52925,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8596/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_015.jpg",
+        "image-datetime": "2013-04-23 23:14:00",
+        "image-longitude": -6.57996111111111,
+        "image-latitude": 50.5292055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8597/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_014.jpg",
+        "image-datetime": "2013-04-23 23:13:00",
+        "image-longitude": -6.57998888888889,
+        "image-latitude": 50.5291611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8598/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_013.jpg",
+        "image-datetime": "2013-04-23 23:13:00",
+        "image-longitude": -6.58001111111111,
+        "image-latitude": 50.5291166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8599/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_012.jpg",
+        "image-datetime": "2013-04-23 23:13:00",
+        "image-longitude": -6.58006111111111,
+        "image-latitude": 50.529075,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8600/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_011.jpg",
+        "image-datetime": "2013-04-23 23:12:00",
+        "image-longitude": -6.580075,
+        "image-latitude": 50.5290722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8601/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_009.jpg",
+        "image-datetime": "2013-04-23 23:12:00",
+        "image-longitude": -6.58008611111111,
+        "image-latitude": 50.5290333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8603/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_008.jpg",
+        "image-datetime": "2013-04-23 23:11:00",
+        "image-longitude": -6.58011388888889,
+        "image-latitude": 50.5290083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8604/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_007.jpg",
+        "image-datetime": "2013-04-23 23:10:00",
+        "image-longitude": -6.58016666666667,
+        "image-latitude": 50.5289388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8605/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_006.jpg",
+        "image-datetime": "2013-04-23 23:09:00",
+        "image-longitude": -6.58021111111111,
+        "image-latitude": 50.5288638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8606/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_005.jpg",
+        "image-datetime": "2013-04-23 23:09:00",
+        "image-longitude": -6.58024444444444,
+        "image-latitude": 50.5287861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8607/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_004.jpg",
+        "image-datetime": "2013-04-23 23:08:00",
+        "image-longitude": -6.58025833333333,
+        "image-latitude": 50.5287444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8608/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_003.jpg",
+        "image-datetime": "2013-04-23 23:07:00",
+        "image-longitude": -6.58028333333333,
+        "image-latitude": 50.5287027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8609/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_11_STN_124_A1_002.jpg",
+        "image-datetime": "2013-04-23 23:06:00",
+        "image-longitude": -6.58034722222222,
+        "image-latitude": 50.5286361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8610/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_020.jpg",
+        "image-datetime": "2013-04-23 22:44:00",
+        "image-longitude": -6.57800555555556,
+        "image-latitude": 50.5272166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8611/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_019.jpg",
+        "image-datetime": "2013-04-23 22:43:00",
+        "image-longitude": -6.57786944444444,
+        "image-latitude": 50.5271361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8612/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_018.jpg",
+        "image-datetime": "2013-04-23 22:42:00",
+        "image-longitude": -6.57781388888889,
+        "image-latitude": 50.5271,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8613/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_017.jpg",
+        "image-datetime": "2013-04-23 22:41:00",
+        "image-longitude": -6.57773333333333,
+        "image-latitude": 50.5270472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8614/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_016.jpg",
+        "image-datetime": "2013-04-23 22:40:00",
+        "image-longitude": -6.57765833333333,
+        "image-latitude": 50.527,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8615/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_015.jpg",
+        "image-datetime": "2013-04-23 22:40:00",
+        "image-longitude": -6.57764444444444,
+        "image-latitude": 50.5269972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8616/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_014.jpg",
+        "image-datetime": "2013-04-23 22:39:00",
+        "image-longitude": -6.577575,
+        "image-latitude": 50.5269444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8617/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_013.jpg",
+        "image-datetime": "2013-04-23 22:39:00",
+        "image-longitude": -6.57754444444444,
+        "image-latitude": 50.5269305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8618/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_012.jpg",
+        "image-datetime": "2013-04-23 22:38:00",
+        "image-longitude": -6.57746111111111,
+        "image-latitude": 50.5268694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8619/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_011.jpg",
+        "image-datetime": "2013-04-23 22:38:00",
+        "image-longitude": -6.57742222222222,
+        "image-latitude": 50.5268416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8620/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_010.jpg",
+        "image-datetime": "2013-04-23 22:37:00",
+        "image-longitude": -6.57734444444444,
+        "image-latitude": 50.5268027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8621/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_009.jpg",
+        "image-datetime": "2013-04-23 22:36:00",
+        "image-longitude": -6.57725555555556,
+        "image-latitude": 50.5267416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8622/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_008.jpg",
+        "image-datetime": "2013-04-23 22:35:00",
+        "image-longitude": -6.57721666666667,
+        "image-latitude": 50.5267194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8623/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_007.jpg",
+        "image-datetime": "2013-04-23 22:35:00",
+        "image-longitude": -6.57717222222222,
+        "image-latitude": 50.5266805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8624/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_006.jpg",
+        "image-datetime": "2013-04-23 22:34:00",
+        "image-longitude": -6.57713333333333,
+        "image-latitude": 50.5266666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8625/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_005.jpg",
+        "image-datetime": "2013-04-23 22:34:00",
+        "image-longitude": -6.57706388888889,
+        "image-latitude": 50.5266111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8626/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_004.jpg",
+        "image-datetime": "2013-04-23 22:33:00",
+        "image-longitude": -6.57698611111111,
+        "image-latitude": 50.5265583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8627/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_003.jpg",
+        "image-datetime": "2013-04-23 22:32:00",
+        "image-longitude": -6.57687222222222,
+        "image-latitude": 50.5265055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8628/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_10_STN_123_A1_002.jpg",
+        "image-datetime": "2013-04-23 22:31:00",
+        "image-longitude": -6.5768,
+        "image-latitude": 50.5264361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8629/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_025.jpg",
+        "image-datetime": "2013-04-23 21:56:00",
+        "image-longitude": -6.58148333333333,
+        "image-latitude": 50.5127361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8630/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_024.jpg",
+        "image-datetime": "2013-04-23 21:55:00",
+        "image-longitude": -6.58152222222222,
+        "image-latitude": 50.5127027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8631/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_023.jpg",
+        "image-datetime": "2013-04-23 21:54:00",
+        "image-longitude": -6.58159722222222,
+        "image-latitude": 50.5126388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8632/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_022.jpg",
+        "image-datetime": "2013-04-23 21:53:00",
+        "image-longitude": -6.58167777777778,
+        "image-latitude": 50.5125888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8633/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_021.jpg",
+        "image-datetime": "2013-04-23 21:52:00",
+        "image-longitude": -6.58173055555556,
+        "image-latitude": 50.5125361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8634/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_020.jpg",
+        "image-datetime": "2013-04-23 21:51:00",
+        "image-longitude": -6.58183055555556,
+        "image-latitude": 50.5124527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8635/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_019.jpg",
+        "image-datetime": "2013-04-23 21:51:00",
+        "image-longitude": -6.58191388888889,
+        "image-latitude": 50.5124166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8636/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_018.jpg",
+        "image-datetime": "2013-04-23 21:50:00",
+        "image-longitude": -6.58195,
+        "image-latitude": 50.512375,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8637/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_017.jpg",
+        "image-datetime": "2013-04-23 21:49:00",
+        "image-longitude": -6.58202222222222,
+        "image-latitude": 50.5123222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8638/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_016.jpg",
+        "image-datetime": "2013-04-23 21:49:00",
+        "image-longitude": -6.58206388888889,
+        "image-latitude": 50.5122861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8639/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_015.jpg",
+        "image-datetime": "2013-04-23 21:48:00",
+        "image-longitude": -6.58213611111111,
+        "image-latitude": 50.5122388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8640/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_014.jpg",
+        "image-datetime": "2013-04-23 21:47:00",
+        "image-longitude": -6.58217222222222,
+        "image-latitude": 50.5121972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8641/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_013.jpg",
+        "image-datetime": "2013-04-23 21:47:00",
+        "image-longitude": -6.58221111111111,
+        "image-latitude": 50.5121638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8642/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_012.jpg",
+        "image-datetime": "2013-04-23 21:46:00",
+        "image-longitude": -6.58229722222222,
+        "image-latitude": 50.5121194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8643/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_011.jpg",
+        "image-datetime": "2013-04-23 21:45:00",
+        "image-longitude": -6.58234722222222,
+        "image-latitude": 50.5120694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8644/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_010.jpg",
+        "image-datetime": "2013-04-23 21:45:00",
+        "image-longitude": -6.58241111111111,
+        "image-latitude": 50.5120166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8645/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_009.jpg",
+        "image-datetime": "2013-04-23 21:44:00",
+        "image-longitude": -6.58246111111111,
+        "image-latitude": 50.5119722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8646/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_008.jpg",
+        "image-datetime": "2013-04-23 21:43:00",
+        "image-longitude": -6.58254166666667,
+        "image-latitude": 50.5118833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8647/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_007.jpg",
+        "image-datetime": "2013-04-23 21:42:00",
+        "image-longitude": -6.58263333333333,
+        "image-latitude": 50.511825,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8648/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_006.jpg",
+        "image-datetime": "2013-04-23 21:41:00",
+        "image-longitude": -6.58269166666667,
+        "image-latitude": 50.511775,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8649/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_005.jpg",
+        "image-datetime": "2013-04-23 21:40:00",
+        "image-longitude": -6.58273055555556,
+        "image-latitude": 50.5117194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8650/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_004.jpg",
+        "image-datetime": "2013-04-23 21:40:00",
+        "image-longitude": -6.58275555555556,
+        "image-latitude": 50.5117138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8651/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_003.jpg",
+        "image-datetime": "2013-04-23 21:39:00",
+        "image-longitude": -6.58279444444444,
+        "image-latitude": 50.5116777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8652/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_09_STN_122_A1_002.jpg",
+        "image-datetime": "2013-04-23 21:39:00",
+        "image-longitude": -6.58283333333333,
+        "image-latitude": 50.5116638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8653/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_016.jpg",
+        "image-datetime": "2013-04-23 21:14:00",
+        "image-longitude": -6.58289166666667,
+        "image-latitude": 50.5057777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8654/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_015.jpg",
+        "image-datetime": "2013-04-23 21:13:00",
+        "image-longitude": -6.58300555555556,
+        "image-latitude": 50.5058333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8655/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_014.jpg",
+        "image-datetime": "2013-04-23 21:12:00",
+        "image-longitude": -6.58315833333333,
+        "image-latitude": 50.5058833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8656/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_013.jpg",
+        "image-datetime": "2013-04-23 21:11:00",
+        "image-longitude": -6.58321666666667,
+        "image-latitude": 50.5058944444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8657/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_012.jpg",
+        "image-datetime": "2013-04-23 21:11:00",
+        "image-longitude": -6.58328888888889,
+        "image-latitude": 50.5059111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8658/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_010.jpg",
+        "image-datetime": "2013-04-23 21:08:00",
+        "image-longitude": -6.58358333333333,
+        "image-latitude": 50.5060138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8660/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_009.jpg",
+        "image-datetime": "2013-04-23 21:07:00",
+        "image-longitude": -6.58367222222222,
+        "image-latitude": 50.5060444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8661/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_008.jpg",
+        "image-datetime": "2013-04-23 21:06:00",
+        "image-longitude": -6.58383611111111,
+        "image-latitude": 50.5060916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8662/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_007.jpg",
+        "image-datetime": "2013-04-23 21:06:00",
+        "image-longitude": -6.58388888888889,
+        "image-latitude": 50.5061111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8663/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_006.jpg",
+        "image-datetime": "2013-04-23 21:05:00",
+        "image-longitude": -6.583975,
+        "image-latitude": 50.5061444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8664/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_005.jpg",
+        "image-datetime": "2013-04-23 21:04:00",
+        "image-longitude": -6.58408055555556,
+        "image-latitude": 50.5061722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8665/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_004.jpg",
+        "image-datetime": "2013-04-23 21:03:00",
+        "image-longitude": -6.58421388888889,
+        "image-latitude": 50.5062055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8666/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_003.jpg",
+        "image-datetime": "2013-04-23 21:02:00",
+        "image-longitude": -6.58434166666667,
+        "image-latitude": 50.5062472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8667/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_08_STN_121_A1_002.jpg",
+        "image-datetime": "2013-04-23 21:01:00",
+        "image-longitude": -6.58442222222222,
+        "image-latitude": 50.5062805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8668/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_019.jpg",
+        "image-datetime": "2013-04-23 20:44:00",
+        "image-longitude": -6.58704166666667,
+        "image-latitude": 50.5053611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8669/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_018.jpg",
+        "image-datetime": "2013-04-23 20:44:00",
+        "image-longitude": -6.58703333333333,
+        "image-latitude": 50.5053277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8670/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_017.jpg",
+        "image-datetime": "2013-04-23 20:43:00",
+        "image-longitude": -6.587025,
+        "image-latitude": 50.5052472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8671/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_016.jpg",
+        "image-datetime": "2013-04-23 20:42:00",
+        "image-longitude": -6.58700833333333,
+        "image-latitude": 50.5051611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8672/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_015.jpg",
+        "image-datetime": "2013-04-23 20:41:00",
+        "image-longitude": -6.58698888888889,
+        "image-latitude": 50.5051,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8673/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_014.jpg",
+        "image-datetime": "2013-04-23 20:41:00",
+        "image-longitude": -6.58699444444444,
+        "image-latitude": 50.5050833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8674/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_013.jpg",
+        "image-datetime": "2013-04-23 20:40:00",
+        "image-longitude": -6.58693888888889,
+        "image-latitude": 50.5049694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8675/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_012.jpg",
+        "image-datetime": "2013-04-23 20:39:00",
+        "image-longitude": -6.58694444444444,
+        "image-latitude": 50.5048777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8676/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_011.jpg",
+        "image-datetime": "2013-04-23 20:38:00",
+        "image-longitude": -6.58693888888889,
+        "image-latitude": 50.5048277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8677/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_010.jpg",
+        "image-datetime": "2013-04-23 20:37:00",
+        "image-longitude": -6.58692777777778,
+        "image-latitude": 50.5047722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8678/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_009.jpg",
+        "image-datetime": "2013-04-23 20:37:00",
+        "image-longitude": -6.58694444444444,
+        "image-latitude": 50.5047194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8679/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_008.jpg",
+        "image-datetime": "2013-04-23 20:36:00",
+        "image-longitude": -6.58690277777778,
+        "image-latitude": 50.50465,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8680/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_007.jpg",
+        "image-datetime": "2013-04-23 20:35:00",
+        "image-longitude": -6.58687777777778,
+        "image-latitude": 50.5045388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8681/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_006.jpg",
+        "image-datetime": "2013-04-23 20:34:00",
+        "image-longitude": -6.58687777777778,
+        "image-latitude": 50.5044472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8682/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_005.jpg",
+        "image-datetime": "2013-04-23 20:32:00",
+        "image-longitude": -6.58685,
+        "image-latitude": 50.5043527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8683/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_004.jpg",
+        "image-datetime": "2013-04-23 20:32:00",
+        "image-longitude": -6.58685,
+        "image-latitude": 50.5043527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8684/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_003.jpg",
+        "image-datetime": "2013-04-23 20:32:00",
+        "image-longitude": -6.58683611111111,
+        "image-latitude": 50.5042888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8685/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_07_STN_120_A1_002.jpg",
+        "image-datetime": "2013-04-23 20:30:00",
+        "image-longitude": -6.58680555555556,
+        "image-latitude": 50.5041583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8686/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_022.jpg",
+        "image-datetime": "2013-04-23 19:57:00",
+        "image-longitude": -6.58889166666667,
+        "image-latitude": 50.4899333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8700/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_021.jpg",
+        "image-datetime": "2013-04-23 19:56:00",
+        "image-longitude": -6.58896388888889,
+        "image-latitude": 50.4899361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8701/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_020.jpg",
+        "image-datetime": "2013-04-23 19:56:00",
+        "image-longitude": -6.58900555555556,
+        "image-latitude": 50.4899361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8702/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_018.jpg",
+        "image-datetime": "2013-04-23 19:55:00",
+        "image-longitude": -6.58908888888889,
+        "image-latitude": 50.4899277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8704/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_017.jpg",
+        "image-datetime": "2013-04-23 19:54:00",
+        "image-longitude": -6.58924166666667,
+        "image-latitude": 50.489925,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8705/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_016.jpg",
+        "image-datetime": "2013-04-23 19:53:00",
+        "image-longitude": -6.58936111111111,
+        "image-latitude": 50.4899388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8706/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_015.jpg",
+        "image-datetime": "2013-04-23 19:52:00",
+        "image-longitude": -6.58946666666667,
+        "image-latitude": 50.4899416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8707/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_014.jpg",
+        "image-datetime": "2013-04-23 19:52:00",
+        "image-longitude": -6.589525,
+        "image-latitude": 50.4899388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8708/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_013.jpg",
+        "image-datetime": "2013-04-23 19:51:00",
+        "image-longitude": -6.58961666666667,
+        "image-latitude": 50.4899416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8709/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_012.jpg",
+        "image-datetime": "2013-04-23 19:50:00",
+        "image-longitude": -6.58973055555556,
+        "image-latitude": 50.4899138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8710/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_011.jpg",
+        "image-datetime": "2013-04-23 19:49:00",
+        "image-longitude": -6.58980833333333,
+        "image-latitude": 50.4899361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8711/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_010.jpg",
+        "image-datetime": "2013-04-23 19:49:00",
+        "image-longitude": -6.58989444444444,
+        "image-latitude": 50.4899416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8712/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_009.jpg",
+        "image-datetime": "2013-04-23 19:48:00",
+        "image-longitude": -6.59,
+        "image-latitude": 50.4899194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8713/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_008.jpg",
+        "image-datetime": "2013-04-23 19:47:00",
+        "image-longitude": -6.59014722222222,
+        "image-latitude": 50.4899055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8714/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_007.jpg",
+        "image-datetime": "2013-04-23 19:46:00",
+        "image-longitude": -6.59024166666667,
+        "image-latitude": 50.4899111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8715/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_006.jpg",
+        "image-datetime": "2013-04-23 19:46:00",
+        "image-longitude": -6.59030277777778,
+        "image-latitude": 50.4899305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8716/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_005.jpg",
+        "image-datetime": "2013-04-23 19:45:00",
+        "image-longitude": -6.59034444444444,
+        "image-latitude": 50.4899305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8717/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_004.jpg",
+        "image-datetime": "2013-04-23 19:45:00",
+        "image-longitude": -6.59038888888889,
+        "image-latitude": 50.4899444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8718/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_003.jpg",
+        "image-datetime": "2013-04-23 19:45:00",
+        "image-longitude": -6.5904,
+        "image-latitude": 50.4899444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8719/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_05_STN_119_A1_002.jpg",
+        "image-datetime": "2013-04-23 19:44:00",
+        "image-longitude": -6.59048055555556,
+        "image-latitude": 50.4899333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8720/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_015.jpg",
+        "image-datetime": "2013-04-23 19:03:00",
+        "image-longitude": -6.59356944444444,
+        "image-latitude": 50.4703805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8722/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_014.jpg",
+        "image-datetime": "2013-04-23 19:02:00",
+        "image-longitude": -6.59370833333333,
+        "image-latitude": 50.4703222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8723/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_013.jpg",
+        "image-datetime": "2013-04-23 19:01:00",
+        "image-longitude": -6.59388055555556,
+        "image-latitude": 50.4702444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8724/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_012.jpg",
+        "image-datetime": "2013-04-23 19:00:00",
+        "image-longitude": -6.59395,
+        "image-latitude": 50.4702111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8725/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_011.jpg",
+        "image-datetime": "2013-04-23 18:59:00",
+        "image-longitude": -6.59406388888889,
+        "image-latitude": 50.4701416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8726/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_010.jpg",
+        "image-datetime": "2013-04-23 18:58:00",
+        "image-longitude": -6.59417777777778,
+        "image-latitude": 50.4700944444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8727/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_009.jpg",
+        "image-datetime": "2013-04-23 18:57:00",
+        "image-longitude": -6.59431944444444,
+        "image-latitude": 50.47005,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8728/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_008.jpg",
+        "image-datetime": "2013-04-23 18:56:00",
+        "image-longitude": -6.59435277777778,
+        "image-latitude": 50.4700361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8729/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_006.jpg",
+        "image-datetime": "2013-04-23 18:55:00",
+        "image-longitude": -6.59451944444444,
+        "image-latitude": 50.4699472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8731/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_005.jpg",
+        "image-datetime": "2013-04-23 18:54:00",
+        "image-longitude": -6.59461944444444,
+        "image-latitude": 50.4698972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8732/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_004.jpg",
+        "image-datetime": "2013-04-23 18:53:00",
+        "image-longitude": -6.59465555555556,
+        "image-latitude": 50.469875,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8733/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_003.jpg",
+        "image-datetime": "2013-04-23 18:52:00",
+        "image-longitude": -6.59475,
+        "image-latitude": 50.4698416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8734/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_04_STN_118_A1_002.jpg",
+        "image-datetime": "2013-04-23 18:51:00",
+        "image-longitude": -6.59481944444444,
+        "image-latitude": 50.4698055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8735/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_022.jpg",
+        "image-datetime": "2013-04-23 18:37:00",
+        "image-longitude": -6.595,
+        "image-latitude": 50.4673472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8736/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_021.jpg",
+        "image-datetime": "2013-04-23 18:36:00",
+        "image-longitude": -6.59507777777778,
+        "image-latitude": 50.467325,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8737/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_020.jpg",
+        "image-datetime": "2013-04-23 18:36:00",
+        "image-longitude": -6.59512777777778,
+        "image-latitude": 50.4673083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8738/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_019.jpg",
+        "image-datetime": "2013-04-23 18:34:00",
+        "image-longitude": -6.59526666666667,
+        "image-latitude": 50.4672722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8739/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_018.jpg",
+        "image-datetime": "2013-04-23 18:33:00",
+        "image-longitude": -6.59544166666667,
+        "image-latitude": 50.4672361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8740/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_017.jpg",
+        "image-datetime": "2013-04-23 18:32:00",
+        "image-longitude": -6.59548611111111,
+        "image-latitude": 50.4672277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8741/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_016.jpg",
+        "image-datetime": "2013-04-23 18:32:00",
+        "image-longitude": -6.59560555555556,
+        "image-latitude": 50.4671861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8742/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_015.jpg",
+        "image-datetime": "2013-04-23 18:30:00",
+        "image-longitude": -6.595725,
+        "image-latitude": 50.4671638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8743/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_014.jpg",
+        "image-datetime": "2013-04-23 18:29:00",
+        "image-longitude": -6.59583888888889,
+        "image-latitude": 50.4671277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8744/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_013.jpg",
+        "image-datetime": "2013-04-23 18:28:00",
+        "image-longitude": -6.59597777777778,
+        "image-latitude": 50.4670916666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8745/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_012.jpg",
+        "image-datetime": "2013-04-23 18:28:00",
+        "image-longitude": -6.59602777777778,
+        "image-latitude": 50.4670805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8746/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_011.jpg",
+        "image-datetime": "2013-04-23 18:26:00",
+        "image-longitude": -6.59619722222222,
+        "image-latitude": 50.4670333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8747/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_03_STN_117_A1_010.jpg",
+        "image-datetime": "2013-04-23 18:25:00",
+        "image-longitude": -6.59631388888889,
+        "image-latitude": 50.467,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8748/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_013.jpg",
+        "image-datetime": "2013-04-23 16:45:00",
+        "image-longitude": -6.60893333333333,
+        "image-latitude": 50.4840666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8423/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_012.jpg",
+        "image-datetime": "2013-04-23 16:44:00",
+        "image-longitude": -6.60886111111111,
+        "image-latitude": 50.4840305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8424/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_010.jpg",
+        "image-datetime": "2013-04-23 16:42:00",
+        "image-longitude": -6.60865555555556,
+        "image-latitude": 50.4839638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8426/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_009.jpg",
+        "image-datetime": "2013-04-23 16:41:00",
+        "image-longitude": -6.60855277777778,
+        "image-latitude": 50.4839055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8427/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_008.jpg",
+        "image-datetime": "2013-04-23 16:40:00",
+        "image-longitude": -6.60843333333333,
+        "image-latitude": 50.4838722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8428/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_007.jpg",
+        "image-datetime": "2013-04-23 16:40:00",
+        "image-longitude": -6.60838888888889,
+        "image-latitude": 50.4838611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8429/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_006.jpg",
+        "image-datetime": "2013-04-23 16:39:00",
+        "image-longitude": -6.60827777777778,
+        "image-latitude": 50.4838222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8430/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_005.jpg",
+        "image-datetime": "2013-04-23 16:38:00",
+        "image-longitude": -6.6082,
+        "image-latitude": 50.4837888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8431/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_004.jpg",
+        "image-datetime": "2013-04-23 16:37:00",
+        "image-longitude": -6.60810555555556,
+        "image-latitude": 50.4837555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8432/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_003.jpg",
+        "image-datetime": "2013-04-23 16:36:00",
+        "image-longitude": -6.60799722222222,
+        "image-latitude": 50.4837166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8433/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_19_STN_114_A1_002.jpg",
+        "image-datetime": "2013-04-23 16:35:00",
+        "image-longitude": -6.60784166666667,
+        "image-latitude": 50.4836666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8434/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_019.jpg",
+        "image-datetime": "2013-04-23 15:46:00",
+        "image-longitude": -6.59732222222222,
+        "image-latitude": 50.489275,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8435/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_018.jpg",
+        "image-datetime": "2013-04-23 15:45:00",
+        "image-longitude": -6.59719722222222,
+        "image-latitude": 50.4893111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8436/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_017.jpg",
+        "image-datetime": "2013-04-23 15:44:00",
+        "image-longitude": -6.597075,
+        "image-latitude": 50.4893805555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8437/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_016.jpg",
+        "image-datetime": "2013-04-23 15:43:00",
+        "image-longitude": -6.59694722222222,
+        "image-latitude": 50.4894166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8438/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_015.jpg",
+        "image-datetime": "2013-04-23 15:42:00",
+        "image-longitude": -6.59689722222222,
+        "image-latitude": 50.4894361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8439/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_014.jpg",
+        "image-datetime": "2013-04-23 15:42:00",
+        "image-longitude": -6.59686388888889,
+        "image-latitude": 50.4894777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8440/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_013.jpg",
+        "image-datetime": "2013-04-23 15:41:00",
+        "image-longitude": -6.59675833333333,
+        "image-latitude": 50.4895166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8441/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_012.jpg",
+        "image-datetime": "2013-04-23 15:40:00",
+        "image-longitude": -6.59661666666667,
+        "image-latitude": 50.4895583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8442/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_011.jpg",
+        "image-datetime": "2013-04-23 15:39:00",
+        "image-longitude": -6.59651944444444,
+        "image-latitude": 50.4896305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8443/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_010.jpg",
+        "image-datetime": "2013-04-23 15:38:00",
+        "image-longitude": -6.59638888888889,
+        "image-latitude": 50.4896555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8444/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_008.jpg",
+        "image-datetime": "2013-04-23 15:36:00",
+        "image-longitude": -6.59626666666667,
+        "image-latitude": 50.4897416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8446/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_007.jpg",
+        "image-datetime": "2013-04-23 15:35:00",
+        "image-longitude": -6.59615,
+        "image-latitude": 50.4897777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8447/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_006.jpg",
+        "image-datetime": "2013-04-23 15:34:00",
+        "image-longitude": -6.59604166666667,
+        "image-latitude": 50.4898194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8448/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_005.jpg",
+        "image-datetime": "2013-04-23 15:33:00",
+        "image-longitude": -6.59593888888889,
+        "image-latitude": 50.4898638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8449/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_004.jpg",
+        "image-datetime": "2013-04-23 15:33:00",
+        "image-longitude": -6.59586111111111,
+        "image-latitude": 50.4899027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8450/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_003.jpg",
+        "image-datetime": "2013-04-23 15:32:00",
+        "image-longitude": -6.59580277777778,
+        "image-latitude": 50.4899138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8451/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_18_STN_113_A1_002.jpg",
+        "image-datetime": "2013-04-23 15:31:00",
+        "image-longitude": -6.59572777777778,
+        "image-latitude": 50.4899472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8452/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_014.jpg",
+        "image-datetime": "2013-04-23 15:10:00",
+        "image-longitude": -6.58783333333333,
+        "image-latitude": 50.4940638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8687/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_013.jpg",
+        "image-datetime": "2013-04-23 15:09:00",
+        "image-longitude": -6.5877,
+        "image-latitude": 50.4940583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8688/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_012.jpg",
+        "image-datetime": "2013-04-23 15:09:00",
+        "image-longitude": -6.58760555555556,
+        "image-latitude": 50.4940527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8689/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_011.jpg",
+        "image-datetime": "2013-04-23 15:08:00",
+        "image-longitude": -6.58747222222222,
+        "image-latitude": 50.49405,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8690/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_009.jpg",
+        "image-datetime": "2013-04-23 15:05:00",
+        "image-longitude": -6.58718055555556,
+        "image-latitude": 50.4940361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8692/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_008.jpg",
+        "image-datetime": "2013-04-23 15:04:00",
+        "image-longitude": -6.58703888888889,
+        "image-latitude": 50.4940333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8693/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_007.jpg",
+        "image-datetime": "2013-04-23 15:04:00",
+        "image-longitude": -6.58694444444444,
+        "image-latitude": 50.4940305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8694/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_006.jpg",
+        "image-datetime": "2013-04-23 15:03:00",
+        "image-longitude": -6.58691111111111,
+        "image-latitude": 50.4940305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8695/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_005.jpg",
+        "image-datetime": "2013-04-23 15:02:00",
+        "image-longitude": -6.586775,
+        "image-latitude": 50.4940361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8696/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_004.jpg",
+        "image-datetime": "2013-04-23 15:01:00",
+        "image-longitude": -6.58659722222222,
+        "image-latitude": 50.4940472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8697/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_003.jpg",
+        "image-datetime": "2013-04-23 15:00:00",
+        "image-longitude": -6.58645555555556,
+        "image-latitude": 50.4940416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8698/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_06_STN_112_A1_002.jpg",
+        "image-datetime": "2013-04-23 14:59:00",
+        "image-longitude": -6.58634444444444,
+        "image-latitude": 50.4940472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8699/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_016.jpg",
+        "image-datetime": "2013-04-23 14:40:00",
+        "image-longitude": -6.5794,
+        "image-latitude": 50.497,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8453/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_015.jpg",
+        "image-datetime": "2013-04-23 14:39:00",
+        "image-longitude": -6.57934722222222,
+        "image-latitude": 50.4970583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8454/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_014.jpg",
+        "image-datetime": "2013-04-23 14:38:00",
+        "image-longitude": -6.57926944444444,
+        "image-latitude": 50.497125,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8455/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_013.jpg",
+        "image-datetime": "2013-04-23 14:37:00",
+        "image-longitude": -6.57920277777778,
+        "image-latitude": 50.4972027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8456/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_012.jpg",
+        "image-datetime": "2013-04-23 14:35:00",
+        "image-longitude": -6.57906111111111,
+        "image-latitude": 50.497325,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8457/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_011.jpg",
+        "image-datetime": "2013-04-23 14:35:00",
+        "image-longitude": -6.57901666666667,
+        "image-latitude": 50.4973722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8458/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_010.jpg",
+        "image-datetime": "2013-04-23 14:34:00",
+        "image-longitude": -6.57898055555556,
+        "image-latitude": 50.4974361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8459/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_009.jpg",
+        "image-datetime": "2013-04-23 14:33:00",
+        "image-longitude": -6.5789,
+        "image-latitude": 50.4975027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8460/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_008.jpg",
+        "image-datetime": "2013-04-23 14:31:00",
+        "image-longitude": -6.57881111111111,
+        "image-latitude": 50.4976083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8461/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_007.jpg",
+        "image-datetime": "2013-04-23 14:30:00",
+        "image-longitude": -6.57873333333333,
+        "image-latitude": 50.4976861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8462/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_006.jpg",
+        "image-datetime": "2013-04-23 14:29:00",
+        "image-longitude": -6.57865555555556,
+        "image-latitude": 50.4977666666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8463/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_005.jpg",
+        "image-datetime": "2013-04-23 14:29:00",
+        "image-longitude": -6.57865833333333,
+        "image-latitude": 50.4978416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8464/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_004.jpg",
+        "image-datetime": "2013-04-23 14:28:00",
+        "image-longitude": -6.57855833333333,
+        "image-latitude": 50.4978722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8465/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_003.jpg",
+        "image-datetime": "2013-04-23 14:27:00",
+        "image-longitude": -6.57851388888889,
+        "image-latitude": 50.4979222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8466/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_17_STN_111_A1_002.jpg",
+        "image-datetime": "2013-04-23 14:26:00",
+        "image-longitude": -6.57843611111111,
+        "image-latitude": 50.498,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8467/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_021.jpg",
+        "image-datetime": "2013-04-23 14:06:00",
+        "image-longitude": -6.56515833333333,
+        "image-latitude": 50.5053027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8468/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_020.jpg",
+        "image-datetime": "2013-04-23 14:05:00",
+        "image-longitude": -6.56505,
+        "image-latitude": 50.505325,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8469/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_019.jpg",
+        "image-datetime": "2013-04-23 14:04:00",
+        "image-longitude": -6.56490833333333,
+        "image-latitude": 50.5053583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8470/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_018.jpg",
+        "image-datetime": "2013-04-23 14:03:00",
+        "image-longitude": -6.56484722222222,
+        "image-latitude": 50.5053777777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8471/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_017.jpg",
+        "image-datetime": "2013-04-23 14:03:00",
+        "image-longitude": -6.56478333333333,
+        "image-latitude": 50.5053583333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8472/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_016.jpg",
+        "image-datetime": "2013-04-23 14:02:00",
+        "image-longitude": -6.56466666666667,
+        "image-latitude": 50.5054194444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8473/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_015.jpg",
+        "image-datetime": "2013-04-23 14:01:00",
+        "image-longitude": -6.56455833333333,
+        "image-latitude": 50.5054361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8474/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_014.jpg",
+        "image-datetime": "2013-04-23 14:00:00",
+        "image-longitude": -6.56448888888889,
+        "image-latitude": 50.5054611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8475/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_013.jpg",
+        "image-datetime": "2013-04-23 14:00:00",
+        "image-longitude": -6.56443333333333,
+        "image-latitude": 50.5054555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8476/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_012.jpg",
+        "image-datetime": "2013-04-23 13:59:00",
+        "image-longitude": -6.56436388888889,
+        "image-latitude": 50.5054833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8477/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_011.jpg",
+        "image-datetime": "2013-04-23 13:59:00",
+        "image-longitude": -6.56429166666667,
+        "image-latitude": 50.5055,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8478/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_010.jpg",
+        "image-datetime": "2013-04-23 13:58:00",
+        "image-longitude": -6.56417777777778,
+        "image-latitude": 50.5055222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8479/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_009.jpg",
+        "image-datetime": "2013-04-23 13:57:00",
+        "image-longitude": -6.56409444444444,
+        "image-latitude": 50.5055277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8480/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_008.jpg",
+        "image-datetime": "2013-04-23 13:57:00",
+        "image-longitude": -6.56404722222222,
+        "image-latitude": 50.5055388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8481/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_007.jpg",
+        "image-datetime": "2013-04-23 13:56:00",
+        "image-longitude": -6.56391388888889,
+        "image-latitude": 50.5055722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8482/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_006.jpg",
+        "image-datetime": "2013-04-23 13:55:00",
+        "image-longitude": -6.56379444444444,
+        "image-latitude": 50.5056138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8483/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_005.jpg",
+        "image-datetime": "2013-04-23 13:54:00",
+        "image-longitude": -6.56367222222222,
+        "image-latitude": 50.5056361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8484/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_004.jpg",
+        "image-datetime": "2013-04-23 13:52:00",
+        "image-longitude": -6.56351944444444,
+        "image-latitude": 50.5056611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8485/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_003.jpg",
+        "image-datetime": "2013-04-23 13:52:00",
+        "image-longitude": -6.56346111111111,
+        "image-latitude": 50.5056861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8486/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_16_STN_110_A1_002.jpg",
+        "image-datetime": "2013-04-23 13:51:00",
+        "image-longitude": -6.56334166666667,
+        "image-latitude": 50.5057027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8487/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_021.jpg",
+        "image-datetime": "2013-04-23 13:26:00",
+        "image-longitude": -6.54775277777778,
+        "image-latitude": 50.5114083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8488/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_020.jpg",
+        "image-datetime": "2013-04-23 13:26:00",
+        "image-longitude": -6.54766666666667,
+        "image-latitude": 50.5114555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8489/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_019.jpg",
+        "image-datetime": "2013-04-23 13:24:00",
+        "image-longitude": -6.54753055555556,
+        "image-latitude": 50.5115388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8490/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_018.jpg",
+        "image-datetime": "2013-04-23 13:23:00",
+        "image-longitude": -6.54744166666667,
+        "image-latitude": 50.5116222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8491/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_017.jpg",
+        "image-datetime": "2013-04-23 13:23:00",
+        "image-longitude": -6.54738611111111,
+        "image-latitude": 50.5116277777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8492/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_016.jpg",
+        "image-datetime": "2013-04-23 13:22:00",
+        "image-longitude": -6.54731944444444,
+        "image-latitude": 50.5116611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8493/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_014.jpg",
+        "image-datetime": "2013-04-23 13:20:00",
+        "image-longitude": -6.54713611111111,
+        "image-latitude": 50.5117527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8495/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_012.jpg",
+        "image-datetime": "2013-04-23 13:18:00",
+        "image-longitude": -6.54695555555556,
+        "image-latitude": 50.51185,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8497/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_011.jpg",
+        "image-datetime": "2013-04-23 13:17:00",
+        "image-longitude": -6.54685833333333,
+        "image-latitude": 50.5119111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8498/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_010.jpg",
+        "image-datetime": "2013-04-23 13:16:00",
+        "image-longitude": -6.54674722222222,
+        "image-latitude": 50.511975,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8499/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_009.jpg",
+        "image-datetime": "2013-04-23 13:15:00",
+        "image-longitude": -6.54664722222222,
+        "image-latitude": 50.5120222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8500/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_008.jpg",
+        "image-datetime": "2013-04-23 13:14:00",
+        "image-longitude": -6.54654166666667,
+        "image-latitude": 50.5120888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8501/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_007.jpg",
+        "image-datetime": "2013-04-23 13:13:00",
+        "image-longitude": -6.54644166666667,
+        "image-latitude": 50.5121361111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8502/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_006.jpg",
+        "image-datetime": "2013-04-23 13:12:00",
+        "image-longitude": -6.54635555555556,
+        "image-latitude": 50.5121833333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8503/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_005.jpg",
+        "image-datetime": "2013-04-23 13:12:00",
+        "image-longitude": -6.54635277777778,
+        "image-latitude": 50.5121944444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8504/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_004.jpg",
+        "image-datetime": "2013-04-23 13:11:00",
+        "image-longitude": -6.54626111111111,
+        "image-latitude": 50.5122555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8505/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_003.jpg",
+        "image-datetime": "2013-04-23 13:10:00",
+        "image-longitude": -6.54618888888889,
+        "image-latitude": 50.5123027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8506/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_15_STN_109_A1_002.jpg",
+        "image-datetime": "2013-04-23 13:09:00",
+        "image-longitude": -6.54610833333333,
+        "image-latitude": 50.5123333333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8507/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_030.jpg",
+        "image-datetime": "2013-04-23 12:45:00",
+        "image-longitude": -6.53230277777778,
+        "image-latitude": 50.5167416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8508/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_029.jpg",
+        "image-datetime": "2013-04-23 12:44:00",
+        "image-longitude": -6.53232222222222,
+        "image-latitude": 50.5168472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8509/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_028.jpg",
+        "image-datetime": "2013-04-23 12:43:00",
+        "image-longitude": -6.53230555555556,
+        "image-latitude": 50.516875,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8510/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_027.jpg",
+        "image-datetime": "2013-04-23 12:43:00",
+        "image-longitude": -6.53231111111111,
+        "image-latitude": 50.5169083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8511/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_026.jpg",
+        "image-datetime": "2013-04-23 12:42:00",
+        "image-longitude": -6.53233333333333,
+        "image-latitude": 50.5169611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8512/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_025.jpg",
+        "image-datetime": "2013-04-23 12:41:00",
+        "image-longitude": -6.53234166666667,
+        "image-latitude": 50.5170444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8513/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_024.jpg",
+        "image-datetime": "2013-04-23 12:41:00",
+        "image-longitude": -6.53233888888889,
+        "image-latitude": 50.5170694444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8514/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_023.jpg",
+        "image-datetime": "2013-04-23 12:40:00",
+        "image-longitude": -6.53236111111111,
+        "image-latitude": 50.5171111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8515/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_022.jpg",
+        "image-datetime": "2013-04-23 12:40:00",
+        "image-longitude": -6.53236388888889,
+        "image-latitude": 50.5171472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8516/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_021.jpg",
+        "image-datetime": "2013-04-23 12:39:00",
+        "image-longitude": -6.53237777777778,
+        "image-latitude": 50.5172555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8517/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_020.jpg",
+        "image-datetime": "2013-04-23 12:38:00",
+        "image-longitude": -6.53237777777778,
+        "image-latitude": 50.517325,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8518/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_019.jpg",
+        "image-datetime": "2013-04-23 12:37:00",
+        "image-longitude": -6.53240833333333,
+        "image-latitude": 50.5174111111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8519/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_018.jpg",
+        "image-datetime": "2013-04-23 12:37:00",
+        "image-longitude": -6.53241666666667,
+        "image-latitude": 50.5174388888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8520/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_017.jpg",
+        "image-datetime": "2013-04-23 12:36:00",
+        "image-longitude": -6.532425,
+        "image-latitude": 50.5174861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8521/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_016.jpg",
+        "image-datetime": "2013-04-23 12:36:00",
+        "image-longitude": -6.53241944444444,
+        "image-latitude": 50.5175166666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8522/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_015.jpg",
+        "image-datetime": "2013-04-23 12:34:00",
+        "image-longitude": -6.53246111111111,
+        "image-latitude": 50.51765,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8523/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_014.jpg",
+        "image-datetime": "2013-04-23 12:34:00",
+        "image-longitude": -6.53245555555556,
+        "image-latitude": 50.517675,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8524/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_013.jpg",
+        "image-datetime": "2013-04-23 12:33:00",
+        "image-longitude": -6.53247222222222,
+        "image-latitude": 50.5177305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8525/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_012.jpg",
+        "image-datetime": "2013-04-23 12:32:00",
+        "image-longitude": -6.53248888888889,
+        "image-latitude": 50.5178138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8526/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_011.jpg",
+        "image-datetime": "2013-04-23 12:31:00",
+        "image-longitude": -6.53247222222222,
+        "image-latitude": 50.5178888888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8527/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_010.jpg",
+        "image-datetime": "2013-04-23 12:31:00",
+        "image-longitude": -6.53246388888889,
+        "image-latitude": 50.5179,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8528/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_009.jpg",
+        "image-datetime": "2013-04-23 12:30:00",
+        "image-longitude": -6.53249722222222,
+        "image-latitude": 50.51795,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8529/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_008.jpg",
+        "image-datetime": "2013-04-23 12:29:00",
+        "image-longitude": -6.53251666666667,
+        "image-latitude": 50.5180222222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8530/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_007.jpg",
+        "image-datetime": "2013-04-23 12:29:00",
+        "image-longitude": -6.532525,
+        "image-latitude": 50.5180722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8531/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_006.jpg",
+        "image-datetime": "2013-04-23 12:28:00",
+        "image-longitude": -6.53251944444444,
+        "image-latitude": 50.5181527777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8532/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_004.jpg",
+        "image-datetime": "2013-04-23 12:27:00",
+        "image-longitude": -6.53256666666667,
+        "image-latitude": 50.5182472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8534/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_003.jpg",
+        "image-datetime": "2013-04-23 12:26:00",
+        "image-longitude": -6.53256944444444,
+        "image-latitude": 50.5182638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8535/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_14_STN_108_A1_002.jpg",
+        "image-datetime": "2013-04-23 12:26:00",
+        "image-longitude": -6.532575,
+        "image-latitude": 50.5183027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8536/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_017.jpg",
+        "image-datetime": "2013-04-23 12:00:00",
+        "image-longitude": -6.52072777777778,
+        "image-latitude": 50.5224972222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8537/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_016.jpg",
+        "image-datetime": "2013-04-23 11:59:00",
+        "image-longitude": -6.52084722222222,
+        "image-latitude": 50.5225472222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8538/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_015.jpg",
+        "image-datetime": "2013-04-23 11:59:00",
+        "image-longitude": -6.52089722222222,
+        "image-latitude": 50.5225722222222,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8539/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_014.jpg",
+        "image-datetime": "2013-04-23 11:58:00",
+        "image-longitude": -6.52101111111111,
+        "image-latitude": 50.5226083333333,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8540/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_013.jpg",
+        "image-datetime": "2013-04-23 11:57:00",
+        "image-longitude": -6.521125,
+        "image-latitude": 50.5226555555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8541/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_012.jpg",
+        "image-datetime": "2013-04-23 11:56:00",
+        "image-longitude": -6.52124166666667,
+        "image-latitude": 50.5227055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8542/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_011.jpg",
+        "image-datetime": "2013-04-23 11:55:00",
+        "image-longitude": -6.521375,
+        "image-latitude": 50.5227638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8543/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_010.jpg",
+        "image-datetime": "2013-04-23 11:54:00",
+        "image-longitude": -6.52147222222222,
+        "image-latitude": 50.5228027777778,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8544/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_009.jpg",
+        "image-datetime": "2013-04-23 11:53:00",
+        "image-longitude": -6.52156944444444,
+        "image-latitude": 50.5228416666667,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8545/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_008.jpg",
+        "image-datetime": "2013-04-23 11:52:00",
+        "image-longitude": -6.52173611111111,
+        "image-latitude": 50.5229138888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8546/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_007.jpg",
+        "image-datetime": "2013-04-23 11:51:00",
+        "image-longitude": -6.52183611111111,
+        "image-latitude": 50.5229611111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8547/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_006.jpg",
+        "image-datetime": "2013-04-23 11:50:00",
+        "image-longitude": -6.52190277777778,
+        "image-latitude": 50.5230055555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8548/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_005.jpg",
+        "image-datetime": "2013-04-23 11:50:00",
+        "image-longitude": -6.52198611111111,
+        "image-latitude": 50.5230444444444,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8549/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_004.jpg",
+        "image-datetime": "2013-04-23 11:49:00",
+        "image-longitude": -6.52209722222222,
+        "image-latitude": 50.5230861111111,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8550/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_003.jpg",
+        "image-datetime": "2013-04-23 11:48:00",
+        "image-longitude": -6.52221666666667,
+        "image-latitude": 50.5231305555556,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8551/full/max/0/default.jpg"
+      },
+      {
+        "image-filename": "EHGF_CEND0513_13_STN_107_A1_002.jpg",
+        "image-datetime": "2013-04-23 11:47:00",
+        "image-longitude": -6.52231111111111,
+        "image-latitude": 50.5231638888889,
+        "image-handle": "https://jncc.resourcespace.com/iiif/image/8552/full/max/0/default.jpg"
+      }
+    ]
+  }
+}
