@@ -2,8 +2,8 @@
 
 import logging
 from collections.abc import Callable
-from fastapi import FastAPI
-from fastapi import HTTPException
+
+from fastapi import FastAPI, HTTPException
 from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse

@@ -21,5 +21,5 @@ COPY . /code/
 # RUN poetry config virtualenvs.create false
 # RUN poetry install -vvv --no-interaction --no-ansi
 RUN poetry install -vvv --with dev,test,lint --no-interaction --no-ansi
-EXPOSE 8081
-CMD ["poetry", "run", "uvicorn", "brokerage_service_api.api.app:app", "--host", "0.0.0.0", "--port", "8081", "--workers", "5", "--reload"]
+EXPOSE 8020
+CMD ["poetry", "run", "uvicorn", "brokerage_service_api.api.app:app", "--host", "0.0.0.0", "--port", "8020", "--workers", "5", "--reload"]

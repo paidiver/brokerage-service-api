@@ -1,20 +1,14 @@
 """FastAPI module that represent the root of the API."""
 
-import os
-from contextlib import asynccontextmanager
-from typing import Any
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
-from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES
-from brokerage_service_api.api.exceptions import AppException
-from brokerage_service_api.api.exceptions import add_exception_handlers
+
+from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+
 
 class HealthResponse(BaseModel):
     """Health check response model."""
@@ -98,7 +92,7 @@ def create_app() -> FastAPI:
     add_exception_handlers(app, DEFAULT_STATUS_CODES)
 
     @app.get(
-        "/healthz",
+        "/health",
         description="Health Check.",
         summary="Health Check.",
         operation_id="healthCheck",
