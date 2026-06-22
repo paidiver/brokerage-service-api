@@ -1,3 +1,0 @@
-[submodule ".gitlab"]
-	path = .gitlab
-	url = git@gitlab.com:nocacuk/ocean-informatics/atlantis/infrastructure/gitlab_templates.git
