@@ -19,29 +19,29 @@ Brokerage Service API provides a federated api access to multiple services.
 ```text
 .
 ├── docker
-│   ├── docker-compose.yml # Docker compose file for local development
-│   └── Dockerfile      # Dockerfile for the API service
+│   ├── docker-compose.yml # Docker compose file for local development
+│   └── Dockerfile      # Dockerfile for the API service
 ├── LICENSE
 ├── pyproject.toml      # Project metadata & dependencies (Poetry)
 ├── README.md
 ├── ruff.toml           # Ruff configuration
 ├── src
-│   └── brokerage_service_api
-│       ├── api         # Main API package
-│       │   ├── app.py
-│       │   ├── exceptions.py
-│       │   ├── __init__.py
-│       │   └── v1
-│       │       └── __init__.py # API V1 endpoints
-│       ├── crud    # CRUD operations for models
-│       │   └── __init__.py
-│       ├── __init__.py
-│       ├── models  # Models
-│       │   └── __init__.py
-│       └── schemas # Pydantic schemas
-│           └── __init__.py
+│   └── brokerage_service_api
+│       ├── api         # Main API package
+│       │   ├── app.py
+│       │   ├── exceptions.py
+│       │   ├── __init__.py
+│       │   └── v1
+│       │       └── __init__.py # API V1 endpoints
+│       ├── crud    # CRUD operations for models
+│       │   └── __init__.py
+│       ├── __init__.py
+│       ├── models  # Models
+│       │   └── __init__.py
+│       └── schemas # Pydantic schemas
+│           └── __init__.py
 ├── tests # Test suite
-│   └── __init__.py
+│   └── __init__.py
 └── tox.ini
 ```
 
@@ -143,6 +143,32 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
+## Deploying locally with Kubernetes
+
+The API can be deployed with either a local image, or an image pulled from the image registry, accessible [here](https://github.com/paidiver/brokerage-service-api/pkgs/container/brokerage-service-api).
+
+If using a local image go to `helm/values.yaml` and change the `repository` and `tag `fields to suit.
+
+For example, if the API is built with the tag set to `local`
+
+```
+image:
+  repository: annotations-api
+  tag: local
+  pullPolicy: IfNotPresent
+```
+
+If using an image from the registry, either use `latest` or your required tag.
+
+1. Ensure that a local Kubernetes instance is running and is ready to go.
+2. Run: `cd helm`
+3. Run: `helm install annotations-api . `
+4. Check the pod is running: `kubectl get pods`
+5. Check the service is running: `kubectl get svc`
+6. Now setup port forwarding: `kubectl port-forward svc/annotations-api-annotations-api 8080:80`
+7. Access the swagger docs [here](http://localhost:8080/docs#).
+8. 
+
 ## Development Workflow
 
 ### Formatting
@@ -178,3 +204,4 @@ A collection of example API requests and responses is available in the [API Exam
 ## Acknowledgements
 
 This project was supported by the UK Natural Environment Research Council (NERC) through the *Tools for automating image analysis for biodiversity monitoring (AIAB)* Funding Opportunity, reference code **UKRI052**.
+
