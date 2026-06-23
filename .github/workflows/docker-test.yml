@@ -1,0 +1,30 @@
+name: Build Docker Image
+
+on:
+  pull_request:
+    branches:
+    - main
+
+env:
+  CI_REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
+  RUN_LIVE_UPSTREAM_TESTS: "1"
+
+jobs:
+  test-docker:
+    name: Build API Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build and Run Docker Image
+        run: |
+          docker compose -f docker/docker-compose.yml build
+          docker compose -f docker/docker-compose.yml up -d
+
+      - name: Run Docker Tests
+        run: |
+          docker compose -f docker/docker-compose.yml run --rm app tox -e py313

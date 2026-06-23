@@ -6,7 +6,7 @@ import pytest
 from brokerage_service_api.registry.sources import get_source_registry
 
 
-def test_get_source():
+def test_get_source() -> None:
     """Test getting a source from the registry."""
     sources = get_source_registry()
 
