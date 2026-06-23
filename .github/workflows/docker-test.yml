@@ -22,6 +22,7 @@ jobs:
 
       - name: Build and Run Docker Image
         run: |
+          cp .env.example .env
           docker compose -f docker/docker-compose.yml build
           docker compose -f docker/docker-compose.yml up -d
 
