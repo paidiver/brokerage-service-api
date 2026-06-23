@@ -80,8 +80,8 @@ Example contents:
 
 ```bash
 # ENV APIS
-JNCC_URL=http://annotations-api1:8000/api # URL for the JNCC API service. It is using the docker service name as hostname to allow inter-container communication.
-BODC_URL=http://annotations-api2:8000/api # URL for the BODC API service. It is using the docker service name as hostname to allow inter-container communication.
+JNCC_ANNOTATIONS_API_URL=http://annotations-api1:8000/api # URL for the JNCC API service. It is using the docker service name as hostname to allow inter-container communication.
+BODC_ANNOTATIONS_API_URL=http://annotations-api2:8000/api # URL for the BODC API service. It is using the docker service name as hostname to allow inter-container communication.
 
 # Local DEV: Annotation API and Worms-cache configuration
 DJANGO_SECRET_KEY=dev-secret-key-change-me

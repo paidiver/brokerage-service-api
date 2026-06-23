@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Ingest image-set metadata and annotation spreadsheets into the annotations API."""
 
 import argparse
 import json
@@ -7,19 +8,17 @@ from pathlib import Path
 
 import requests
 
-
 BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 AUTH_TOKEN = os.getenv("API_AUTH_TOKEN", "")
 
 IMAGE_SET_ENDPOINT = f"{BASE_URL}/api/ingest/image-set"
 ANNOTATION_ENDPOINT = f"{BASE_URL}/api/annotations/upload_annotation/"
 
-XLSX_MIME_TYPE = (
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
+XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def get_headers() -> dict[str, str]:
+    """Build common headers for annotations API requests."""
     return {
         "accept": "application/json",
         "Authorization": f"Bearer {AUTH_TOKEN}",
@@ -27,6 +26,7 @@ def get_headers() -> dict[str, str]:
 
 
 def ingest_image_set(json_path: Path) -> dict:
+    """Submit an image-set JSON file to the annotations API."""
     if not json_path.exists():
         raise FileNotFoundError(f"JSON file not found: {json_path}")
 
@@ -51,6 +51,7 @@ def ingest_image_set(json_path: Path) -> dict:
 
 
 def upload_annotation_file(excel_path: Path) -> dict:
+    """Upload an annotation spreadsheet to the annotations API."""
     if not excel_path.exists():
         raise FileNotFoundError(f"Excel file not found: {excel_path}")
 
@@ -80,9 +81,8 @@ def upload_annotation_file(excel_path: Path) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Ingest image-set JSON and upload annotation Excel file."
-    )
+    """Run the ingestion script from command-line arguments."""
+    parser = argparse.ArgumentParser(description="Ingest image-set JSON and upload annotation Excel file.")
 
     parser.add_argument(
         "image_json",

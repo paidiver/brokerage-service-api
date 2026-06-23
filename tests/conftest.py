@@ -1,13 +1,19 @@
 """Pytest fixtures for testing the PostGIS API."""
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
 
+import httpx
 import pytest
 from brokerage_service_api.api.app import create_app
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 DEFAULT_PORT = 8000
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    """Run async tests on asyncio."""
+    return "asyncio"
 
 
 @pytest.fixture
@@ -25,14 +31,18 @@ def app() -> Generator[FastAPI, None, None]:
 
 
 @pytest.fixture
-def client(app: FastAPI) -> Generator[TestClient]:
+async def client(app: FastAPI) -> AsyncGenerator[httpx.AsyncClient, None]:
     """Provide a FastAPI test client.
 
     Args:
         app (FastAPI): The FastAPI application to test.
 
     Yields:
-        TestClient: A test client for the FastAPI application.
+        AsyncClient: A test client for the FastAPI application.
     """
-    with TestClient(app) as test_client:
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url=f"http://testserver:{DEFAULT_PORT}",
+    ) as test_client:
         yield test_client
