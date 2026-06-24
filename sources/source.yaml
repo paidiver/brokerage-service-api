@@ -1,7 +1,0 @@
-sources:
-  bodc:
-    source_name: "bodc"
-    base_url: "http://annotations-api-bodc:8000"
-  jncc:
-    source_name: "jncc"
-    base_url: "http://annotations-api-jncc:8000"

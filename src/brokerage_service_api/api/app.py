@@ -2,9 +2,7 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
-import yaml
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
@@ -13,7 +11,8 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
-from brokerage_service_api.crud.source_health import router as source_health_router
+from brokerage_service_api.api.v1 import source_health_router
+from brokerage_service_api.registry import get_source_registry
 
 
 class HealthResponse(BaseModel):
@@ -33,18 +32,11 @@ def create_app() -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         """Lifespan context manager for the FastAPI application to load sources."""
         try:
-            BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-            sources_path = BASE_DIR / "sources" / "source.yaml"
-            if sources_path.exists():
-                with sources_path.open("r") as file:
-                    config_data = yaml.safe_load(file)
-                    app.state.sources = config_data.get("sources", {})
-            else:
-                raise FileNotFoundError
+            app.state.sources = get_source_registry().list()
+            print(f"Loaded sources: {app.state.sources}")  # Debugging line to check the loaded sources
         except FileNotFoundError:
             print("Warning: sources.yaml file not found!")
             app.state.sources = {}
-
         yield
 
     app = FastAPI(

@@ -5,25 +5,27 @@ import asyncio
 import httpx
 from fastapi import APIRouter, Request
 
+from brokerage_service_api.models.sources import SourceConfig
+
 router = APIRouter()
 
 
-async def check_source_health(client: httpx.AsyncClient, source: dict) -> dict:
+async def check_source_health(client: httpx.AsyncClient, source: SourceConfig) -> dict:
     """Check the health status of a source API.
 
     Args:
         client (httpx.AsyncClient): The HTTP client to use for the request.
-        source (dict): The source configuration dictionary.
+        source (SourceConfig): The source configuration object.
 
     Returns:
         dict: A dictionary with the health status of the source.
     """
     try:
-        source_name = source.get("source_name", "unknown")
-        source_label = source.get("source_label", source_name)
-        base_url = source.get("base_url")
+        source_name = source.name
+        source_label = source.label
+        base_url = str(source.base_url).rstrip("/")
 
-        health_endpoint = f"{base_url}/api/health/"
+        health_endpoint = f"{base_url}/health/"
         response = await client.get(health_endpoint, timeout=5.0)
 
         response.raise_for_status()
@@ -46,20 +48,18 @@ async def check_source_health(client: httpx.AsyncClient, source: dict) -> dict:
     description="Retrieve the health status of all configured source APIs.",
 )
 async def get_sources(request: Request) -> dict:
-    """Get the health status of a source API.
+    """Get the health status of all configured source APIs.
 
     Args:
         request (Request): The incoming request.
 
     Returns:
-        dict: A dictionary with the health status of the source with some other information related to source.
+        dict: A dictionary with the health status of each configured source.
     """
     sources_config = request.app.state.sources
+    print(f"Sources config: {sources_config}")  # Debugging line to check the sources config
     async with httpx.AsyncClient() as client:
-        tasks = []
-        for source in sources_config.values():
-            tasks.append(check_source_health(client, source))
-
+        tasks = [check_source_health(client, source) for source in sources_config]
         results = await asyncio.gather(*tasks)
 
     return {"sources": results}
