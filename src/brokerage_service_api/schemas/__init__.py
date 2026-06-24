@@ -1,3 +1,1 @@
-"""Schemas package for the PostGIS API."""
-
-
+"""Response and request schemas for the Brokerage Service API."""
