@@ -21,8 +21,6 @@ async def check_source_health(client: httpx.AsyncClient, source: SourceConfig) -
         dict: A dictionary with the health status of the source.
     """
     try:
-        source_name = source.name
-        source_label = source.label
         base_url = str(source.base_url).rstrip("/")
 
         health_endpoint = f"{base_url}/health/"
@@ -32,12 +30,12 @@ async def check_source_health(client: httpx.AsyncClient, source: SourceConfig) -
 
         status = response.json().get("status", "unknown")
 
-        return {"source_name": source_name, "source_label": source_label, "base_url": base_url, "status": status}
+        return {"source_name": source.name, "source_label": source.label, "base_url": source.base_url, "status": status}
     except (httpx.RequestError, httpx.HTTPStatusError):
         return {
-            "source_name": source_name,
-            "source_label": source_label,
-            "base_url": base_url,
+            "source_name": source.name,
+            "source_label": source.label,
+            "base_url": source.base_url,
             "status": "unhealthy",
         }
 
