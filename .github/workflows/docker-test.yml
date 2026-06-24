@@ -30,3 +30,9 @@ jobs:
       - name: Run Docker Tests
         run: |
           docker compose -f docker/docker-compose.yml run --rm app tox -e py313
+
+      - name: Show Docker Compose status and logs
+        if: always()
+        run: |
+          docker compose -f docker/docker-compose.yml ps
+          docker compose -f docker/docker-compose.yml logs --no-color --timestamps --tail=300
