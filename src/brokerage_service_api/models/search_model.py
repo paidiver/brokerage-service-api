@@ -4,16 +4,16 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel
 
 
 class Result(BaseModel):
     """A representation of an individual result."""
+
     source: Literal["BODC", "JNCC"]
     uuid: str
     image_filename: str
-    image_handle:  str
+    image_handle: str
     image_uuid: UUID
     label_name: str
     label_aphia_id: int
@@ -27,12 +27,10 @@ class Result(BaseModel):
     annotation_set_uuid: UUID
     annotation_set_name: str
     image_set_uuid: UUID
-    image_set_name:str
+    image_set_name: str
 
 
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
+
     results: list[Result]
-
-
-

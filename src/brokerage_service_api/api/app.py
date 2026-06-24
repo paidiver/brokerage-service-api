@@ -6,9 +6,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
-from brokerage_service_api.api.routes.search import router as brokerage_search_router
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+from brokerage_service_api.api.routes.search import router as brokerage_search_router
 
 
 class HealthResponse(BaseModel):

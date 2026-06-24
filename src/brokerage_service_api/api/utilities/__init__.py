@@ -1,1 +1,1 @@
-"""Application utilities"""
+"""Application utilities."""

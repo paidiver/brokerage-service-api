@@ -1,10 +1,9 @@
 """Code to call the JNCC and BODC annotations API and compile the results."""
 
+from brokerage_service_api.models.search_model import Result, SearchResults
+
 JNCC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8019/api/annotations/search/"
 BODC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
-
-
-from brokerage_service_api.models.search_model import SearchResults, Result
 
 
 def fetch_results_from_bodc_annotations_api() -> list[Result]:
