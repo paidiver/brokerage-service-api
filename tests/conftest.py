@@ -3,10 +3,9 @@
 from collections.abc import Generator
 
 import pytest
+from brokerage_service_api.api.app import create_app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-from brokerage_service_api.api.app import create_app
 
 
 @pytest.fixture
