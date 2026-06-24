@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+from brokerage_service_api.crud.source_health import router as source_health_router
 
 
 class HealthResponse(BaseModel):
@@ -32,8 +33,8 @@ def create_app() -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         """Lifespan context manager for the FastAPI application to load sources."""
         try:
-            BASE_DIR = Path(__file__).resolve().parent.parent
-            sources_path = BASE_DIR / "sources" / "sources.yaml"
+            BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+            sources_path = BASE_DIR / "sources" / "source.yaml"
             if sources_path.exists():
                 with sources_path.open("r") as file:
                     config_data = yaml.safe_load(file)
@@ -129,6 +130,12 @@ def create_app() -> FastAPI:
             dict: A dictionary with a "status" key and "ok" value to indicate the service is healthy.
         """
         return {"status": "ok"}
+
+    app.include_router(
+        source_health_router,
+        prefix="/api",
+        tags=["Source Health Check"],
+    )
 
     return app
 
