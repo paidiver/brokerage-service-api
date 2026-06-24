@@ -1,3 +1,4 @@
+"""Example code for data ingestion."""
 #!/usr/bin/env python3
 
 import argparse
@@ -17,6 +18,12 @@ XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sh
 
 
 def get_headers() -> dict[str, str]:
+    """Build and return the default HTTP headers used for API requests.
+
+    Returns:
+        dict[str, str]: A dictionary containing standard headers including
+        JSON acceptance and Bearer authentication token.
+    """
     return {
         "accept": "application/json",
         "Authorization": f"Bearer {AUTH_TOKEN}",
@@ -24,6 +31,25 @@ def get_headers() -> dict[str, str]:
 
 
 def ingest_image_set(json_path: Path) -> dict:
+    """Upload an image set JSON file to the ingestion API endpoint.
+
+    This function:
+    - Validates that the JSON file exists
+    - Loads and parses the JSON payload
+    - Sends a POST request to the image-set ingestion endpoint
+    - Prints response status and body for debugging
+    - Returns the parsed JSON response
+
+    Args:
+        json_path (Path): Path to the image-set JSON file.
+
+    Returns:
+        dict: JSON response from the API.
+
+    Raises:
+        FileNotFoundError: If the JSON file does not exist.
+        requests.HTTPError: If the API request fails.
+    """
     if not json_path.exists():
         raise FileNotFoundError(f"JSON file not found: {json_path}")
 
@@ -48,6 +74,26 @@ def ingest_image_set(json_path: Path) -> dict:
 
 
 def upload_annotation_file(excel_path: Path) -> dict:
+    """Upload an annotation Excel (.xlsx) file to the annotation API endpoint.
+
+    This function:
+    - Validates file existence
+    - Ensures file is .xlsx format
+    - Uploads file using multipart/form-data
+    - Sends request with authentication headers
+    - Returns parsed JSON response
+
+    Args:
+        excel_path (Path): Path to the annotation Excel file.
+
+    Returns:
+        dict: JSON response from the API.
+
+    Raises:
+        FileNotFoundError: If file does not exist.
+        ValueError: If file is not .xlsx format.
+        requests.HTTPError: If upload request fails.
+    """
     if not excel_path.exists():
         raise FileNotFoundError(f"Excel file not found: {excel_path}")
 
@@ -77,6 +123,20 @@ def upload_annotation_file(excel_path: Path) -> dict:
 
 
 def main() -> None:
+    """CLI entry point for ingesting an image set and uploading annotations.
+
+    Workflow:
+    1. Parse command-line arguments
+    2. Send image set JSON to API
+    3. Upload annotation Excel file
+    4. Print formatted responses
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     parser = argparse.ArgumentParser(description="Ingest image-set JSON and upload annotation Excel file.")
 
     parser.add_argument(
