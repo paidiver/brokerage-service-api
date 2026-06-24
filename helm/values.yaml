@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/paidiver/brokerage-service-api
-  tag: 0.0.1-a2
+  tag: 0.0.1-a3
   pullPolicy: IfNotPresent
 
 container:
@@ -34,5 +34,8 @@ resources:
 ingress:
   enabled: false
   className: nginx
-  host: fastapi.local
+  host: annotations-api.local
   path: /
+
+env:
+  fastapiRootPath: "/k8s/clusters/c-m-qvhg4xf9/api/v1/namespaces/paidiver-default/services/http:brokerage-service-api-annotations-api:80/proxy"

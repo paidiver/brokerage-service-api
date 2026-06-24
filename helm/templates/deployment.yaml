@@ -19,8 +19,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          - name: FASTAPI_ROOT_PATH
-            value: "/k8s/clusters/c-m-qvhg4xf9/api/v1/namespaces/paidiver-default/services/http:brokerage-service-api-annotations-api:80/proxy"
+            - name: FASTAPI_ROOT_PATH
+              value: {{ .Values.env.fastapiRootPath | quote }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
