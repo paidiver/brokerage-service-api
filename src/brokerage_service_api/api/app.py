@@ -1,5 +1,10 @@
 """FastAPI module that represent the root of the API."""
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+import yaml
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
@@ -22,8 +27,27 @@ def create_app() -> FastAPI:
     Returns:
         FastAPI: The configured FastAPI application instance.
     """
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        """Lifespan context manager for the FastAPI application to load sources."""
+        try:
+            BASE_DIR = Path(__file__).resolve().parent.parent
+            sources_path = BASE_DIR / "sources" / "sources.yaml"
+            if sources_path.exists():
+                with sources_path.open("r") as file:
+                    config_data = yaml.safe_load(file)
+                    app.state.sources = config_data.get("sources", {})
+            else:
+                raise FileNotFoundError
+        except FileNotFoundError:
+            print("Warning: sources.yaml file not found!")
+            app.state.sources = {}
+
+        yield
+
     app = FastAPI(
-        lifespan=None,
+        lifespan=lifespan,
         title="Brokerage Service API",
         version="0.1.0",
         openapi_url="/openapi.json",
