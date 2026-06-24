@@ -30,16 +30,12 @@ Brokerage Service API provides a federated api access to multiple services.
 │       ├── api         # Main API package
 │       │   ├── app.py
 │       │   ├── exceptions.py
-│       │   ├── __init__.py
-│       │   └── v1
-│       │       └── __init__.py # API V1 endpoints
-│       ├── crud    # CRUD operations for models
-│       │   └── __init__.py
-│       ├── __init__.py
+│       │   └── v1 # API V1 endpoints
+│       ├── fixtures    # Fixtures for source data
+│       ├── registry    # Registry for upstream services
 │       ├── models  # Models
-│       │   └── __init__.py
-│       └── schemas # Pydantic schemas
-│           └── __init__.py
+│       ├── schemas # Pydantic schemas
+│       └── upstream # Clients for upstream services
 ├── tests # Test suite
 │   └── __init__.py
 └── tox.ini
@@ -82,6 +78,8 @@ Example contents:
 # ENV APIS
 JNCC_ANNOTATIONS_API_URL=http://annotations-api1:8000/api # URL for the JNCC API service. It is using the docker service name as hostname to allow inter-container communication.
 BODC_ANNOTATIONS_API_URL=http://annotations-api2:8000/api # URL for the BODC API service. It is using the docker service name as hostname to allow inter-container communication.
+
+RUN_LIVE_UPSTREAM_TESTS=1 # flag to run tests that require live upstream services (JNCC, BODC). Set to 0 to skip these tests or if you are not running the upstream services locally.
 
 # Local DEV: Annotation API and Worms-cache configuration
 DJANGO_SECRET_KEY=dev-secret-key-change-me
