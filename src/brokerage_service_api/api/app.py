@@ -28,7 +28,8 @@ def create_app() -> FastAPI:
         lifespan=None,
         title="Brokerage Service API",
         version="0.1.0",
-        openapi_url=os.getenv("FASTAPI_ROOT_PATH","/openapi.json"),
+        root_path=os.getenv("FASTAPI_ROOT_PATH", ""),
+        openapi_url="/openapi.json",
         docs_url="/docs",
         openapi_version="3.0.3",
     )
