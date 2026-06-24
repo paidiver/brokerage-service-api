@@ -11,7 +11,7 @@ env:
 
 jobs:
   test-docker:
-    name: Build API Image
+    name: Build Test Environment
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,6 +23,7 @@ jobs:
       - name: Build and Run Docker Image
         run: |
           cp .env.example .env
+          echo "BASE_PATH=/app/tests/data" >> .env
           docker compose -f docker/docker-compose.yml build
           docker compose -f docker/docker-compose.yml up -d
 
