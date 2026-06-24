@@ -75,7 +75,8 @@ def upload_annotation_file(excel_path: Path) -> dict:
             files=files,
             timeout=600,
         )
-
+    print(f"Annotation upload response status code: {response.status_code}")
+    print(f"Annotation upload response content: {response.text}")
     response.raise_for_status()
     return response.json()
 
@@ -105,8 +106,10 @@ def main() -> None:
 
     print("Uploading annotation Excel file...")
     annotation_response = upload_annotation_file(args.annotation_xlsx)
-    print("Annotation response code:")
+    print("Annotation upload response status code:")
     print(annotation_response.get("status_code", "No status code in response"))
+    print("Annotation upload response content:")
+    print(annotation_response.get("content", "No content in response"))
 
     print("Done.")
 

@@ -27,7 +27,7 @@ jobs:
           python -m json.tool tests/data/sample_jncc.json > /dev/null
           python -m json.tool tests/data/sample_bodc.json > /dev/null
           docker compose -f docker/docker-compose.yml build
-          docker compose -f docker/docker-compose.yml --verbose up -d
+          docker compose -f docker/docker-compose.yml up -d
 
       - name: Run Docker Tests
         run: |
