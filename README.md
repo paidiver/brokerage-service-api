@@ -167,7 +167,6 @@ If using an image from the registry, either use `latest` or your required tag.
 5. Check the service is running: `kubectl get svc`
 6. Now setup port forwarding: `kubectl port-forward svc/annotations-api-annotations-api 8080:80`
 7. Access the swagger docs [here](http://localhost:8080/docs#).
-8. 
 
 ## Development Workflow
 
