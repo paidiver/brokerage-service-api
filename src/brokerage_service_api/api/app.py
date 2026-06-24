@@ -33,7 +33,7 @@ def create_app() -> FastAPI:
         """Lifespan context manager for the FastAPI application to load sources."""
         try:
             app.state.sources = get_source_registry().list()
-            print(f"Loaded sources: {app.state.sources}")  # Debugging line to check the loaded sources
+            print(f"Loaded sources: {app.state.sources}")
         except FileNotFoundError:
             print("Warning: sources.yaml file not found!")
             app.state.sources = {}

@@ -55,7 +55,6 @@ async def get_sources(request: Request) -> dict:
         dict: A dictionary with the health status of each configured source.
     """
     sources_config = request.app.state.sources
-    print(f"Sources config: {sources_config}")  # Debugging line to check the sources config
     async with httpx.AsyncClient() as client:
         tasks = [check_source_health(client, source) for source in sources_config]
         results = await asyncio.gather(*tasks)
