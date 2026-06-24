@@ -8,15 +8,13 @@ from fastapi.testclient import TestClient
 
 from brokerage_service_api.api.app import create_app
 
-DEFAULT_PORT = 8000
-
 
 @pytest.fixture
 def app() -> Generator[FastAPI]:
-    """Create a FastAPI app with the DB dependency overridden.
+    """Create a FastAPI app with dependency overrides cleared after tests.
 
     Yields:
-        FastAPI: A FastAPI application instance
+        FastAPI: A FastAPI application instance.
     """
     app = create_app()
     try:
