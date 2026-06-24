@@ -13,6 +13,16 @@ service:
   port: 80
   targetPort: 8020
 
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
 resources:
   limits:
     cpu: "500m"

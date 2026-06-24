@@ -1,5 +1,7 @@
 """FastAPI module that represent the root of the API."""
 
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
@@ -26,7 +28,7 @@ def create_app() -> FastAPI:
         lifespan=None,
         title="Brokerage Service API",
         version="0.1.0",
-        openapi_url="/openapi.json",
+        openapi_url=os.getenv("FASTAPI_ROOT_PATH","/openapi.json"),
         docs_url="/docs",
         openapi_version="3.0.3",
     )
