@@ -65,17 +65,13 @@ class TestCheckSourceHealth:
         assert str(result["base_url"]).rstrip("/") == "http://test-api:8000/api"
         assert result["status"] == "ok"
 
-        mock_client.get.assert_called_once_with(
-            "http://test-api:8000/api/health/", timeout=5.0
-        )
+        mock_client.get.assert_called_once_with("http://test-api:8000/api/health/", timeout=5.0)
 
     @pytest.mark.anyio
     async def test_check_source_health_http_error(self, mock_source_config: SourceConfig) -> None:
         """Test health check with HTTP error."""
         mock_client = AsyncMock(spec=httpx.AsyncClient)
-        mock_client.get.side_effect = httpx.HTTPStatusError(
-            "404 Not Found", request=MagicMock(), response=MagicMock()
-        )
+        mock_client.get.side_effect = httpx.HTTPStatusError("404 Not Found", request=MagicMock(), response=MagicMock())
 
         result = await check_source_health(mock_client, mock_source_config)
 
@@ -96,9 +92,7 @@ class TestCheckSourceHealth:
         assert result["status"] == "unhealthy"
 
     @pytest.mark.anyio
-    async def test_check_source_health_unknown_status(
-        self, mock_source_config: SourceConfig
-    ) -> None:
+    async def test_check_source_health_unknown_status(self, mock_source_config: SourceConfig) -> None:
         """Test health check when status field is missing."""
         mock_client = AsyncMock(spec=httpx.AsyncClient)
         mock_response = MagicMock()
@@ -149,7 +143,6 @@ class TestGetSourcesEndpoint:
 
             assert bodc_result["status"] == "healthy"
             assert jncc_result["status"] == "healthy"
-
 
     def test_get_sources_empty(self) -> None:
         """Test retrieval when no sources are configured."""
