@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from brokerage_service_api.registry.sources import get_source_registry
 
 
