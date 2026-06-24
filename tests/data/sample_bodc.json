@@ -1,0 +1,172 @@
+{
+  "submission_id": "submission-001",
+  "image_set_uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
+  "ifdo": {
+    "image-set-header": {
+      "image-set-name": "Greater Haig Fras 2012 autonomous underwater vehicle image survey - mosaicked tiles used for quantifying benthic community and characterising seabed type",
+      "image-project": {
+        "name": "RRS Discovery III cruise 377/8 (BODC ship identifier 74E3)",
+        "uri": ""
+      },
+      "image-context": {
+        "name": "D377-062",
+        "uri": ""
+      },
+      "image-abstract": "This photographic survey was the first in a series of surveys conducted in the same location with a camera mounted on an autonomous underwater vehicle, initially when the Greater Haig Fras area was under consideration for Marine Conservation Zone (MCZ) status. The work was initially undertaken as a Defra-funded project \"Investigating the feasibility of utilizing AUV and Glider technology for mapping and monitoring of the UK MPA network (MB0118)\", Case study 2: Shallow-water AUV mapping off SW UK; Cruise report: Ruhl, H., 2013. RRS Discovery cruise 377 & 378, 05-27 July 2012. Autonomous ecological surveying of the abyss: understanding mesoscale spatial heterogeneity at the Porcupine Abyssal Plain.  (73 pp.). Southampton, UK: National Oceanography Centre, Southampton. (National Oceanography Centre Cruise Report, 23). https://nora.nerc.ac.uk/id/eprint/500784/1/NOC_CR_23.pdf  See also: Wynn, R. B., B. J. Bett, A. J. Evans, G. Griffiths, V. A. I. Huvenne, A. R. Jones, M. R. Palmer, D. Dove, J. A. Howe, T. J. Boyd & B. J. Bett, 2012. Investigating the feasibility of utilizing AUV and Glider technology for mapping and monitoring of the UK MPA network., vol Final report for Defra project MB0118. National Oceanography Centre, Southampton. 244pp.  https://nora.nerc.ac.uk/id/eprint/500733/1/DEFRA_MB0118%28Wynn%29_FINAL.pdf",
+      "image-event": {
+        "name": "D377-062",
+        "uri": ""
+      },
+      "image-platform": {
+        "name": "http://vocab.nerc.ac.uk/collection/B76/current/B7600031/",
+        "uri": ""
+      },
+      "image-sensor": {
+        "name": "http://vocab.nerc.ac.uk/collection/L22/current/TOOL1897/",
+        "uri": ""
+      },
+      "image-set-uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
+      "image-set-handle": "",
+      "image-creators": [
+        {
+          "name": "Noelie Benoist",
+          "uri": "https://orcid.org/0000-0002-9079-593X"
+        },
+        {
+          "name": "Brian J Bett",
+          "uri": "https://orcid.org/0000-0002-9079-593X"
+        },
+        {
+          "name": "Kirsty Morris",
+          "uri": "https://orcid.org/0000-0002-9079-593X"
+        },
+        {
+          "name": "Henry A Ruhl",
+          "uri": "https://orcid.org/0000-0002-9079-593X"
+        }
+      ],
+      "image-pi": {
+        "name": "Henry Ruhl",
+        "uri": "https://orcid.org/0000-0002-9079-593X"
+      },
+      "image-license": {
+        "name": "Open Government License",
+        "uri": ""
+      },
+      "image-copyright": "Open data - freely available for use under the Open Government Licence (OGL); see NERC Policy on Licensing and Charging for Information (v1.5; 30/09/2016)",
+      "image-coordinate-reference-system": "UTM Zone 29 WGS84",
+      "image-acquisition": "photo",
+      "image-quality": "product",
+      "image-deployment": "mapping",
+      "image-navigation": "reconstructed",
+      "image-scale-reference": "calibrated camera",
+      "image-illumination": "artificial light",
+      "image-resolution": "mm",
+      "image-marine-zone": "seafloor",
+      "image-spectral-resolution": "rgb",
+      "image-capture-mode": "timer",
+      "image-spatial-constraints": "Image tiles generated from four seabed photography survey lines within a bounding box of c. (50.35493999,- 7.720771485; 50.39472532, -7.720770658; 50.39472514, -7.712087057; 50.35493981, -7.712087884)",
+      "image-temporal-constraints": "Constituent images of the tiles were captured in a single dive of the Autosub6000 vehicle during its mission 58. The image acquisition period was c. 26/07/2012 02:53 - 26/07/2012 06:38",
+      "image-target-environment": "Constrained seabed area of near level-bottom terrain encompassing a range of seabed types. The specific location of the Autosub6000 mission was chosen to correspond with an area of ship-based multibeam echosounder seabed survey carried out from the RV Cefas Endeavour just prior to the arrival of RRS Discovery cruise 377/8.",
+      "image-objective": "The aim of the survey was to undertake high-resolution seabed mapping and colour photography in a recommended Marine Conservation Zone (rMCZ), to highlight the capability of AUV technology for high-resolution shallow-water mapping and benthic assemblage assessment.",
+      "image-reference-calibration": "",
+      "image-time-synchronisation": "",
+      "image-item-identification-scheme": "<Autosub6000 mission number M##>_<8-digit downward camera ID>_<milliseconds since 01/01/1601>",
+      "image-curation-protocol": "Images were mosaicked in \"tiles\" consisting of 5 consecutive images (each tile representing approximately 7.3 m2 of seabed). Images were orthorectified and scaled to a common altitude per tile. The average dimension of a pixel was 0.59 mm; this scaling (used in estimating the areas provided and in published analysis) is incorrect as it employed an incorrect camera magnification of 1.45, while the true magnification was likely 1.35. Further details of the mosaicking process are detailed in: Morris, K.J., Bett, B.J., Durden, J.M., Huvenne, V.A.I., Milligan, R., Jones, D.O.B., McPhail, S., Robert, K., Bailey, D., Ruhl, H.A., 2014. A new method for ecological surveying of the abyss using autonomous underwater vehicle photography. Limnology and Oceanography: Methods, 12, 795-809. 10.4319/lom.2014.12.795.",
+      "image-set-start-datetime": "7/26/2012 2:53",
+      "image-set-end-datetime": "7/26/2012 6:38",
+      "image-set-lat-min": 50.354,
+      "image-set-lat-max": 50.398,
+      "image-set-long-min": -7.722,
+      "image-set-long-max": -7.711,
+      "image-set-documentation": "https://nora.nerc.ac.uk/id/eprint/500784/; https://www.bodc.ac.uk/data/published_data_library/catalogue/10.5285/090239b1-b7dd-1030-e063-6c86abc0e183/",
+      "image-set-funder": "Department for Environment, Food and Rural Affairs; Natural Environment Research Council",
+      "image-set-grant-number": "Investigating the Feasibility of Utilizing AUV and Glider Technology for Mapping and Monitoring of the UK MPA Network (MB0118); Autonomous Ecological Surveying of the Abyss (NERC: NE/H021787/1)",
+      "image-acquisition-settings": {
+        "about": "These tiles were derived from raw images: https://www.bodc.ac.uk/data/published_data_library/catalogue/10.5285/090239b1-b7dd-1030-e063-6c86abc0e183/"
+      }
+    },
+    "image-set-items": [
+      {
+        "image-filename": "M58_10441297_12987745240267.jpg",
+        "image-datetime": "2016-05-11 10:10:03+01:00",
+        "image-longitude": -7.7121296,
+        "image-latitude": 50.38867326,
+        "image-uuid": "1345C48A-D360-4D48-8737-2F94A1C9517B",
+        "image-area-square-meter": 6.921951206,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987745240267.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987744811443.jpg",
+        "image-datetime": "2016-05-11 10:26:08+01:00",
+        "image-longitude": -7.71210988,
+        "image-latitude": 50.39413194,
+        "image-uuid": "5FC8AC68-3C00-4885-8E61-EB1DB7F278D4",
+        "image-area-square-meter": 6.997520739,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987744811443.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987749390121.jpg",
+        "image-datetime": "2016-05-11 10:13:42+01:00",
+        "image-longitude": -7.71580346,
+        "image-latitude": 50.37048085,
+        "image-uuid": "B35D5B10-B1A1-47FE-A850-2CF60F26075D",
+        "image-area-square-meter": 7.578636105,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987749390121.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987749054970.jpg",
+        "image-datetime": "2016-05-11 10:13:22+01:00",
+        "image-longitude": -7.71580906,
+        "image-latitude": 50.36652833,
+        "image-uuid": "C9EB02A4-4048-4DB8-AEA2-02D78894A32F",
+        "image-area-square-meter": 7.444410116,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987749054970.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987752223813.jpg",
+        "image-datetime": "2016-05-11 10:15:58+01:00",
+        "image-longitude": -7.71964875,
+        "image-latitude": 50.38760024,
+        "image-uuid": "6AE63D10-4DA0-4783-9C1D-E26DC24803EB",
+        "image-area-square-meter": 7.495418713,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987752223813.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987757649461.jpg",
+        "image-datetime": "2016-05-11 10:20:36+01:00",
+        "image-longitude": -7.71309081,
+        "image-latitude": 50.38634311,
+        "image-uuid": "BAB923B4-0A5B-44BE-A795-1A5EB5D037A1",
+        "image-area-square-meter": 8.20348123,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987757649461.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987755746830.jpg",
+        "image-datetime": "2016-05-11 10:19:12+01:00",
+        "image-longitude": -7.72076758,
+        "image-latitude": 50.36221911,
+        "image-uuid": "54290493-13A4-4D4F-B8D5-8BF463B3CE5F",
+        "image-area-square-meter": 8.355263033,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987755746830.jpg"
+      },
+      {
+        "image-filename": "M58_10441297_12987753293346.jpg",
+        "image-datetime": "2016-05-11 10:17:07+01:00",
+        "image-longitude": -7.7196522,
+        "image-latitude": 50.37518772,
+        "image-uuid": "8678354D-4612-4109-8C15-E78841AE40A9",
+        "image-area-square-meter": 6.584361387,
+        "image-media-type": "JPEG",
+        "image-handle": "https://dap.ceda.ac.uk/bodc/deposits01/USO230175/GHF_Mosaicked_Tiles_2012/M58_10441297_12987753293346.jpg"
+      }
+    ]
+  }
+}

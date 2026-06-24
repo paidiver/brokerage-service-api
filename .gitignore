@@ -24,6 +24,7 @@ share/python-wheels/
 .python-version
 # jupyter notebook
 .ipynb_checkpoints
+notebooks/*
 
 # Unit test / coverage reports
 htmlcov/
