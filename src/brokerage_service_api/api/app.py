@@ -81,7 +81,7 @@ def create_app() -> FastAPI:
         )
 
     @app.get("/", include_in_schema=False)
-    def main() -> RedirectResponse:
+    async def main() -> RedirectResponse:
         """Redirect to docs.
 
         Returns:
@@ -98,7 +98,7 @@ def create_app() -> FastAPI:
         operation_id="healthCheck",
         tags=["Health Check"],
     )
-    def health() -> dict:
+    async def health() -> dict:
         """Health check.
 
         Returns:
