@@ -9,14 +9,11 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from brokerage_service_api.fixtures.constants import ENV_SOURCE_URL_MAP
 from brokerage_service_api.models.sources import SourceConfig
 
 DEFAULT_SOURCES_FILE = Path(__file__).resolve().parent.parent / "fixtures" / "source.yaml"
 
-ENV_SOURCE_URL_MAP = {
-    "bodc": ("BODC_ANNOTATIONS_API_URL", "http://annotations-api2:8000/api/"),
-    "jncc": ("JNCC_ANNOTATIONS_API_URL", "http://annotations-api1:8000/api/"),
-}
 
 
 class SourcesFile(BaseModel):
