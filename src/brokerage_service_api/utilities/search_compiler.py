@@ -29,7 +29,8 @@ def fetch_results_from_bodc_annotations_api(params: AnnotationSearchRequest) -> 
         return []
 
     # This will only exist if user selects 'calculate_summary' as True.
-    summary = bodc_response.json().get("results").get("summary")
+    bodc_summary = bodc_response.json().get("results").get("summary")
+    print("BODC Summary:", bodc_summary)
 
     bodc_results = bodc_response.json().get("results").get("annotations")
     return [Result.construct_instance_from_raw_response(result, source="BODC") for result in bodc_results]
@@ -51,6 +52,10 @@ def fetch_results_from_jncc_annotations_api(params: AnnotationSearchRequest) -> 
         # Log any errors and return an empty list, so any BODC results can still be used.
         print(f"Something went wrong calling the JNCC annotations API {exc}.")
         return []
+
+    # This will only exist if user selects 'calculate_summary' as True.
+    jncc_summary = jncc_response.json().get("results").get("summary")
+    print("JNCC Summary:", jncc_summary)
 
     jncc_results = jncc_response.json().get("results").get("annotations")
     return [Result.construct_instance_from_raw_response(result, source="JNCC") for result in jncc_results]
