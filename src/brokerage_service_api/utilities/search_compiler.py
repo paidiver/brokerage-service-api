@@ -20,9 +20,8 @@ def fetch_results_from_bodc_annotations_api(params: AnnotationSearchRequest) -> 
     Returns:
         list: A list of Result objects constructed from the JNCC results.
     """
-    print(urljoin(BODC_ANNOTATIONS_API_ENDPOINT, params.to_query_string()))
     try:
-        bodc_response = rq.get(BODC_ANNOTATIONS_API_ENDPOINT + "?aphia_ids%5B%5D=558&aphia_ids%5B%5D=1292")
+        bodc_response = rq.get(urljoin(BODC_ANNOTATIONS_API_ENDPOINT, params.to_query_string()))
         bodc_response.raise_for_status()
     except Exception as exc:
         # Log any errors and return an empty list, so any JNCC results can still be used.
@@ -43,7 +42,7 @@ def fetch_results_from_jncc_annotations_api(params: AnnotationSearchRequest) -> 
         list: A list of Result objects constructed from the JNCC results.
     """
     try:
-        jncc_response = rq.get(JNCC_ANNOTATIONS_API_ENDPOINT + "?aphia_ids%5B%5D=558&aphia_ids%5B%5D=1292")
+        jncc_response = rq.get(urljoin(JNCC_ANNOTATIONS_API_ENDPOINT, params.to_query_string()))
         jncc_response.raise_for_status()
     except Exception as exc:
         # Log any errors and return an empty list, so any BODC results can still be used.
