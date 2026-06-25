@@ -15,7 +15,6 @@ from brokerage_service_api.models.sources import SourceConfig
 DEFAULT_SOURCES_FILE = Path(__file__).resolve().parent.parent / "fixtures" / "source.yaml"
 
 
-
 class SourcesFile(BaseModel):
     """Top-level structure of the sources YAML file."""
 
