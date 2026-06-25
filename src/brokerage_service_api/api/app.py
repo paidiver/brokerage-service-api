@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
-from brokerage_service_api.api.v1 import source_health_router
+from brokerage_service_api.api.v1 import search_router, source_health_router
 from brokerage_service_api.registry import get_source_registry
 
 
@@ -126,7 +126,13 @@ def create_app() -> FastAPI:
     app.include_router(
         source_health_router,
         prefix="/api",
-        tags=["Source Health Check"],
+        tags=["Health Check"],
+    )
+
+    app.include_router(
+        search_router,
+        prefix="/api",
+        tags=["Search Endpoints"],
     )
 
     return app

@@ -142,7 +142,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            f"/api/annotations/worms_cache/ajax_by_name_part/{self._path_param(name_part)}/",
+            f"/annotations/worms_cache/ajax_by_name_part/{self._path_param(name_part)}/",
             response_schema=list[TaxonWormsLike],
             params=params,
         )
@@ -301,6 +301,7 @@ class AnnotationApiClient:
             path,
             params=params.to_query_params() if params else None,
         )
+        print(f"Request URL: {request.url}") #debugging print statement
         try:
             response = await self._client.send(request)
         except httpx.RequestError as exc:
