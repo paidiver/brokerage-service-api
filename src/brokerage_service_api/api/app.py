@@ -1,6 +1,8 @@
 """FastAPI module that represent the root of the API."""
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
@@ -10,6 +12,8 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+from brokerage_service_api.api.v1 import source_health_router
+from brokerage_service_api.registry import get_source_registry
 
 
 class HealthResponse(BaseModel):
@@ -24,8 +28,20 @@ def create_app() -> FastAPI:
     Returns:
         FastAPI: The configured FastAPI application instance.
     """
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        """Lifespan context manager for the FastAPI application to load sources."""
+        try:
+            app.state.sources = get_source_registry().list()
+            print(f"Loaded sources: {app.state.sources}")
+        except FileNotFoundError:
+            print("Warning: sources.yaml file not found!")
+            app.state.sources = {}
+        yield
+
     app = FastAPI(
-        lifespan=None,
+        lifespan=lifespan,
         title="Brokerage Service API",
         version="0.1.0",
         root_path=os.getenv("FASTAPI_ROOT_PATH", ""),
@@ -84,7 +100,7 @@ def create_app() -> FastAPI:
         )
 
     @app.get("/", include_in_schema=False)
-    def main() -> RedirectResponse:
+    async def main() -> RedirectResponse:
         """Redirect to docs.
 
         Returns:
@@ -101,13 +117,19 @@ def create_app() -> FastAPI:
         operation_id="healthCheck",
         tags=["Health Check"],
     )
-    def health() -> dict:
+    async def health() -> dict:
         """Health check.
 
         Returns:
             dict: A dictionary with a "status" key and "ok" value to indicate the service is healthy.
         """
         return {"status": "ok"}
+
+    app.include_router(
+        source_health_router,
+        prefix="/api",
+        tags=["Source Health Check"],
+    )
 
     return app
 

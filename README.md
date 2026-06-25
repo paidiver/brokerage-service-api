@@ -26,6 +26,7 @@ Brokerage Service API provides a federated api access to multiple services.
 ├── README.md
 ├── ruff.toml           # Ruff configuration
 ├── src
+<<<<<<< HEAD
 │   └── brokerage_service_api
 │       ├── api         # Main API package
 │       │   ├── app.py
@@ -40,6 +41,18 @@ Brokerage Service API provides a federated api access to multiple services.
 │       │   └── __init__.py
 │       └── schemas # Pydantic schemas
 │           └── __init__.py
+=======
+│   └── brokerage_service_api
+│       ├── api         # Main API package
+│       │   ├── app.py
+│       │   ├── exceptions.py
+│       │   └── v1 # API V1 endpoints
+│       ├── fixtures    # Fixtures for source data
+│       ├── registry    # Registry for upstream services
+│       ├── models  # Models
+│       ├── schemas # Pydantic schemas
+│       └── upstream # Clients for upstream services
+>>>>>>> main
 ├── tests # Test suite
 │   └── __init__.py
 └── tox.ini
@@ -80,8 +93,10 @@ Example contents:
 
 ```bash
 # ENV APIS
-JNCC_URL=http://annotations-api1:8000/api # URL for the JNCC API service. It is using the docker service name as hostname to allow inter-container communication.
-BODC_URL=http://annotations-api2:8000/api # URL for the BODC API service. It is using the docker service name as hostname to allow inter-container communication.
+JNCC_ANNOTATIONS_API_URL=http://annotations-api1:8000/api # URL for the JNCC API service. It is using the docker service name as hostname to allow inter-container communication.
+BODC_ANNOTATIONS_API_URL=http://annotations-api2:8000/api # URL for the BODC API service. It is using the docker service name as hostname to allow inter-container communication.
+
+RUN_LIVE_UPSTREAM_TESTS=1 # flag to run tests that require live upstream services (JNCC, BODC). Set to 0 to skip these tests or if you are not running the upstream services locally.
 
 # Local DEV: Annotation API and Worms-cache configuration
 DJANGO_SECRET_KEY=dev-secret-key-change-me
@@ -168,6 +183,61 @@ If using an image from the registry, either use `latest` or your required tag.
 6. Now setup port forwarding: `kubectl port-forward svc/annotations-api-annotations-api 8080:80`
 7. Access the swagger docs [here](http://localhost:8080/docs#).
 
+## Upstream Sources
+
+Upstream API sources are managed within the configuration file located at [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). This file is parsed and loaded into the application's memory during initialization (startup) and remains immutable throughout the application's lifespan.
+
+### Example source:
+
+```yaml
+sources:
+  bodc:
+    source_name: "bodc"
+    label: "BRITISH OCEANOGRAPHIC DATA CENTRE"
+    base_url: "BODC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+  jncc:
+    source_name: "jncc"
+    label: "JOINT NATURE CONSERVATION COMMITTEE"
+    base_url: "JNCC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+```
+
+### Configuring new source
+
+To onboard a new upstream source, follow these steps:
+
+#### 1. Update the YAML Configuration:
+
+Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name.
+
+#### 2. Define Environment Variables:
+
+Declare the environment variable name and its value in your locally managed [.env] file.
+
+#### 3. Register the Environment Mapping:
+
+Add a new key-value entry to the `ENV_SOURCE_URL_MAP` dictionary inside [*fixtures/constants.py*](./src/brokerage_service_api/fixtures/constants.py). This maps the source identifier to its environment variable name and an isolated container fallback URL.
+
+```python
+ENV_SOURCE_URL_MAP = {
+    # Existing mappings...
+    "new_source_name": ("EXAMPLE_ANNOTATIONS_API_URL", "http://example-api:8000/api/"),
+}
+```
+
 ## Development Workflow
 
 ### Formatting
@@ -203,4 +273,3 @@ A collection of example API requests and responses is available in the [API Exam
 ## Acknowledgements
 
 This project was supported by the UK Natural Environment Research Council (NERC) through the *Tools for automating image analysis for biodiversity monitoring (AIAB)* Funding Opportunity, reference code **UKRI052**.
-

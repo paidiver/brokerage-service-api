@@ -120,6 +120,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ../examples:/app/examples:ro
+      - ../tests:/app/tests:ro
     command: >
       bash -eu -o pipefail -c '
         if python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"; then
@@ -144,9 +145,12 @@ services:
             export API_AUTH_TOKEN
             export API_BASE_URL="http://annotations-api-jncc:8000"
 
+            if [ -z "$$BASE_PATH" ]; then
+              BASE_PATH="/app/examples"
+            fi
             python /app/examples/ingest_data.py \
-              /app/examples/sample_jncc.json \
-              /app/examples/sample_jncc_annotations.xlsx
+              "$$BASE_PATH/sample_jncc.json" \
+              "$$BASE_PATH/sample_jncc_annotations.xlsx"
           else
             echo "Database check failed with status $$status"
             exit "$$status"
@@ -172,6 +176,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ../examples:/app/examples:ro
+      - ../tests:/app/tests:ro
     command: >
       bash -eu -o pipefail -c '
         if python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Annotation\"); raise SystemExit(0 if Model.objects.exists() else 42)"; then
@@ -195,10 +200,12 @@ services:
 
             export API_AUTH_TOKEN
             export API_BASE_URL="http://annotations-api-bodc:8000"
-
+            if [ -z "$$BASE_PATH" ]; then
+              BASE_PATH="/app/examples"
+            fi
             python /app/examples/ingest_data.py \
-              /app/examples/sample_bodc.json \
-              /app/examples/sample_bodc_annotations.xlsx
+              "$$BASE_PATH/sample_bodc.json" \
+              "$$BASE_PATH/sample_bodc_annotations.xlsx"
           else
             echo "Database check failed with status $$status"
             exit "$$status"

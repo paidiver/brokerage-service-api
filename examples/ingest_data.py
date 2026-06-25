@@ -1,5 +1,6 @@
 """Example code for data ingestion."""
 #!/usr/bin/env python3
+"""Ingest image-set metadata and annotation spreadsheets into the annotations API."""
 
 import argparse
 import json
@@ -31,7 +32,7 @@ def get_headers() -> dict[str, str]:
 
 
 def ingest_image_set(json_path: Path) -> dict:
-    """Upload an image set JSON file to the ingestion API endpoint.
+    """Submit an image-set JSON file to the annotations API.
 
     This function:
     - Validates that the JSON file exists
@@ -117,7 +118,8 @@ def upload_annotation_file(excel_path: Path) -> dict:
             files=files,
             timeout=600,
         )
-
+    print(f"Annotation upload response status code: {response.status_code}")
+    print(f"Annotation upload response content: {response.text}")
     response.raise_for_status()
     return response.json()
 
@@ -160,17 +162,13 @@ def main() -> None:
 
     print("Uploading annotation Excel file...")
     annotation_response = upload_annotation_file(args.annotation_xlsx)
-    print("Annotation response:")
-    print(json.dumps(annotation_response, indent=2))
+    print("Annotation upload response status code:")
+    print(annotation_response.get("status_code", "No status code in response"))
+    print("Annotation upload response content:")
+    print(annotation_response.get("content", "No content in response"))
 
     print("Done.")
 
 
 if __name__ == "__main__":
     main()
-
-# export API_AUTH_TOKEN="70bb17dd3ff2ae653a61025c7a5c7d0d984c3f6c"
-# export API_AUTH_TOKEN="9617726de74f8093b4ba3dfb466d018a21b2d42a"
-# export API_BASE_URL="https://annotations-api.paidiver.site"
-# export API_BASE_URL="https://annotationsdev.bodc.ac.uk"
-# python ingest_data.py sample_jncc.json sample_jncc_annotations.xlsx
