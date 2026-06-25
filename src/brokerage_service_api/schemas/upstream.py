@@ -7,7 +7,6 @@ from typing import Generic, Literal, TypeVar
 from urllib.parse import urlencode
 from uuid import UUID
 
-from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field
 
 type JsonScalar = str | int | float | bool | None
