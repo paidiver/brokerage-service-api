@@ -141,6 +141,61 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
+## Upstream Sources
+
+Upstream API sources are managed within the configuration file located at [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). This file is parsed and loaded into the application's memory during initialization (startup) and remains immutable throughout the application's lifespan.
+
+### Example source:
+
+```yaml
+sources:
+  bodc:
+    source_name: "bodc"
+    label: "BRITISH OCEANOGRAPHIC DATA CENTRE"
+    base_url: "BODC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+  jncc:
+    source_name: "jncc"
+    label: "JOINT NATURE CONSERVATION COMMITTEE"
+    base_url: "JNCC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+```
+
+### Configuring new source
+
+To onboard a new upstream source, follow these steps:
+
+#### 1. Update the YAML Configuration: 
+
+Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name. 
+
+#### 2. Define Environment Variables: 
+
+Declare the environment variable name and its value in your locally managed [.env] file.
+
+#### 3. Register the Environment Mapping: 
+
+Add a new key-value entry to the `ENV_SOURCE_URL_MAP` dictionary inside [*fixtures/constants.py*](./src/brokerage_service_api/fixtures/constants.py). This maps the source identifier to its environment variable name and an isolated container fallback URL.
+
+```python
+ENV_SOURCE_URL_MAP = {
+    # Existing mappings...
+    "new_source_name": ("EXAMPLE_ANNOTATIONS_API_URL", "http://example-api:8000/api/"),
+}
+```
+
 ## Development Workflow
 
 ### Formatting

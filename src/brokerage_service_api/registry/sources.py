@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-import json
 import os
 from functools import lru_cache
 from pathlib import Path
 
+import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from brokerage_service_api.fixtures.constants import ENV_SOURCE_URL_MAP
 from brokerage_service_api.models.sources import SourceConfig
 
-DEFAULT_SOURCES_FILE = Path(__file__).parents[1] / "fixtures" / "sources.json"
+DEFAULT_SOURCES_FILE = Path(__file__).resolve().parent.parent / "fixtures" / "source.yaml"
 
 
 class SourcesFile(BaseModel):
-    """Top-level structure of the sources JSON file."""
+    """Top-level structure of the sources YAML file."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -52,20 +53,36 @@ class UnknownSourceError(ValueError):
 
 
 def load_sources(path: Path = DEFAULT_SOURCES_FILE) -> SourceRegistry:
-    """Load source configuration from a JSON file."""
-    data = json.loads(path.read_text(encoding="utf-8"))
-    bodc_url = os.environ.get("BODC_ANNOTATIONS_API_URL")
-    jncc_url = os.environ.get("JNCC_ANNOTATIONS_API_URL")
-    for source in data.get("sources", []):
-        if source.get("name") == "bodc" and bodc_url:
-            source["base_url"] = bodc_url
-        elif source.get("name") == "jncc" and jncc_url:
-            source["base_url"] = jncc_url
-    sources_file = SourcesFile.model_validate(data)
-    return SourceRegistry(sources_file.sources)
+    """Load source configuration from a YAML file.
+
+    Args:
+        path: Path to the YAML source configuration file .
+
+    Returns:
+        SourceRegistry: Registry of validated and configured sources.
+    """
+    yaml_content = yaml.safe_load(path.read_text(encoding="utf-8"))
+    sources_data = []
+
+    for source_name, source_config in yaml_content.get("sources", {}).items():
+        source_config["name"] = source_name
+
+        if source_name in ENV_SOURCE_URL_MAP:
+            env_var, default_url = ENV_SOURCE_URL_MAP[source_name]
+            base_url = os.environ.get(env_var, default_url)
+            source_config["base_url"] = base_url
+
+        sources_data.append(source_config)
+
+    validated_sources = [SourceConfig.model_validate(source) for source in sources_data]
+    return SourceRegistry(validated_sources)
 
 
 @lru_cache
 def get_source_registry() -> SourceRegistry:
-    """Return the cached source registry."""
+    """Return the cached source registry.
+
+    Returns:
+        SourceRegistry: The validated and cached registry of sources.
+    """
     return load_sources()
