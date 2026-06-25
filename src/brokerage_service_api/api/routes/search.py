@@ -21,4 +21,6 @@ def brokerage_search() -> SearchResults:
     try:
         return fetch_combined_results_from_annotation_apis()
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"An error occured whilst fetching the search results. {exc}")
+        raise HTTPException(
+            status_code=500, detail=f"An error occured whilst fetching the search results. {exc}"
+        ) from None

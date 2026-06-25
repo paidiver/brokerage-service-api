@@ -28,29 +28,36 @@ class Result(BaseModel):
     image_set_uuid: UUID
     image_set_name: str
 
-
     @classmethod
-    def construct_instance_from_raw_response(cls, raw_response: dict, source: str):
-        return cls(source=source,
-                   uuid=raw_response.get("uuid"),
-                   image_filename=raw_response.get("image_filename"),
-                   image_handle=raw_response.get("image_handle"),
-                   image_uuid=raw_response.get("image_set_uuid"),
-                   label_name=raw_response.get("label_name"),
-                   label_aphia_id=raw_response.get("label_aphia_id"),
-                   annotation_platform=raw_response.get("annotation_platform"),
-                   annotation_creation_datetime=raw_response.get("annotation_creation_datetime"),
-                   annotation_shape=raw_response.get("annotation_shape"),
-                   annotation_coordinates=raw_response.get("annotation_coordinates"),
-                   annotation_dimension_pixels=raw_response.get("annotation_dimension_pixels"),
-                   annotator_name=raw_response.get("annotator_name"),
-                   annotation_set_uuid=raw_response.get("annotation_set_uuid"),
-                   annotation_set_name=raw_response.get("annotation_set_name"),
-                   image_set_uuid=raw_response.get("image_set_uuid"),
-                   image_set_name=raw_response.get("image_set_name")
-        
-                   )
+    def construct_instance_from_raw_response(cls, raw_response: dict, source: str) -> "Result":
+        """Parse the raw response from the API and return a Result instance.
 
+        Args:
+            raw_response: The raw dict from the API.
+            source: Either JNCC or BODC.
+
+        Returns:
+            An instance of the Result class.
+        """
+        return cls(
+            source=source,
+            uuid=raw_response.get("uuid"),
+            image_filename=raw_response.get("image_filename"),
+            image_handle=raw_response.get("image_handle"),
+            image_uuid=raw_response.get("image_set_uuid"),
+            label_name=raw_response.get("label_name"),
+            label_aphia_id=raw_response.get("label_aphia_id"),
+            annotation_platform=raw_response.get("annotation_platform"),
+            annotation_creation_datetime=raw_response.get("annotation_creation_datetime"),
+            annotation_shape=raw_response.get("annotation_shape"),
+            annotation_coordinates=raw_response.get("annotation_coordinates"),
+            annotation_dimension_pixels=raw_response.get("annotation_dimension_pixels"),
+            annotator_name=raw_response.get("annotator_name"),
+            annotation_set_uuid=raw_response.get("annotation_set_uuid"),
+            annotation_set_name=raw_response.get("annotation_set_name"),
+            image_set_uuid=raw_response.get("image_set_uuid"),
+            image_set_name=raw_response.get("image_set_name"),
+        )
 
 
 class SearchResults(BaseModel):
