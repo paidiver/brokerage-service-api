@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Generic, Literal, TypeVar
+from urllib.parse import urlencode
 from uuid import UUID
 
+from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field
 
 type JsonScalar = str | int | float | bool | None
@@ -31,6 +33,80 @@ class PaginationParams(QueryParamModel):
 
     page: int | None = Field(default=None, gt=0)
     page_size: int | None = Field(default=None, gt=0)
+
+
+class AnnotationSearchRequest(BaseModel):
+    """A representation of the request to search to forward to the BODC/JNCC API's."""
+
+    aphia_ids: list[int] | None = Field(default=None, description="A list of Aphia ID's to search for.")
+    calculate_summary: bool | None = Field(
+        default=None, description="If true, include a summary of the search results."
+    )
+    deployment: (
+        Literal[
+            "experiment",
+            "exploration",
+            "mapping",
+            "sampling",
+            "stationary",
+            "survey",
+        ]
+        | None
+    ) = Field(default=None, description="Deployment filter. Must be one of the allowed deployment values.")
+    exclude_annotation_set: list[UUID] | None = Field(
+        default=None, alias="List of annotation set IDs to exclude from the search results."
+    )
+    exclude_aphia_ids: list[int] | None = Field(
+        default=None, alias="List of AphiaIDs to exclude from the search results."
+    )
+    exclude_image_set: list[UUID] | None = Field(
+        default=None, alias="List of image set IDs to exclude from the search results."
+    )
+    fauna_attraction: Literal["baited", "light", "none"] | None = Field(
+        default=None, description="Fauna attraction filter. Must be one of the allowed values."
+    )
+    image_set_name: str | None = Field(
+        default=None, description="Partial image set name to filter results. Must contain at least 3 characters."
+    )
+    include_descendants: bool | None = Field(
+        default=None, description="If true, include descendant taxa in the response."
+    )
+    marine_zone: (
+        Literal[
+            "atmosphere",
+            "laboratory",
+            "sea surface",
+            "seafloor",
+            "water column",
+        ]
+        | None
+    ) = Field(default=None, description="Marine zone filter. Must be one of the allowed values.")
+    max_lat: float | None = Field(default=None, description="Maximum latitude in EPSG:4326 degrees.")
+    max_lon: float | None = Field(default=None, description="Maximum longitude in EPSG:4326 degrees.")
+    min_lat: float | None = Field(default=None, description="Minimum latitude in EPSG:4326 degrees.")
+    min_lon: float | None = Field(default=None, description="Minimum longitude in EPSG:4326 degrees.")
+    name_part: str | None = Field(
+        default=None, description="Partial name to search for in labels. Must contain at least 3 characters."
+    )
+    page: int | None = Field(default=None, description="A page number within the paginated result set.")
+    page_size: int | None = Field(default=None, description="Number of results to return per page.")
+    platform: str | None = Field(
+        default=None, description="Partial platform name to filter results. Must contain at least 3 characters."
+    )
+    project: str | None = Field(
+        default=None, description="Partial project name to filter results. Must contain at least 3 characters."
+    )
+    return_image_annotation_name_info: bool | None = Field(
+        default=None, description="If true, include image and annotation set information in the response."
+    )
+
+    def to_query_string(self) -> str:
+        """Return the model fields as a structured query string.
+
+        Returns:
+            str: A urlencoded query string.
+        """
+        return f"?{urlencode(self.model_dump(exclude_none=True))}".replace("True", "true").replace("False", "false")
 
 
 class AnnotationSearchParams(PaginationParams):
