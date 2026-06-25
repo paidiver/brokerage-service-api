@@ -99,13 +99,20 @@ class AnnotationSearchRequest(BaseModel):
         default=None, description="If true, include image and annotation set information in the response."
     )
 
+    @property
+    def aphia_ids_in_query_string(self):
+        return "&".join([f"aphia_ids[]={aphia_id}" for aphia_id in self.aphia_ids])
+
     def to_query_string(self) -> str:
         """Return the model fields as a structured query string.
 
         Returns:
             str: A urlencoded query string.
         """
-        return f"?{urlencode(self.model_dump(exclude_none=True))}".replace("True", "true").replace("False", "false")
+        dumped_model = self.model_dump(exclude_none=True)
+        if "aphia_ids" in dumped_model:
+            dumped_model["aphia_ids"] = self.aphia_ids_in_query_string
+        return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
 
 
 class AnnotationSearchParams(PaginationParams):
