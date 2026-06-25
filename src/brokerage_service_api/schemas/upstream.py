@@ -95,9 +95,9 @@ class AnnotationSearchRequest(BaseModel):
     project: str | None = Field(
         default=None, description="Partial project name to filter results. Must contain at least 3 characters."
     )
-    return_image_annotation_name_info: bool | None = Field(
-        default=None, description="If true, include image and annotation set information in the response."
-    )
+    # return_image_annotation_name_info: bool | None = Field(
+    #     default=None, description="If true, include image and annotation set information in the response."
+    # )
 
     @property
     def aphia_ids_in_query_string(self):
@@ -109,10 +109,19 @@ class AnnotationSearchRequest(BaseModel):
         Returns:
             str: A urlencoded query string.
         """
+
         dumped_model = self.model_dump(exclude_none=True)
-        if "aphia_ids" in dumped_model:
-            dumped_model["aphia_ids"] = self.aphia_ids_in_query_string
-        return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
+
+        if "aphia_ids" not in dumped_model:
+            return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
+            
+        # If aphia ID's are in the model, then format them to suit the upstream API's.
+        dumped_model.pop("aphia_ids")
+        dumped_model_as_string = (
+            f"?{self.aphia_ids_in_query_string}"
+            f"&{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
+        )    
+        return dumped_model_as_string
 
 
 class AnnotationSearchParams(PaginationParams):

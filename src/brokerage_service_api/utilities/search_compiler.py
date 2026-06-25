@@ -28,6 +28,9 @@ def fetch_results_from_bodc_annotations_api(params: AnnotationSearchRequest) -> 
         print(f"Something went wrong calling the BODC annotations API {exc}.")
         return []
 
+    # This will only exist if user selects 'calculate_summary' as True.
+    summary = bodc_response.json().get("results").get("summary")
+
     bodc_results = bodc_response.json().get("results").get("annotations")
     return [Result.construct_instance_from_raw_response(result, source="BODC") for result in bodc_results]
 

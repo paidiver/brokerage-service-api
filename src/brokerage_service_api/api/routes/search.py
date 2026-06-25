@@ -2,7 +2,8 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from brokerage_service_api.models.search_model import SearchResults
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
