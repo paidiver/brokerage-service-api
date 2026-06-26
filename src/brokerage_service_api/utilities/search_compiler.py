@@ -55,10 +55,42 @@ def fetch_results_from_jncc_annotations_api(params: AnnotationSearchRequest) -> 
 
     # This will only exist if user selects 'calculate_summary' as True.
     jncc_summary = jncc_response.json().get("results").get("summary")
-    print("JNCC Summary:", jncc_summary)
 
     jncc_results = jncc_response.json().get("results").get("annotations")
     return [Result.construct_instance_from_raw_response(result, source="JNCC") for result in jncc_results]
+
+
+class JNCCAnnotationsAPIFetcher:
+    def __init__(self, params: AnnotationSearchRequest):
+        self.params = params
+        self._results = []
+        self._summary = None
+        self._make_request()
+
+    def _make_request(self) -> None:
+        """Make request to the JNCC API and store the results in the class if available."""
+        try:
+            jncc_response = rq.get(urljoin(JNCC_ANNOTATIONS_API_ENDPOINT, self.params.to_query_string()))
+            jncc_response.raise_for_status()
+        except Exception as exc:
+            print(f"Something went wrong calling the JNCC annotations API {exc}.")
+        
+        if (summary := jncc_response.json().get("results").get("summary")) is not None:
+            self._summary = summary
+
+        if (results := jncc_response.json().get("results").get("annotations")) is not None:
+            self._results = results
+        
+    @property
+    def jncc_results(self) -> list:
+        """Return the fetched JNCC results or an empty list."""
+        return self._results
+    
+    @property
+    def jncc_summary(self) -> dict | None:
+        """"Return the fetched JNCC summary or None."""
+        return self._summary
+
 
 
 def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest) -> SearchResults:
@@ -70,7 +102,9 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.
     """
-    all_annotations = fetch_results_from_bodc_annotations_api(params=params) + fetch_results_from_jncc_annotations_api(params=params)
+    jncc = JNCCAnnotationsAPIFetcher()
+
+    all_annotations = jncc.jncc_results
 
 
     return SearchResults(
