@@ -49,3 +49,25 @@ jobs:
           docker push $CI_REGISTRY_IMAGE:${{ steps.version.outputs.version }}
           docker push $CI_REGISTRY_IMAGE:${{ github.sha }}
 
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.1
+
+      - name: add dependency repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Install yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O yq &&\
+          chmod +x yq
+
+      - name: Update Chart.yaml version
+        run: |
+          yq -i '.version = "${{ steps.version.outputs.version }}"' deployment/Chart.yaml
+          yq -i '.appVersion = "${{ steps.version.outputs.version }}"' deployment/Chart.yaml
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_RELEASE_NAME_TEMPLATE: "docker-v{{ .Version }}"

@@ -7,6 +7,8 @@ import pytest
 from brokerage_service_api.api.app import create_app
 from fastapi import FastAPI
 
+DEFAULT_PORT = 8000
+
 
 @pytest.fixture
 def anyio_backend() -> str:

@@ -1,5 +1,3 @@
-"""Example code for data ingestion."""
-#!/usr/bin/env python3
 """Ingest image-set metadata and annotation spreadsheets into the annotations API."""
 
 import argparse
