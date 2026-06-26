@@ -50,7 +50,6 @@ async def search_taxonomies(
             for source in available_sources
         ]
         results = await asyncio.gather(*tasks)
-        print(f"Results from all sources: {results}")  # Debugging print statement
         return {"results": results}
     except (httpx.RequestError, httpx.HTTPStatusError):
         return {"results": []}
