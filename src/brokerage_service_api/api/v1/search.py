@@ -3,42 +3,13 @@
 import asyncio
 
 import httpx
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel
 
 from brokerage_service_api.schemas.upstream import TaxaNamePartParams, TaxonWormsLike
 from brokerage_service_api.upstream.annotations import AnnotationApiClient, UpstreamResponse
 
 router = APIRouter()
-
-
-# async def get_taxas(
-#     client: httpx.AsyncClient,
-#     source: SourceConfig,
-#     name_part: str,
-#     combine_vernaculars: bool = False,
-# ) -> list[dict]:
-#     """Search for taxonomies using the external API.
-
-#     Args:
-#         client (httpx.AsyncClient): The HTTP client to use for the request.
-#         source (SourceConfig): The source configuration object.
-#         name_part (str): The partial name to search for.
-#         combine_vernaculars (bool): Whether to include vernacular matching. Defaults to False.
-
-#     Returns:
-#         list[dict]: A list of dictionaries containing the search results.
-#     """
-#     base_url = str(source.base_url).rstrip("/")
-#     search_endpoint = f"{base_url}/annotations/worms_cache/ajax_by_name_part/{name_part}"
-
-#     try:
-#         params = {"combine_vernaculars": combine_vernaculars}
-#         response = await client.get(search_endpoint, params=params, timeout=5.0)
-#         response.raise_for_status()
-#         return response.json()
-#     except (httpx.RequestError, httpx.HTTPStatusError):
-#         return []
 
 class TaxaBulkResponse(BaseModel):
     """Response model for bulk taxonomy search results."""
@@ -54,24 +25,29 @@ class TaxaBulkResponse(BaseModel):
 async def search_taxonomies(
     request: Request,
     name_part: str,
-    params: TaxaNamePartParams = Query(),
+    sources: list[str] | None = Query(default=None, description="List of source names to search"),
+    params: TaxaNamePartParams = Depends(),
 ) -> TaxaBulkResponse:
     """Search for taxonomies using the external API.
 
     Args:
         request (Request): The incoming request.
         name_part (str): The partial name to search for.
+        sources (list[str] | None): Optional list of source names to filter the search.
         params (TaxaNamePartParams): The query parameters for the search.
 
     Returns:
         TaxaBulkResponse: The search results wrapped in a TaxaBulkResponse.
     """
-    sources = request.app.state.sources
-
+    configured_sources = request.app.state.sources
+    if sources:
+        available_sources = [source for source in configured_sources if source.name in sources]
+    else:
+        available_sources = configured_sources
     try:
         tasks = [
             AnnotationApiClient(source).search_taxa_by_name_part(name_part, params)
-            for source in sources
+            for source in available_sources
         ]
         results = await asyncio.gather(*tasks)
         print(f"Results from all sources: {results}")  # Debugging print statement
