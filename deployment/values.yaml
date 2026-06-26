@@ -5,8 +5,12 @@ image:
   tag: 0.0.1-a3
   pullPolicy: IfNotPresent
 
+imagePullSecrets: []
+
 container:
   port: 8020
+
+componentName: brokerage-service-api
 
 service:
   type: ClusterIP
@@ -33,9 +37,7 @@ resources:
 
 ingress:
   enabled: false
-  className: nginx
-  host: annotations-api.local
-  path: /
 
 env:
-  fastapiRootPath: "/k8s/clusters/c-m-qvhg4xf9/api/v1/namespaces/paidiver-default/services/http:brokerage-service-api-annotations-api:80/proxy"
+  bodcAnnotationsApiUrl: "https://annotationsdev.bodc.ac.uk/api"
+  jnccAnnotationsApiUrl: "https://annotations-api.paidiver.site"

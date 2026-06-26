@@ -1,0 +1,51 @@
+environments:
+  dev:
+    values:
+      - mode: "dev"
+      - name: dev
+        context: seai-admin@seai
+        config: env/dev/values.yaml
+      - namespace: "paidiver-default"
+
+  live:
+    values:
+      - mode: "live"
+      - name: live
+        context: seai-admin@seai
+        config: env/live/values.yaml
+      - namespace: "paidiver-default"
+
+---
+
+{{ $env := .Environment.Values }}
+{{ $secretsFile := printf "env/%s/secrets/secrets.yaml" $env.mode }}
+
+helmDefaults:
+  historyMax: 3
+  createNamespace: false
+  kubeContext: {{ $env.context | quote }}
+
+releases:
+
+  - name: {{ requiredEnv "RELEASE_NAME" | quote }}
+    namespace: {{ $env.namespace | quote }}
+    createNamespace: false
+    chart: .
+    values:
+      - env/default/values.yaml
+      - {{ $env.config }}
+      - imagePullSecrets:
+          - name: {{ requiredEnv "GHCR_SECRET_NAME" | quote }}
+{{- if isFile $secretsFile }}
+      - {{ $secretsFile }}
+{{- end }}
+    hooks:
+      - events: ["presync"]
+        showlogs: true
+        command: sh
+        args:
+          - -c
+          - >
+            echo "Checking required secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' exists in namespace '{{ $env.namespace }}'...";
+            kubectl get secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' -n '{{ $env.namespace }}' >/dev/null 2>&1 ||
+              (echo "ERROR: Required secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' not found in namespace '{{ $env.namespace }}'." && exit 1);

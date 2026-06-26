@@ -19,8 +19,8 @@ services:
     depends_on:
       annotations-seed-data-jncc:
         condition: service_completed_successfully
-      # annotations-seed-data-bodc:
-      #   condition: service_completed_successfully
+      annotations-seed-data-bodc:
+        condition: service_completed_successfully
       worms-cache:
         condition: service_healthy
       taxamatch:
@@ -116,7 +116,7 @@ services:
     depends_on:
       annotations-api-jncc:
         condition: service_healthy
-      worms-cache-migrate:
+      worms-cache-seed:
         condition: service_completed_successfully
     volumes:
       - ../examples:/app/examples:ro
@@ -144,10 +144,7 @@ services:
 
             export API_AUTH_TOKEN
             export API_BASE_URL="http://annotations-api-jncc:8000"
-
-            if [ -z "$$BASE_PATH" ]; then
-              BASE_PATH="/app/examples"
-            fi
+            BASE_PATH="$${BASE_PATH:-/app/examples}"
             python /app/examples/ingest_data.py \
               "$$BASE_PATH/sample_jncc.json" \
               "$$BASE_PATH/sample_jncc_annotations.xlsx"
@@ -172,7 +169,7 @@ services:
     depends_on:
       annotations-api-bodc:
         condition: service_healthy
-      worms-cache-migrate:
+      worms-cache-seed:
         condition: service_completed_successfully
     volumes:
       - ../examples:/app/examples:ro
@@ -199,10 +196,9 @@ services:
             fi
 
             export API_AUTH_TOKEN
+
             export API_BASE_URL="http://annotations-api-bodc:8000"
-            if [ -z "$$BASE_PATH" ]; then
-              BASE_PATH="/app/examples"
-            fi
+            BASE_PATH="$${BASE_PATH:-/app/examples}"
             python /app/examples/ingest_data.py \
               "$$BASE_PATH/sample_bodc.json" \
               "$$BASE_PATH/sample_bodc_annotations.xlsx"
@@ -317,6 +313,37 @@ services:
     networks:
       - shared_services
 
+
+  worms-cache-seed:
+    image: ghcr.io/paidiver/worms-cache:latest
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_DB: worms-cache-db
+      POSTGRES_HOST: worms-db
+    restart: "no"
+    depends_on:
+      worms-cache:
+        condition: service_healthy
+    volumes:
+      - ../examples:/app/examples:ro
+    command: >
+      bash -c '
+        python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Taxon\"); raise SystemExit(0 if Model.objects.exists() else 42)"
+        status=$$?
+
+        if [ "$$status" -eq 0 ]; then
+          echo "Worms cache database already has data; skipping ingest_worms"
+        elif [ "$$status" -eq 42 ]; then
+          echo "Worms cache database is empty; running ingest_worms"
+          python manage.py ingest_worms --file /app/examples/initial_aphia_ids.txt --add-ranks
+        else
+          echo "Database check failed with status $$status"
+          exit "$$status"
+        fi
+      '
+    networks:
+      - shared_services
   taxamatch:
     image: ghcr.io/paidiver/worms-cache:rb-latest
     environment:
@@ -331,6 +358,7 @@ services:
     restart: unless-stopped
     networks:
       - shared_services
+
 
 volumes:
   annotations_pg_data_jncc:
