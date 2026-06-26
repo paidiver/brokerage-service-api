@@ -19,24 +19,13 @@ from starlette import status
 
 COD_APHIA_ID = 126436
 
-BODC_SOURCE = SourceConfig(
-    name="bodc",
-    label="BODC",
-    base_url="https://annotations.bodc.example/",
-)
-JNCC_SOURCE = SourceConfig(
-    name="jncc",
-    label="JNCC",
-    base_url="https://annotations-api.jncc.example/",
-)
-
 
 def run(coro: Any) -> Any:
     """Run an async client call from a synchronous test."""
     return asyncio.run(coro)
 
 
-def test_client_sends_query_params_and_returns_success_metadata() -> None:
+def test_client_sends_query_params_and_returns_success_metadata(bodc_source: SourceConfig) -> None:
     """The client should preserve source and request metadata on success."""
     seen_requests: list[httpx.Request] = []
 
@@ -74,7 +63,7 @@ def test_client_sends_query_params_and_returns_success_metadata() -> None:
         )
 
     async def exercise() -> None:
-        async with AnnotationApiClient(BODC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.search_annotations(
                 AnnotationSearchParams(
                     name_part="cod",
@@ -87,7 +76,7 @@ def test_client_sends_query_params_and_returns_success_metadata() -> None:
 
         assert response.ok is True
         assert response.status_code == status.HTTP_200_OK
-        assert response.source == BODC_SOURCE
+        assert response.source == bodc_source
         assert response.method == "GET"
         assert response.data is not None
         assert response.data.count == 1
@@ -96,7 +85,7 @@ def test_client_sends_query_params_and_returns_success_metadata() -> None:
         assert response.error is None
         assert response.path == "/api/annotations/search/"
         assert seen_requests[0].url == (
-            "https://annotations.bodc.example/api/annotations/search/"
+            "http://bodc-api:8000/api/annotations/search/"
             "?page=2&aphia_ids%5B%5D=126436&aphia_ids%5B%5D=141433&calculate_summary=true"
             "&deployment=survey&name_part=cod"
         )
@@ -104,7 +93,7 @@ def test_client_sends_query_params_and_returns_success_metadata() -> None:
     run(exercise())
 
 
-def test_client_encodes_path_params() -> None:
+def test_client_encodes_path_params(jncc_source: SourceConfig) -> None:
     """Path parameters should be URL encoded before the upstream call."""
     seen_requests: list[httpx.Request] = []
 
@@ -113,7 +102,7 @@ def test_client_encodes_path_params() -> None:
         return httpx.Response(status.HTTP_200_OK, json=[], request=request)
 
     async def exercise() -> None:
-        async with AnnotationApiClient(JNCC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(jncc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.search_taxa_by_name_part(
                 "Abra alba",
                 TaxaNamePartParams(combine_vernaculars=True),
@@ -122,14 +111,14 @@ def test_client_encodes_path_params() -> None:
         assert response.ok is True
         assert response.path == "/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
         assert seen_requests[0].url == (
-            "https://annotations-api.jncc.example/api/annotations/worms_cache/ajax_by_name_part/"
+            "http://jncc-api:8000/annotations/worms_cache/ajax_by_name_part/"
             "Abra%20alba/?combine_vernaculars=true"
         )
 
     run(exercise())
 
 
-def test_client_parses_paginated_list_response() -> None:
+def test_client_parses_paginated_list_response(bodc_source: SourceConfig) -> None:
     """List endpoints should parse upstream data into typed response models."""
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -151,7 +140,7 @@ def test_client_parses_paginated_list_response() -> None:
         )
 
     async def exercise() -> None:
-        async with AnnotationApiClient(BODC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.list_image_sets()
 
         assert response.ok is True
@@ -163,7 +152,7 @@ def test_client_parses_paginated_list_response() -> None:
     run(exercise())
 
 
-def test_client_returns_error_metadata_for_http_errors() -> None:
+def test_client_returns_error_metadata_for_http_errors(bodc_source: SourceConfig) -> None:
     """Non-2xx upstream responses should keep failure details without raising."""
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -174,7 +163,7 @@ def test_client_returns_error_metadata_for_http_errors() -> None:
         )
 
     async def exercise() -> None:
-        async with AnnotationApiClient(BODC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.list_image_sets()
 
         assert response.ok is False
@@ -187,7 +176,7 @@ def test_client_returns_error_metadata_for_http_errors() -> None:
     run(exercise())
 
 
-def test_client_returns_generic_error_metadata_for_non_json_http_errors() -> None:
+def test_client_returns_generic_error_metadata_for_non_json_http_errors(bodc_source: SourceConfig) -> None:
     """Non-JSON errors should fall back to a status-code error message."""
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -198,7 +187,7 @@ def test_client_returns_generic_error_metadata_for_non_json_http_errors() -> Non
         )
 
     async def exercise() -> None:
-        async with AnnotationApiClient(BODC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.list_image_sets()
 
         assert response.ok is False
@@ -236,7 +225,7 @@ def test_client_returns_error_metadata_for_request_errors() -> None:
     run(exercise())
 
 
-def test_client_methods_map_to_expected_paths() -> None:
+def test_client_methods_map_to_expected_paths(bodc_source: SourceConfig) -> None:
     """Public helper methods should target the requested upstream endpoints."""
     seen_paths: list[str] = []
 
@@ -245,7 +234,7 @@ def test_client_methods_map_to_expected_paths() -> None:
         return httpx.Response(status.HTTP_200_OK, json={}, request=request)
 
     async def exercise() -> None:
-        async with AnnotationApiClient(BODC_SOURCE, transport=httpx.MockTransport(handler)) as client:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             await client.search_annotations_grouped()
             await client.list_image_sets(PaginationParams(page=1, page_size=20))
             await client.get_image_set("image-set-1")

@@ -25,8 +25,8 @@ class TaxaBulkResponse(BaseModel):
 async def search_taxonomies(
     request: Request,
     name_part: str,
-    sources: list[str] | None = Query(default=None, description="List of source names to search"),
-    params: TaxaNamePartParams = Depends(),
+    sources: list[str] | None = Query(default=None, description="List of source names to search"),  # noqa: B008
+    params: TaxaNamePartParams = Depends(),  # noqa: B008
 ) -> TaxaBulkResponse:
     """Search for taxonomies using the external API.
 
