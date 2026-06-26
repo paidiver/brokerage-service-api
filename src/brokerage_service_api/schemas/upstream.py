@@ -95,12 +95,13 @@ class AnnotationSearchRequest(BaseModel):
     project: str | None = Field(
         default=None, description="Partial project name to filter results. Must contain at least 3 characters."
     )
-    # return_image_annotation_name_info: bool | None = Field(
-    #     default=None, description="If true, include image and annotation set information in the response."
-    # )
+    return_image_annotation_name_info: bool | None = Field(
+        default=None, description="If true, include image and annotation set information in the response."
+    )
 
     @property
-    def aphia_ids_in_query_string(self):
+    def aphia_ids_in_query_string(self) -> str:
+        """Construct the correct query string section for the aphia_ids."""
         return "&".join([f"aphia_ids[]={aphia_id}" for aphia_id in self.aphia_ids])
 
     def to_query_string(self) -> str:
@@ -113,15 +114,14 @@ class AnnotationSearchRequest(BaseModel):
 
         if "aphia_ids" not in dumped_model:
             return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
-            
+
         # If aphia ID's are in the model, then format them to suit the upstream API's.
         dumped_model.pop("aphia_ids")
-        dumped_model_as_string = (
-            f"?{self.aphia_ids_in_query_string}"
-            f"&{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
-        )    
+        dumped_model_as_string = f"?{self.aphia_ids_in_query_string}" f"&{urlencode(dumped_model)}".replace(
+            "True", "true"
+        ).replace("False", "false")
 
-        print("DUMPED", dumped_model_as_string)
+
         return dumped_model_as_string
 
 

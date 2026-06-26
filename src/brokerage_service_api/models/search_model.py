@@ -62,27 +62,32 @@ class Result(BaseModel):
 
 class Summary(BaseModel):
     """A representation of the merged summaries retrieved from the upstream API's."""
+
     n_annotations: int
     n_images: int
     n_annotation_sets: int
     n_image_sets: int
 
-
     def __add__(self, other: "Summary") -> "Summary":
         """Override the + operator to allow for merging of Summary instances."""
-        return Summary(n_annotations=self.n_annotations + other.n_annotations,
-                       n_images=self.n_images + other.n_images,
-                       n_annotation_sets=self.n_annotation_sets + other.n_annotation_sets,
-                       n_image_sets=self.n_image_sets + other.n_image_sets)
+        return Summary(
+            n_annotations=self.n_annotations + other.n_annotations,
+            n_images=self.n_images + other.n_images,
+            n_annotation_sets=self.n_annotation_sets + other.n_annotation_sets,
+            n_image_sets=self.n_image_sets + other.n_image_sets,
+        )
 
 
 class Results(BaseModel):
     """A representation of the aggregated summary and annotations."""
-    summary: None = None
+
+    summary: Summary | None = None
     annotations: list[Result]
+
 
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
+
     count: int
     next: str | None = None
     previous: str | None = None
