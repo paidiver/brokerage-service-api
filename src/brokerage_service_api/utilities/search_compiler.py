@@ -2,7 +2,7 @@
 
 import requests as rq
 
-from brokerage_service_api.models.search_model import Result, Results, SearchResults
+from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 
 JNCC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
@@ -21,7 +21,7 @@ class AnnotationsAPIFetcher:
         self.flavour: str = flavour
         self.params: AnnotationSearchRequest = params
         self._results: list[Result] = []
-        self._summary: dict | None = None
+        self._summary: Summary | None = None
         self._make_request()
 
     def _make_request(self) -> None:
@@ -51,7 +51,7 @@ class AnnotationsAPIFetcher:
             return
         
         if (summary := results.get("summary")) is not None:
-            self._summary = summary
+            self._summary = Summary(**summary)
 
         if (annotations := results.get("annotations")) is not None:
             self._results = [Result.construct_instance_from_raw_response(result, source=self.flavour) for result in annotations]
@@ -62,10 +62,9 @@ class AnnotationsAPIFetcher:
         return self._results
     
     @property
-    def summary(self) -> dict | None:
+    def summary(self) -> Summary | None:
         """Return the fetched summary or None."""
         return self._summary
-
 
 
 
@@ -84,9 +83,9 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
     all_annotations = jncc.results + bodc.results
     
     if jncc.summary is not None and bodc.summary is not None:
-        print("Summaries retrieved")
-        print(jncc.summary)
-        print(bodc.summary)
+        combined_summary = jncc.summary + bodc.summary
+        print("Combined:", combined_summary)
+
 
     return SearchResults(
         count=len(all_annotations),
