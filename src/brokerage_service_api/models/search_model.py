@@ -59,10 +59,13 @@ class Result(BaseModel):
             image_set_name=raw_response.get("image_set_name"),
         )
 
+class Results(BaseModel):
+    summary: None = None
+    annotations: list[Result]
 
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
     count: int
     next: str | None = None
     previous: str | None = None
-    annotations: list[Result]
+    results: Results

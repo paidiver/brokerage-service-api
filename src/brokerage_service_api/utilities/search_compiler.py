@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 
 import requests as rq
 
-from brokerage_service_api.models.search_model import Result, SearchResults
+from brokerage_service_api.models.search_model import Result, Results, SearchResults
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 
 JNCC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8019/api/annotations/search/"
@@ -75,5 +75,5 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
 
     return SearchResults(
         count=len(all_annotations),
-        annotations=all_annotations
+        results=Results(annotations=all_annotations)
     )
