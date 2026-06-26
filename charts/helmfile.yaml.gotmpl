@@ -6,7 +6,7 @@ environments:
         context: seai-admin@seai
         config: env/dev/values.yaml
       - namespace: "paidiver-st3"
-      - chartVersion: "0.0.1-a7"
+      - chartVersion: "0.0.1-a8"
 
   live:
     values:
@@ -15,7 +15,7 @@ environments:
         context: seai-admin@seai
         config: env/live/values.yaml
       - namespace: "paidiver-st3"
-      - chartVersion: "0.0.1-a7"
+      - chartVersion: "0.0.1-a8"
 
 ---
 
@@ -31,7 +31,7 @@ releases:
   - name: {{ requiredEnv "RELEASE_NAME" | quote }}
     namespace: {{ $env.namespace | quote }}
     createNamespace: false
-    chart: .
+    chart: ./api
     values:
       - env/default/values.yaml
       - env/{{ .Values.mode }}/values.yaml

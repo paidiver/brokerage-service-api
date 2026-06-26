@@ -16,8 +16,10 @@ spec:
         app: {{ .Release.Name }}
         component: {{ .Values.componentName }}
     spec:
+      {{- with .Values.image.imagePullSecret }}
       imagePullSecrets:
-        - name: {{ .Values.image.imagePullSecret }}
+        - name: {{ . | quote }}
+      {{- end }}
       containers:
         - name: brokerage-service-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
