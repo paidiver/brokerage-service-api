@@ -111,8 +111,7 @@ def test_client_encodes_path_params(jncc_source: SourceConfig) -> None:
         assert response.ok is True
         assert response.path == "/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
         assert seen_requests[0].url == (
-            "http://jncc-api:8000/annotations/worms_cache/ajax_by_name_part/"
-            "Abra%20alba/?combine_vernaculars=true"
+            "http://jncc-api:8000/annotations/worms_cache/ajax_by_name_part/Abra%20alba/?combine_vernaculars=true"
         )
 
     run(exercise())
