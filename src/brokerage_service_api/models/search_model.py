@@ -62,5 +62,7 @@ class Result(BaseModel):
 
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
-
-    results: list[Result]
+    count: int
+    next: str | None = None
+    previous: str | None = None
+    annotations: list[Result]

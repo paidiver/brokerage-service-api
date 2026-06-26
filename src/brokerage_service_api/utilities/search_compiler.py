@@ -70,7 +70,10 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.
     """
+    all_annotations = fetch_results_from_bodc_annotations_api(params=params) + fetch_results_from_jncc_annotations_api(params=params)
+
+
     return SearchResults(
-        results=fetch_results_from_bodc_annotations_api(params=params)
-        + fetch_results_from_jncc_annotations_api(params=params)
+        count=len(all_annotations),
+        annotations=all_annotations
     )
