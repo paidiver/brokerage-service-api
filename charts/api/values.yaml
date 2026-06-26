@@ -32,8 +32,8 @@ resources:
     cpu: "500m"
     memory: "512Mi"
   requests:
-    cpu: "200m"
-    memory: "256Mi"
+    cpu: "500m"
+    memory: "512Mi"
 
 ingress:
   enabled: false
