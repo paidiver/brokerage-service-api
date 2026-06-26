@@ -17,7 +17,7 @@ spec:
         component: {{ .Values.componentName }}
     spec:
       imagePullSecrets:
-        - name: {{ .Values.api.image.imagePullSecret }}
+        - name: {{ .Values.image.imagePullSecret }}
       containers:
         - name: brokerage-service-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
