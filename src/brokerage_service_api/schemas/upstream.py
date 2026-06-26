@@ -85,15 +85,21 @@ class AnnotationSearchRequest(BaseModel):
     min_lat: float | None = Field(default=None, ge=-90, le=90, description="Minimum latitude in EPSG:4326 degrees.")
     min_lon: float | None = Field(default=None, ge=-180, le=180, description="Minimum longitude in EPSG:4326 degrees.")
     name_part: str | None = Field(
-        default=None, min_length=3, description="Partial name to search for in labels. Must contain at least 3 characters."
+        default=None,
+        min_length=3,
+        description="Partial name to search for in labels. Must contain at least 3 characters.",
     )
     page: int | None = Field(default=None, description="A page number within the paginated result set.")
     page_size: int | None = Field(default=None, description="Number of results to return per page.")
     platform: str | None = Field(
-        default=None, min_length=3, description="Partial platform name to filter results. Must contain at least 3 characters."
+        default=None,
+        min_length=3,
+        description="Partial platform name to filter results. Must contain at least 3 characters.",
     )
     project: str | None = Field(
-        default=None, min_length=3, description="Partial project name to filter results. Must contain at least 3 characters."
+        default=None,
+        min_length=3,
+        description="Partial project name to filter results. Must contain at least 3 characters.",
     )
     return_image_annotation_name_info: bool | None = Field(
         default=None, description="If true, include image and annotation set information in the response."
@@ -107,7 +113,8 @@ class AnnotationSearchRequest(BaseModel):
         return self
 
     @property
-    def aphia_ids_in_query_string(self):
+    def aphia_ids_in_query_string(self) -> str:
+        """Return the structured aphia_id's to use in the query string."""
         return "&".join([f"aphia_ids[]={aphia_id}" for aphia_id in self.aphia_ids])
 
     def to_query_string(self) -> str:
