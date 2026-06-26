@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Generic, Literal, TypeVar
+from urllib.parse import urlencode
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 type JsonScalar = str | int | float | bool | None
 type JsonValue = JsonScalar | list[JsonValue] | dict[str, JsonValue]
@@ -31,6 +32,109 @@ class PaginationParams(QueryParamModel):
 
     page: int | None = Field(default=None, gt=0)
     page_size: int | None = Field(default=None, gt=0)
+
+
+class AnnotationSearchRequest(BaseModel):
+    """A representation of the request to search to forward to the BODC/JNCC API's."""
+
+    aphia_ids: list[int] | None = Field(default=None, description="A list of Aphia ID's to search for.")
+    calculate_summary: bool | None = Field(
+        default=None, description="If true, include a summary of the search results."
+    )
+    deployment: (
+        Literal[
+            "experiment",
+            "exploration",
+            "mapping",
+            "sampling",
+            "stationary",
+            "survey",
+        ]
+        | None
+    ) = Field(default=None, description="Deployment filter. Must be one of the allowed deployment values.")
+    exclude_annotation_set: list[UUID] | None = Field(
+        default=None, description="List of annotation set IDs to exclude from the search results."
+    )
+    exclude_aphia_ids: list[int] | None = Field(
+        default=None, description="List of AphiaIDs to exclude from the search results."
+    )
+    exclude_image_set: list[UUID] | None = Field(
+        default=None, description="List of image set IDs to exclude from the search results."
+    )
+    fauna_attraction: Literal["baited", "light", "none"] | None = Field(
+        default=None, description="Fauna attraction filter. Must be one of the allowed values."
+    )
+    image_set_name: str | None = Field(
+        default=None, description="Partial image set name to filter results. Must contain at least 3 characters."
+    )
+    include_descendants: bool | None = Field(
+        default=None, description="If true, include descendant taxa in the response."
+    )
+    marine_zone: (
+        Literal[
+            "atmosphere",
+            "laboratory",
+            "sea surface",
+            "seafloor",
+            "water column",
+        ]
+        | None
+    ) = Field(default=None, description="Marine zone filter. Must be one of the allowed values.")
+    max_lat: float | None = Field(default=None, ge=-90, le=90, description="Maximum latitude in EPSG:4326 degrees.")
+    max_lon: float | None = Field(default=None, ge=-180, le=180, description="Maximum longitude in EPSG:4326 degrees.")
+    min_lat: float | None = Field(default=None, ge=-90, le=90, description="Minimum latitude in EPSG:4326 degrees.")
+    min_lon: float | None = Field(default=None, ge=-180, le=180, description="Minimum longitude in EPSG:4326 degrees.")
+    name_part: str | None = Field(
+        default=None,
+        min_length=3,
+        description="Partial name to search for in labels. Must contain at least 3 characters.",
+    )
+    page: int | None = Field(default=None, description="A page number within the paginated result set.")
+    page_size: int | None = Field(default=None, description="Number of results to return per page.")
+    platform: str | None = Field(
+        default=None,
+        min_length=3,
+        description="Partial platform name to filter results. Must contain at least 3 characters.",
+    )
+    project: str | None = Field(
+        default=None,
+        min_length=3,
+        description="Partial project name to filter results. Must contain at least 3 characters.",
+    )
+    return_image_annotation_name_info: bool | None = Field(
+        default=None, description="If true, include image and annotation set information in the response."
+    )
+
+    @model_validator(mode="after")
+    def check_required_fields(self) -> AnnotationSearchRequest:
+        """Validate that the required fields are present."""
+        if not self.aphia_ids and not self.name_part:
+            raise ValueError("At least one of 'aphia_ids' or 'name_part' must be provided")
+        return self
+
+    @property
+    def aphia_ids_in_query_string(self) -> str:
+        """Return the structured aphia_id's to use in the query string."""
+        return "&".join([f"aphia_ids[]={aphia_id}" for aphia_id in self.aphia_ids])
+
+    def to_query_string(self) -> str:
+        """Return the model fields as a structured query string.
+
+        Returns:
+            str: A urlencoded query string.
+        """
+        dumped_model = self.model_dump(exclude_none=True)
+
+        if "aphia_ids" not in dumped_model:
+            return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
+
+        # If aphia ID's are in the model, then format them to suit the upstream API's.
+        dumped_model.pop("aphia_ids")
+        dumped_model_as_string = f"?{self.aphia_ids_in_query_string}" f"&{urlencode(dumped_model)}".replace(
+            "True", "true"
+        ).replace("False", "false")
+
+        return dumped_model_as_string
 
 
 class AnnotationSearchParams(PaginationParams):
