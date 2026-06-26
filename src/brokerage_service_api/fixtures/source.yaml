@@ -1,0 +1,23 @@
+sources:
+  bodc:
+    source_name: "bodc"
+    label: "BRITISH OCEANOGRAPHIC DATA CENTRE"
+    base_url: "BODC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+  jncc:
+    source_name: "jncc"
+    label: "JOINT NATURE CONSERVATION COMMITTEE"
+    base_url: "JNCC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
