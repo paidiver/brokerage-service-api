@@ -11,8 +11,10 @@ from brokerage_service_api.upstream.annotations import AnnotationApiClient, Upst
 
 router = APIRouter()
 
+
 class TaxaBulkResponse(BaseModel):
     """Response model for bulk taxonomy search results."""
+
     results: list[UpstreamResponse[list[TaxonWormsLike]]]
 
 
@@ -46,8 +48,7 @@ async def search_taxonomies(
         available_sources = configured_sources
     try:
         tasks = [
-            AnnotationApiClient(source).search_taxa_by_name_part(name_part, params)
-            for source in available_sources
+            AnnotationApiClient(source).search_taxa_by_name_part(name_part, params) for source in available_sources
         ]
         results = await asyncio.gather(*tasks)
         return {"results": results}

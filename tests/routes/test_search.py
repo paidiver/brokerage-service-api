@@ -90,9 +90,7 @@ async def test_search_taxa_by_name_success(
 
 
 @pytest.mark.anyio
-async def test_search_taxa_with_empty_results(
-    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
-) -> None:
+async def test_search_taxa_with_empty_results(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
     """Test taxonomy search returns empty results when no matches found."""
     upstream_response = UpstreamResponse(
         source=bodc_source,
@@ -122,9 +120,7 @@ async def test_search_taxa_with_empty_results(
 
 
 @pytest.mark.anyio
-async def test_search_taxa_request_error_handling(
-    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
-) -> None:
+async def test_search_taxa_request_error_handling(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
     """Test taxonomy search handles request errors gracefully."""
     client._transport.app.state.sources = [bodc_source]
     upstream_response = UpstreamResponse(
@@ -153,9 +149,7 @@ async def test_search_taxa_request_error_handling(
 
 
 @pytest.mark.anyio
-async def test_search_taxa_http_status_error_handling(
-    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
-) -> None:
+async def test_search_taxa_http_status_error_handling(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
     """Test taxonomy search handles HTTP status errors gracefully."""
     client._transport.app.state.sources = [bodc_source]
 
@@ -186,9 +180,7 @@ async def test_search_taxa_http_status_error_handling(
 
 
 @pytest.mark.anyio
-async def test_search_taxa_passes_params(
-    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
-) -> None:
+async def test_search_taxa_passes_params(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
     """Test that search parameters are correctly passed to the client."""
     upstream_response = UpstreamResponse(
         source=bodc_source,
@@ -221,9 +213,7 @@ async def test_search_taxa_passes_params(
 
 
 @pytest.mark.anyio
-async def test_search_taxa_response_structure(
-    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
-) -> None:
+async def test_search_taxa_response_structure(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
     """Test that search response has correct structure and types."""
     upstream_response = UpstreamResponse(
         source=bodc_source,

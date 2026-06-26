@@ -301,7 +301,6 @@ class AnnotationApiClient:
             path,
             params=params.to_query_params() if params else None,
         )
-        print(f"Request URL: {request.url}") #debugging print statement
         try:
             response = await self._client.send(request)
         except httpx.RequestError as exc:
