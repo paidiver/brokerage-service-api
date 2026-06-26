@@ -21,9 +21,9 @@ def brokerage_search(params: Annotated[AnnotationSearchRequest, Query()]) -> Sea
     Raises:
         HTTPException: Will return a 500 and simple error message if any issues are encountered upstream.
     """
-    try:
-        return fetch_combined_results_from_annotation_apis(params=params)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=500, detail=f"An error occured whilst fetching the search results. {exc}"
-        ) from None
+    # try:
+    return fetch_combined_results_from_annotation_apis(params=params)
+    # except Exception as exc:
+    #     raise HTTPException(
+    #         status_code=500, detail=f"An error occured whilst fetching the search results. {exc}"
+    #     ) from None
