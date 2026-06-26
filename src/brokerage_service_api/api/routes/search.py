@@ -11,7 +11,7 @@ from brokerage_service_api.utilities.search_compiler import fetch_combined_resul
 router = APIRouter(prefix="/api/annotations", tags=["Brokerage Search"])
 
 
-@router.post("/search", response_model=SearchResults)
+@router.get("/search", response_model=SearchResults)
 def brokerage_search(params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
     """Route to provide access to the brokerage search feature.
 

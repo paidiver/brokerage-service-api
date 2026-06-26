@@ -44,7 +44,7 @@ class Result(BaseModel):
             uuid=raw_response.get("uuid"),
             image_filename=raw_response.get("image_filename"),
             image_handle=raw_response.get("image_handle"),
-            image_uuid=raw_response.get("image_set_uuid"),
+            image_uuid=raw_response.get("image_uuid"),
             label_name=raw_response.get("label_name"),
             label_aphia_id=raw_response.get("label_aphia_id"),
             annotation_platform=raw_response.get("annotation_platform"),

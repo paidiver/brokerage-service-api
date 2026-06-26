@@ -1,12 +1,14 @@
 """Code to call the upstream annotations API's and compile the results."""
 
+import os
+
 import requests as rq
 
 from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 
-JNCC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
-BODC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
+JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api/annotations/search/")
+BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api/annotations/search/")
 
 ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT, "BODC": BODC_ANNOTATIONS_API_ENDPOINT}
 
