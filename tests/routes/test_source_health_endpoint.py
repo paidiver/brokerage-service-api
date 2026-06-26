@@ -24,28 +24,6 @@ def mock_source_config() -> SourceConfig:
     )
 
 
-@pytest.fixture
-def mock_source_config_bodc() -> SourceConfig:
-    """Create a mock BODC source configuration."""
-    return SourceConfig(
-        name="bodc",
-        label="BODC API",
-        base_url="http://bodc-api:8000/api/",
-        enabled=True,
-    )
-
-
-@pytest.fixture
-def mock_source_config_jncc() -> SourceConfig:
-    """Create a mock JNCC source configuration."""
-    return SourceConfig(
-        name="jncc",
-        label="JNCC API",
-        base_url="http://jncc-api:8000/api/",
-        enabled=True,
-    )
-
-
 class TestCheckSourceHealth:
     """Tests for the check_source_health function."""
 
@@ -109,12 +87,12 @@ class TestGetSourcesEndpoint:
 
     def test_get_sources_success(
         self,
-        mock_source_config_bodc: SourceConfig,
-        mock_source_config_jncc: SourceConfig,
+        bodc_source: SourceConfig,
+        jncc_source: SourceConfig,
     ) -> None:
         """Test successful retrieval of all sources health status."""
         client = TestClient(app, raise_server_exceptions=False)
-        mock_sources = [mock_source_config_bodc, mock_source_config_jncc]
+        mock_sources = [bodc_source, jncc_source]
 
         with patch("brokerage_service_api.api.v1.source_health.httpx.AsyncClient") as mock_client_class:
             mock_http_client = AsyncMock()

@@ -120,7 +120,7 @@ def test_client_encodes_path_params() -> None:
             )
 
         assert response.ok is True
-        assert response.path == "/api/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
+        assert response.path == "/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
         assert seen_requests[0].url == (
             "https://annotations-api.jncc.example/api/annotations/worms_cache/ajax_by_name_part/"
             "Abra%20alba/?combine_vernaculars=true"
