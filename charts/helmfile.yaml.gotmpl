@@ -5,7 +5,8 @@ environments:
       - name: dev
         context: seai-admin@seai
         config: env/dev/values.yaml
-      - namespace: "paidiver-default"
+      - namespace: "paidiver-st3"
+      - chartVersion: "0.0.1-a7"
 
   live:
     values:
@@ -13,12 +14,12 @@ environments:
       - name: live
         context: seai-admin@seai
         config: env/live/values.yaml
-      - namespace: "paidiver-default"
+      - namespace: "paidiver-st3"
+      - chartVersion: "0.0.1-a7"
 
 ---
 
 {{ $env := .Environment.Values }}
-{{ $secretsFile := printf "env/%s/secrets/secrets.yaml" $env.mode }}
 
 helmDefaults:
   historyMax: 3
@@ -33,12 +34,7 @@ releases:
     chart: .
     values:
       - env/default/values.yaml
-      - {{ $env.config }}
-      - imagePullSecrets:
-          - name: {{ requiredEnv "GHCR_SECRET_NAME" | quote }}
-{{- if isFile $secretsFile }}
-      - {{ $secretsFile }}
-{{- end }}
+      - env/{{ .Values.mode }}/values.yaml
     hooks:
       - events: ["presync"]
         showlogs: true
