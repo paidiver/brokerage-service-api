@@ -1,6 +1,4 @@
-"""Code to call the JNCC and BODC annotations API and compile the results."""
-
-from urllib.parse import urljoin
+"""Code to call the upstream annotations API's and compile the results."""
 
 import requests as rq
 
@@ -10,88 +8,65 @@ from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 JNCC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
 BODC_ANNOTATIONS_API_ENDPOINT = "http://localhost:8018/api/annotations/search/"
 
+ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT,
+             "BODC": BODC_ANNOTATIONS_API_ENDPOINT}
 
-class BODCAnnotationsAPIFetcher:
-    def __init__(self, params: AnnotationSearchRequest):
-        """Initialise the class and make an attempt to call the BODC API."""
-        self.params = params
-        self._results = []
-        self._summary = None
+
+class UnknownFlavourError(Exception):
+    """Raised when an unknown upstream is referenced."""
+
+class AnnotationsAPIFetcher:
+    def __init__(self, flavour: str, params: AnnotationSearchRequest):
+        """Initialise the class and make an attempt to call the upstream API."""
+        self.flavour: str = flavour
+        self.params: AnnotationSearchRequest = params
+        self._results: list[Result] = []
+        self._summary: dict | None = None
         self._make_request()
 
     def _make_request(self) -> None:
-        """Make request to the BODC API and store the results in the class if available."""
+        """Make request to the upstream API and store the results in the class if available."""
+        endpoint = ENDPOINTS.get(self.flavour)
+        if endpoint is None:
+            raise UnknownFlavourError(f"{self.flavour} is not recognised.")
+        
         try:
-            jncc_response = rq.get(urljoin(BODC_ANNOTATIONS_API_ENDPOINT, self.params.to_query_string()))
-            jncc_response.raise_for_status()
-        except Exception as exc:
-            print(f"Something went wrong calling the BODC annotations API {exc}.")
+            response = rq.get(f"{endpoint}{self.params.to_query_string()}", timeout=30)
+            response.raise_for_status()
+        except rq.RequestException as exc:
+            # Exit early if the request fails.
+            print(f"Something went wrong calling the {self.flavour} annotations API {exc}.")
             return
     
-            
-        bodc_results = jncc_response.json().get("results")
-        
+        try:
+            results = response.json().get("results")
+        except ValueError:
+            # Exit early if the JSON is malformed in the response.
+            print(f"{self.flavour} returned invalid JSON.")
+            return
+
+
         # Exit early if there is no 'results' object entry in the JSON.
-        if bodc_results is None:
+        if results is None:
             return
         
-        if (bodc_summary := bodc_results.get("summary")) is not None:
-            self._summary = bodc_summary
+        if (summary := results.get("summary")) is not None:
+            self._summary = summary
 
-        if (bodc_annotations := bodc_results.get("annotations")) is not None:
-            self._results = [Result.construct_instance_from_raw_response(result, source="BODC") for result in bodc_annotations]
+        if (annotations := results.get("annotations")) is not None:
+            self._results = [Result.construct_instance_from_raw_response(result, source=self.flavour) for result in annotations]
         
     @property
-    def bodc_results(self) -> list[Result]:
-        """Return the fetched BODC results or an empty list."""
+    def results(self) -> list[Result]:
+        """Return the fetched results or an empty list."""
         return self._results
     
     @property
-    def bodc_summary(self) -> dict | None:
-        """"Return the fetched BODC summary or None."""
+    def summary(self) -> dict | None:
+        """Return the fetched summary or None."""
         return self._summary
 
 
-
-class JNCCAnnotationsAPIFetcher:
-    def __init__(self, params: AnnotationSearchRequest):
-        """Initialise the class and make an attempt to call the JNCC API."""
-        self.params = params
-        self._results = []
-        self._summary = None
-        self._make_request()
-
-    def _make_request(self) -> None:
-        """Make request to the JNCC API and store the results in the class if available."""
-        try:
-            jncc_response = rq.get(urljoin(JNCC_ANNOTATIONS_API_ENDPOINT, self.params.to_query_string()))
-            jncc_response.raise_for_status()
-        except Exception as exc:
-            print(f"Something went wrong calling the JNCC annotations API {exc}.")
-            return
-    
-            
-        jncc_results = jncc_response.json().get("results")
-        
-        # Exit early if there is no 'results' object entry in the JSON.
-        if jncc_results is None:
-            return
-        
-        if (jncc_summary := jncc_results.get("summary")) is not None:
-            self._summary = jncc_summary
-
-        if (jncc_annotations := jncc_results.get("annotations")) is not None:
-            self._results = [Result.construct_instance_from_raw_response(result, source="JNCC") for result in jncc_annotations]
-        
-    @property
-    def jncc_results(self) -> list[Result]:
-        """Return the fetched JNCC results or an empty list."""
-        return self._results
-    
-    @property
-    def jncc_summary(self) -> dict | None:
-        """"Return the fetched JNCC summary or None."""
-        return self._summary
 
 
 def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest) -> SearchResults:
@@ -103,8 +78,15 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.
     """
-    jncc = JNCCAnnotationsAPIFetcher(params=params)
-    all_annotations = jncc.jncc_results
+    jncc = AnnotationsAPIFetcher(flavour="JNCC", params=params)
+    bodc = AnnotationsAPIFetcher(flavour="BODC", params=params)
+
+    all_annotations = jncc.results + bodc.results
+    
+    if jncc.summary is not None and bodc.summary is not None:
+        print("Summaries retrieved")
+        print(jncc.summary)
+        print(bodc.summary)
 
     return SearchResults(
         count=len(all_annotations),
