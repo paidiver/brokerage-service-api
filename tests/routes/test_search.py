@@ -149,7 +149,9 @@ async def test_search_taxa_request_error_handling(client: "httpx_type.AsyncClien
 
 
 @pytest.mark.anyio
-async def test_search_taxa_http_status_error_handling(client: "httpx_type.AsyncClient", bodc_source: SourceConfig) -> None:
+async def test_search_taxa_http_status_error_handling(
+    client: "httpx_type.AsyncClient", bodc_source: SourceConfig
+) -> None:
     """Test taxonomy search handles HTTP status errors gracefully."""
     client._transport.app.state.sources = [bodc_source]
 
