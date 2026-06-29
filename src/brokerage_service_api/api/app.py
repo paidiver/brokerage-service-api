@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+from brokerage_service_api.api.routes.search import router as brokerage_search_router
 from brokerage_service_api.api.v1 import search_router, source_health_router
 from brokerage_service_api.registry import get_source_registry
 
@@ -57,6 +58,7 @@ def create_app() -> FastAPI:
         allow_headers=["Access-Control-Allow-Headers", "Content-Type", "Authorization", "Access-Control-Allow-Origin"],
         allow_credentials=True,
     )
+    app.include_router(brokerage_search_router)
 
     @app.exception_handler(AppException)
     async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
