@@ -28,6 +28,11 @@ class AnnotationsAPIFetcher:
         self._summary: Summary | None = None
         self._make_request()
 
+    def order_results(self, ordering_key: str) -> None:
+        """Perform an in-place sort of the internal _results list."""
+        if ordering_key == "aphia_id":
+            self._results.sort(key=lambda result: result.label_aphia_id)
+
     def _make_request(self) -> None:
         """Make request to the upstream API and store the results in the class if available."""
         endpoint = ENDPOINTS.get(self.flavour)

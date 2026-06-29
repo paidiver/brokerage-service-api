@@ -38,6 +38,7 @@ class AnnotationSearchRequest(BaseModel):
     """A representation of the request to search to forward to the BODC/JNCC API's."""
 
     aphia_ids: list[int] | None = Field(default=None, description="A list of Aphia ID's to search for.")
+    order_by: Literal["aphia_id", "other"] | None = Field(default=None, description="What to order by.")
     calculate_summary: bool | None = Field(
         default=None, description="If true, include a summary of the search results."
     )
