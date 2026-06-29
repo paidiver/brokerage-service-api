@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 from brokerage_service_api.api.app import app
-from brokerage_service_api.api.v1.source_health import check_source_health
+from brokerage_service_api.api.routes.source_health import check_source_health
 from brokerage_service_api.models.sources import SourceConfig
 from fastapi.testclient import TestClient
 from starlette import status
