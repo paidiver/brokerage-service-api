@@ -94,7 +94,7 @@ class TestGetSourcesEndpoint:
         client = TestClient(app, raise_server_exceptions=False)
         mock_sources = [bodc_source, jncc_source]
 
-        with patch("brokerage_service_api.api.v1.source_health.httpx.AsyncClient") as mock_client_class:
+        with patch("brokerage_service_api.api.routes.source_health.httpx.AsyncClient") as mock_client_class:
             mock_http_client = AsyncMock()
             mock_client_class.return_value.__aenter__.return_value = mock_http_client
 
@@ -125,7 +125,7 @@ class TestGetSourcesEndpoint:
         """Test retrieval when no sources are configured."""
         client = TestClient(app, raise_server_exceptions=False)
 
-        with patch("brokerage_service_api.api.v1.source_health.httpx.AsyncClient") as mock_client_class:
+        with patch("brokerage_service_api.api.routes.source_health.httpx.AsyncClient") as mock_client_class:
             mock_http_client = AsyncMock()
             mock_client_class.return_value.__aenter__.return_value = mock_http_client
 
