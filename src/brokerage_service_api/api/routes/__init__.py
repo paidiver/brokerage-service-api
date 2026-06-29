@@ -1,1 +1,5 @@
 """Sub directory to store routes."""
+
+from brokerage_service_api.api.routes.source_health import router as source_health_router
+
+__all__ = ["source_health_router"]
