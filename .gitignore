@@ -54,6 +54,8 @@ docs/_build
 # virtual environments
 env
 .env
+!charts/env/
+!charts/env/**
 env3
 .env3
 venv

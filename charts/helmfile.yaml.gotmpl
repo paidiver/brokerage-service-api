@@ -6,6 +6,7 @@ environments:
         context: seai-admin@seai
         config: env/dev/values.yaml
       - namespace: "paidiver-st3"
+      - clusterIssuerName: {{ requiredEnv "CLUSTER_ISSUER_NAME" | quote }}
       - chartVersion: "0.0.1-a9"
 
   live:
@@ -15,11 +16,18 @@ environments:
         context: seai-admin@seai
         config: env/live/values.yaml
       - namespace: "paidiver-st3"
+      - clusterIssuerName: {{ requiredEnv "CLUSTER_ISSUER_NAME" | quote }}
       - chartVersion: "0.0.1-a9"
 
 ---
 
 {{ $env := .Environment.Values }}
+{{ $namespace := $env.namespace }}
+{{ $clusterIssuerName := $env.clusterIssuerName }}
+{{ if eq $env.mode "dev" }}
+{{ $namespace = printf "%s-dev" $namespace }}
+{{ $clusterIssuerName = printf "%s-dev" $clusterIssuerName }}
+{{ end }}
 
 helmDefaults:
   historyMax: 3
@@ -29,19 +37,49 @@ helmDefaults:
 releases:
 
   - name: {{ requiredEnv "RELEASE_NAME" | quote }}
-    namespace: {{ $env.namespace | quote }}
+    namespace: {{ $namespace | quote }}
     createNamespace: false
     chart: ./api
     values:
       - env/default/values.yaml
       - env/{{ .Values.mode }}/values.yaml
+      - image:
+          imagePullSecret: {{ requiredEnv "GHCR_SECRET_NAME" | quote }}
     hooks:
       - events: ["presync"]
         showlogs: true
         command: sh
         args:
           - -c
-          - >
-            echo "Checking required secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' exists in namespace '{{ $env.namespace }}'...";
-            kubectl get secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' -n '{{ $env.namespace }}' >/dev/null 2>&1 ||
-              (echo "ERROR: Required secret '{{ requiredEnv "GHCR_SECRET_NAME" }}' not found in namespace '{{ $env.namespace }}'." && exit 1);
+          - |
+            set -eu
+
+            namespace={{ $namespace | quote }}
+            cluster_issuer_name={{ $clusterIssuerName | quote }}
+
+            : "${GHCR_SECRET_NAME:?GHCR_SECRET_NAME must be set}"
+            : "${GHCR_USERNAME:?GHCR_USERNAME must be set}"
+            : "${GHCR_TOKEN:?GHCR_TOKEN must be set}"
+
+            echo "Ensuring namespace '${namespace}' exists..."
+            kubectl create namespace "${namespace}" --dry-run=client -o yaml | kubectl apply -f -
+
+            echo "Ensuring GHCR pull secret '${GHCR_SECRET_NAME}' exists in namespace '${namespace}'..."
+            existing_secret_type=$(kubectl get secret "${GHCR_SECRET_NAME}" \
+              --namespace "${namespace}" \
+              -o jsonpath='{.type}' 2>/dev/null || true)
+            if [ -n "${existing_secret_type}" ] && [ "${existing_secret_type}" != "kubernetes.io/dockerconfigjson" ]; then
+              echo "Existing secret '${GHCR_SECRET_NAME}' has immutable type '${existing_secret_type}'; recreating it..."
+              kubectl delete secret "${GHCR_SECRET_NAME}" --namespace "${namespace}"
+            fi
+
+            kubectl create secret docker-registry "${GHCR_SECRET_NAME}" \
+              --namespace "${namespace}" \
+              --docker-server ghcr.io \
+              --docker-username "${GHCR_USERNAME}" \
+              --docker-password "${GHCR_TOKEN}" \
+              --dry-run=client \
+              -o yaml | kubectl apply -f -
+
+            echo "Ensuring ClusterIssuer '${cluster_issuer_name}' exists..."
+            sed "s/__CLUSTER_ISSUER_NAME__/${cluster_issuer_name}/g" utils/cluster-issuer.yaml | kubectl apply -f -

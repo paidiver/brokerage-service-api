@@ -26,22 +26,6 @@ Brokerage Service API provides a federated api access to multiple services.
 ├── README.md
 ├── ruff.toml           # Ruff configuration
 ├── src
-<<<<<<< HEAD
-│   └── brokerage_service_api
-│       ├── api         # Main API package
-│       │   ├── app.py
-│       │   ├── exceptions.py
-│       │   ├── __init__.py
-│       │   └── v1
-│       │       └── __init__.py # API V1 endpoints
-│       ├── crud    # CRUD operations for models
-│       │   └── __init__.py
-│       ├── __init__.py
-│       ├── models  # Models
-│       │   └── __init__.py
-│       └── schemas # Pydantic schemas
-│           └── __init__.py
-=======
 │   └── brokerage_service_api
 │       ├── api         # Main API package
 │       │   ├── app.py
@@ -52,7 +36,6 @@ Brokerage Service API provides a federated api access to multiple services.
 │       ├── models  # Models
 │       ├── schemas # Pydantic schemas
 │       └── upstream # Clients for upstream services
->>>>>>> main
 ├── tests # Test suite
 │   └── __init__.py
 └── tox.ini
@@ -158,30 +141,159 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
+
+## Deployment
+
+The [charts](charts/) directory contains Helm charts and files that can be used to deploy this app.
+
+### Helm Chart Versioning & Release Process
+
+Helm chart releases are automated and driven by Git tags.
+
+To release a new Helm Chart version, create a Git tag in the format:
+
+`vMAJOR.MINOR.PATCH[-PRERELEASE]`
+
+Examples:
+- `v1.2.3` → stable release
+- `v1.3.0-alpha.1` → prerelease
+
+The workflow triggers on tag creation.
+The CI workflow:
+
+- Reads the tag version (1.2.3 from v1.2.3)
+- Patches charts/api/Chart.yaml at package time (does not commit to the repo)
+- Packages the Helm chart with the correct version
+- Publishes the chart via [helm/chart-releaser-action](https://github.com/helm/chart-releaser-action)
+
+Whenever you make any change to a Chart, you must update the version in `Chart.yaml`.
+
+* Increment the version to a higher value (e.g. `0.0.0-dev` → `0.0.1-dev`)
+* This is required because the lint process checks that the new version is greater than the previous one
+* If the version is not increased, linting will fail and the release will not run
+
+> Note: The `Chart.yaml` version does not need to match the Git tag, but it must always be higher than the previous version.
+
+To tag a git commit:
+
+```bash
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+
+## Releasing Docker Images
+
+### Production release
+A new `latest` Docker image is build and published to https://ghcr.io/paidiver/annotations-api on each push to main.
+
+### Development release
+Development versions of Docker images can be released manually, driven by Git tags.
+To release a new Docker image, create a Git tag in the format:
+
+`docker-vMAJOR.MINOR.PATCH[-PRERELEASE]`
+
+Examples:
+- `v1.2.3` → stable release
+- `v1.3.0-alpha.1` → prerelease
+
+The workflow triggers on tag creation.
+The CI workflow:
+
+- Reads the tag version (1.2.3 from docker-v1.2.3)
+- Builds a new Docker image
+- Tags the Docker image with the tag version as well as the tagged commit SHA
+- Pushes the images to the GitHub Container Repository
+
+To tag a git commit:
+
+```bash
+git tag docker-vX.X.X
+git push origin docker-vX.X.X
+```
+
+
 ## Deploying locally with Kubernetes
 
-The API can be deployed with either a local image, or an image pulled from the image registry, accessible [here](https://github.com/paidiver/brokerage-service-api/pkgs/container/brokerage-service-api).
+For local Kubernetes, use Helm directly against the API chart. The Helmfile in [charts/helmfile.yaml.gotmpl](charts/helmfile.yaml.gotmpl) is intended for the JASMIN `dev` and `live` deployments because it creates namespaces, GHCR pull secrets, and ClusterIssuers.
 
-If using a local image go to `helm/values.yaml` and change the `repository` and `tag `fields to suit.
+The local values file is [charts/env/local/values.yaml](charts/env/local/values.yaml). It disables ingress and image pull secrets, and uses a local image named `brokerage-service-api:local`.
 
-For example, if the API is built with the tag set to `local`
+### 1. Build the local image
 
-```
-image:
-  repository: annotations-api
-  tag: local
-  pullPolicy: IfNotPresent
+```bash
+docker build -f docker/Dockerfile -t brokerage-service-api:local .
 ```
 
-If using an image from the registry, either use `latest` or your required tag.
+If you use `kind`, load the image into the cluster:
 
-1. Ensure that a local Kubernetes instance is running and is ready to go.
-2. Run: `cd helm`
-3. Run: `helm install annotations-api . `
-4. Check the pod is running: `kubectl get pods`
-5. Check the service is running: `kubectl get svc`
-6. Now setup port forwarding: `kubectl port-forward svc/annotations-api-annotations-api 8080:80`
-7. Access the swagger docs [here](http://localhost:8080/docs#).
+```bash
+kind load docker-image brokerage-service-api:local
+```
+
+If you use Minikube, build inside the Minikube Docker daemon instead:
+
+```bash
+eval "$(minikube docker-env)"
+docker build -f docker/Dockerfile -t brokerage-service-api:local .
+```
+
+### 2. Install or upgrade the chart
+
+```bash
+helm upgrade --install brokerage-service-api charts/api \
+  --namespace brokerage-service-api-local \
+  --create-namespace \
+  -f charts/env/local/values.yaml
+```
+
+To use a published GHCR image instead of a local image:
+
+```bash
+helm upgrade --install brokerage-service-api charts/api \
+  --namespace brokerage-service-api-local \
+  --create-namespace \
+  -f charts/env/local/values.yaml \
+  --set image.repository=ghcr.io/paidiver/brokerage-service-api \
+  --set image.tag=latest
+```
+
+To point the local deployment at different upstream services, override the chart values:
+
+```bash
+helm upgrade --install brokerage-service-api charts/api \
+  --namespace brokerage-service-api-local \
+  --create-namespace \
+  -f charts/env/local/values.yaml \
+  --set env.bodcAnnotationsApiUrl=https://annotationsdev.bodc.ac.uk/api \
+  --set env.jnccAnnotationsApiUrl=https://annotations-api.paidiver.site
+```
+
+### 3. Check and connect
+
+```bash
+kubectl get pods -n brokerage-service-api-local
+kubectl get svc -n brokerage-service-api-local
+kubectl port-forward -n brokerage-service-api-local svc/brokerage-service-api-service 8080:80
+```
+
+Health endpoint:
+
+```
+http://localhost:8080/health/
+```
+
+API schema and documentation:
+
+```
+http://localhost:8080/docs/
+```
+
+To remove the local release:
+
+```bash
+helm uninstall brokerage-service-api -n brokerage-service-api-local
+```
 
 ## Upstream Sources
 

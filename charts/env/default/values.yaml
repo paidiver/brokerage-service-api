@@ -1,0 +1,18 @@
+# Default values for brokerage-service-api.
+
+# bodc-nginx ingress configuration.
+ingress:
+  enabled: true
+  path: ""
+  pathType: Prefix
+  ingressClassName: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+
+image:
+  repository: ghcr.io/paidiver/brokerage-service-api
+  tag: latest
+  pullPolicy: IfNotPresent
+  imagePullSecret: brokerage-service-api-ghcr-pull-secret

@@ -2,12 +2,14 @@
 
 ## Introduction
 
-Brokerage Service API provides a federated api access to multiple services.
+Brokerage Service API provides a federated api access to multiple annotations apis. It is deployed to JASMIN using Helm and Helmfile.
 
 The application source code and Helm charts are hosted under
 https://github.com/paidiver/brokerage-service-api
 
-These instructions guide you through deploying the application using Helm and Helmfile. They assume a Kubernetes cluster is already available and accessible.
+These instructions guide you through deploying the application to JASMIN using Helm and Helmfile. They assume a Kubernetes cluster is already available and accessible.
+
+Run the commands below from the `charts/` directory.
 
 ---
 
@@ -18,7 +20,6 @@ These instructions guide you through deploying the application using Helm and He
 - [Initial Setup](#initial-setup)
 - [Deploy](#deploy)
 - [Check The Deployment](#check-the-deployment)
-- [Upgrade](#upgrade)
 - [Chart Releases](#chart-releases)
 
 ---
@@ -41,12 +42,16 @@ Docker is only required if you are building images locally. Normal deployments p
 
 The main deployment entrypoint is [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
 
-The configured environments include:
+The configured JASMIN environments include:
 
 - `dev`
 - `live`
 
-Environment-specific values live under `env/<environment>/values/values.yaml`.
+Environment-specific values live under `env/<environment>/values.yaml`.
+
+For `dev`, Helmfile deploys into the configured namespace with `-dev` appended. For example, `paidiver-st3` becomes `paidiver-st3-dev`. The ClusterIssuer name also gets the same suffix.
+
+For `live`, Helmfile uses the namespace and ClusterIssuer name exactly as configured in [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
 
 ---
 
@@ -54,20 +59,19 @@ Environment-specific values live under `env/<environment>/values/values.yaml`.
 
 ### 1. Configure Environment Variables
 
-Copy the example environment file and edit the values:
+Copy the example environment file in the `/charts` path and edit the values:
 
 ```bash
 cp .env.example .env
 ```
 
-The secret values are stored in 1Password:
+Set the values required by [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl):
 
-- `GHCR_TOKEN`: `DSG_BODC_EXTERNAL_TOOLS`, "GitHub Container Registry access for Paidiver Worms Cache API"
-- `POSTGRES_PASSWORD`: `DSG_BODC_GENERIC`, "PAIDIVER Postgres worms-cache user password"
-- `POSTGRES_SUPERUSER_PASSWORD`: `DSG_BODC_GENERIC`, "PAIDIVER Postgres worms-cache admin user password"
-- `DJANGO_SECRET_KEY`: `DSG_BODC_GENERIC`, "PAIDIVER Django secret key"
-- `CACHED_WORMS_API_TOKEN`: `DSG_BODC_GENERIC`, "PAIDIVER WORMS API Cache Token"
-
+- `RELEASE_NAME`: Helm release name, for example `brokerage-service-api`
+- `CLUSTER_ISSUER_NAME`: base JASMIN ClusterIssuer name, for example `letsencrypt-brokerage-service-api`
+- `GHCR_SECRET_NAME`: Kubernetes pull secret name, for example `brokerage-service-api-ghcr-pull-secret`
+- `GHCR_USERNAME`: GitHub username or service account with GHCR access
+- `GHCR_TOKEN`: GitHub token with permission to pull the GHCR image
 
 Load the variables into your shell:
 
@@ -79,9 +83,7 @@ set +a
 
 ### 2. Select The Kubernetes Context
 
-When deploying to the BODC clusters, you will need two contexts to be stored in KUBECONFIG. First, store your two kubeconfigs in seperate files (e.g. livhydra-staging-1-kubeconfig and livkraken-staging-1-kubeconfig).
-
-Next, export the kubeconfigs with:
+Export the JASMIN kubeconfig:
 
 ```bash
 export KUBECONFIG="./kube_config_path.yaml"
@@ -93,75 +95,7 @@ Check that your shell is pointing at the intended cluster:
 kubectl config get-contexts
 ```
 
-On the BODC clusters, this should return two lines.
-
-Check that the namespace is reachable:
-
-```bash
-kubectl get pods -n "$NAMESPACE"
-```
-
-**For local deployments only**, create the namespace if it does not already exist:
-
-```bash
-kubectl create namespace "$NAMESPACE"
-```
-
-BODC cluster namespaces and quotas are managed outside this repository within OpenTofu.
-
-### 3. Create Required Secrets
-
-Check the existing secrets first:
-
-```bash
-kubectl get secrets -n "$NAMESPACE"
-```
-
-Create the GHCR pull secret:
-
-```bash
-ghcr_secret_template=$(sed -e "s/{{NAMESPACE}}/$NAMESPACE/g" -e "s/{{GHCR_SECRET_NAME}}/$GHCR_SECRET_NAME/g" -e "s/{{GHCR_USERNAME}}/$GHCR_USERNAME/g" -e "s/{{GHCR_TOKEN}}/$GHCR_TOKEN/g" utils/ghcr-pull-secret.yaml)
-
-echo "$ghcr_secret_template" | kubectl apply -f -
-```
-
-Confirm the required secrets exist:
-
-```bash
-kubectl get secrets -n "$NAMESPACE"
-```
-
-### 4. Create The JASMIN Cluster Issuer
-
-**This step is required ONLY for JASMIN deployments that use TLS via cert-manager.**
-
-```bash
-cluster_issuer_template=$(sed -e "s/{{NAMESPACE}}/$NAMESPACE/g" -e "s/{{CLUSTER_ISSUER_NAME}}/$CLUSTER_ISSUER_NAME/g" utils/cluster-issuer.yaml)
-
-echo "$cluster_issuer_template" | kubectl apply -f -
-```
-
-Check it:
-
-```bash
-kubectl get clusterissuer
-```
-
-### 5. Update Helm Repositories
-
-
-```bash
-helm repo add brokerage-service-api https://paidiver.github.io/brokerage-service-api
-helm repo update
-```
-
-To list available chart versions:
-
-```bash
-helm search repo -l brokerage-service-api
-```
-
-Set the required `chartVersion` in [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
+Helmfile creates or updates the namespace, GHCR pull secret, and ClusterIssuer during the `presync` hook. If an old GHCR secret exists with an incompatible Kubernetes secret type, Helmfile recreates it. You do not need to apply [utils/ghcr-pull-secret.yaml](utils/ghcr-pull-secret.yaml) or [utils/cluster-issuer.yaml](utils/cluster-issuer.yaml) manually.
 
 ---
 
@@ -176,85 +110,40 @@ helmfile -e <environment> diff
 For example:
 
 ```bash
-helmfile -e jasmin diff
+helmfile -e dev diff
 ```
 
-### Deploy to JASMIN
-
-For JASMIN, deploy PostgreSQL first and wait for it to become ready. The API release has init containers and migration hooks that wait for PostgreSQL.
+Apply the selected environment:
 
 ```bash
-helmfile -e jasmin apply --selector name=postgres-annotations-api
+helmfile -e dev apply
 ```
 
-Then deploy the remaining releases:
+For live:
 
 ```bash
-helmfile -e jasmin apply
+helmfile -e live diff
+helmfile -e live apply
 ```
 
-### Deploy to BODC clusters
-
-To deploy to the BODC clusters, you need to deploy to Kraken and Hydra separately. Kraken holds the PostgreSQL and the FRPC tunnel which connects PostgreSQL to the INT servers. Deploy to Kraken with:
-```bash
-helmfile -e livkraken-staging-1 apply
-```
-
-Confirm that the FRPC tunnel is connected properly and that PostgreSQL has started through the logs.
-
-Once FRPC and PostgreSQL are working, you can deploy the WORMS Cache API to Hydra by running:
-
-```bash
-helmfile -e livhydra-staging-1 apply
-```
+The `presync` hook runs as part of `apply`. It ensures the namespace exists, creates or updates the GHCR pull secret from your environment variables, recreates GHCR secrets when needed, and applies the JASMIN ClusterIssuer.
 
 ---
 
 ## Check The Deployment
 
-Check all pods:
+For dev:
 
 ```bash
-kubectl get pods -n "$NAMESPACE"
-```
-You should see the pods related to the environment you deployed, including the PostgreSQL pod and the API pods.
-
----
-
-## Connect To Postgres
-
-Forward the PostgreSQL service to your local machine:
-
-```bash
-kubectl port-forward -n "$NAMESPACE" svc/postgres-postgresql 5432:5432
+kubectl get pods -n paidiver-st3-dev
+kubectl get ingress -n paidiver-st3-dev
 ```
 
-Keep that terminal open while you connect with DBeaver, or `psql`.
-
-Use:
-
-- Host: `localhost` or `livbodcinttst.bodc.me`
-- Port: `5433`
-- Database: value of `POSTGRES_DB`
-- Username: value of `POSTGRES_USER`
-- Password: value of `POSTGRES_PASSWORD`
-
-To inspect the generated PostgreSQL Secret:
+For live:
 
 ```bash
-kubectl get secret -n "$NAMESPACE" postgres-postgresql -o yaml
-```
-
-To decode the normal user password:
-
-```bash
-kubectl get secret -n "$NAMESPACE" postgres-postgresql -o jsonpath='{.data.password}' | base64 --decode
-```
-
-To decode the admin password:
-
-```bash
-kubectl get secret -n "$NAMESPACE" postgres-postgresql -o jsonpath='{.data.postgres-password}' | base64 --decode
+kubectl get pods -n paidiver-st3
+kubectl get ingress -n paidiver-st3
 ```
 
 ---
