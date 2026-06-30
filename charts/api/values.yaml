@@ -17,23 +17,27 @@ service:
   port: 80
   targetPort: 8020
 
-securityContext:
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
       - ALL
-  runAsNonRoot: true
-  runAsUser: 1001
-  seccompProfile:
-    type: RuntimeDefault
+
+securityContext:
+  runAsUser: 1000
 
 resources:
   limits:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "50m"
+    memory: "128Mi"
   requests:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "20m"
+    memory: "64Mi"
 
 ingress:
   enabled: false

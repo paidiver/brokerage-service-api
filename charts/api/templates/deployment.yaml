@@ -20,6 +20,8 @@ spec:
       imagePullSecrets:
         - name: {{ . | quote }}
       {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: brokerage-service-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -37,6 +39,7 @@ spec:
             - "8020"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - containerPort: {{ .Values.container.port }}
           resources:
