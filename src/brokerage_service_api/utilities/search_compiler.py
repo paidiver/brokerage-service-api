@@ -1,6 +1,7 @@
 """Code to call the upstream annotations API's and compile the results."""
 
 import os
+from itertools import batched
 
 import requests as rq
 
@@ -90,6 +91,38 @@ class AnnotationsAPIFetcher:
         return self._summary
 
 
+def results_with_pagination_applied(
+    count: int, all_results: Results, page_size: int, page_number: int | None
+) -> Results:
+    """Apply pagination to the results and return a subset.
+
+    Args:
+        count: The total count of all results.
+        all_results: All the upstream results, to perform the pagination upon.
+        page_size: The number of results on one page.
+        page_number: The page number to return.
+
+    Returns:
+    A SearchResults object with a subset of the results, and the prev|next fields populated.
+    """
+    # Batch the annotations into the required size (100 is the default).
+    batched_annotations = list(batched(all_results.annotations, n=page_size))
+
+    # If no page number is passed, then just return the first page of results.
+    if page_number is None:
+        return SearchResults(
+            count=count, results=Results(summary=all_results.summary, annotations=batched_annotations[0])
+        )
+
+    try:
+        specified_annotation_batch = batched_annotations[page_number - 1]
+    except IndexError:
+        specified_annotation_batch = batched_annotations[-1]
+
+    paginated_results = Results(summary=all_results.summary, annotations=specified_annotation_batch)
+    return SearchResults(count=count, results=paginated_results)
+
+
 def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest) -> SearchResults:
     """Call both annotations apis and return the combined results.
 
@@ -99,13 +132,19 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.
     """
-    jncc = AnnotationsAPIFetcher(flavour="JNCC", params=params)
-    bodc = AnnotationsAPIFetcher(flavour="BODC", params=params)
+    jncc, bodc = (
+        AnnotationsAPIFetcher(flavour="JNCC", params=params),
+        AnnotationsAPIFetcher(flavour="BODC", params=params),
+    )
 
     all_annotations = jncc.results + bodc.results
 
     combined_summary = (jncc.summary + bodc.summary) if jncc.summary is not None and bodc.summary is not None else None
+    all_results = Results(summary=combined_summary, annotations=all_annotations)
 
-    return SearchResults(
-        count=len(all_annotations), results=Results(summary=combined_summary, annotations=all_annotations)
+    # Perform any pagination that is required
+    return results_with_pagination_applied(
+        count=len(all_annotations), all_results=all_results, page_size=params.page_size, page_number=params.page
     )
+
+    return SearchResults(count=len(all_annotations), results=all_results)

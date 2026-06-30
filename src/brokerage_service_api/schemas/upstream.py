@@ -92,8 +92,8 @@ class AnnotationSearchRequest(BaseModel):
         min_length=3,
         description="Partial name to search for in labels. Must contain at least 3 characters.",
     )
-    page: int | None = Field(default=None, description="A page number within the paginated result set.")
-    page_size: int | None = Field(default=None, description="Number of results to return per page.")
+    page: int | None = Field(default=None, ge=1, description="A page number within the paginated result set.")
+    page_size: int | None = Field(default=100, description="Number of results to return per page.")
     platform: str | None = Field(
         default=None,
         min_length=3,
