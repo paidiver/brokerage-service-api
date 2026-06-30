@@ -63,11 +63,13 @@ jobs:
 
       - name: Update Chart.yaml version
         run: |
-          yq -i '.version = "${{ steps.version.outputs.version }}"' charts/api/Chart.yaml
-          yq -i '.appVersion = "${{ steps.version.outputs.version }}"' charts/api/Chart.yaml
+          yq -i '.version = "${{ steps.version.outputs.version }}"' deployment/charts/api/Chart.yaml
+          yq -i '.appVersion = "${{ steps.version.outputs.version }}"' deployment/charts/api/Chart.yaml
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
+        with:
+          charts_dir: deployment/charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_RELEASE_NAME_TEMPLATE: "docker-v{{ .Version }}"

@@ -151,7 +151,7 @@ http://localhost:8020/docs/
 The repository includes two release workflows:
 
 * **Docker image releases**, published to GitHub Container Registry
-* **Helm chart releases**, published from the [`charts/`](charts/) directory
+* **Helm chart releases**, published from the [`deployment/charts/`](deployment/charts/) directory
 
 ### Docker images
 
@@ -196,9 +196,9 @@ git push origin docker-vX.X.X
 
 ### Helm charts
 
-The [`charts/`](charts/) directory contains the Helm chart used to deploy this application.
+The [`deployment/charts/`](deployment/charts/) directory contains the Helm chart used to deploy this application.
 
-After following the steps below, to deploy the application, go to the [charts/README.md](charts/README.md) file for instructions.
+After following the steps below, go to the [deployment/README.md](deployment/README.md) file for deployment instructions.
 
 
 Helm chart releases are automated and driven by Git tags.
@@ -219,7 +219,7 @@ v1.3.0-alpha.1
 When the tag is pushed, the CI workflow:
 
 1. Reads the version from the tag, for example `1.2.3` from `v1.2.3`
-2. Patches `charts/api/Chart.yaml` at package time
+2. Patches `deployment/charts/api/Chart.yaml` at package time
 3. Packages the Helm chart with the correct version
 4. Publishes the chart using [`helm/chart-releaser-action`](https://github.com/helm/chart-releaser-action)
 

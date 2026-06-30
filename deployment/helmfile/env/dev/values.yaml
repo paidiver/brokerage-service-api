@@ -1,16 +1,14 @@
-replicaCount: 1
-
 ingress:
   enabled: true
-  host: brokerage-service-api.paidiver.site
+  host: brokerage-service-api-dev.paidiver.site
   path: ""
   ingressClassName: "nginx"
   tls:
-    - secretName: letsencrypt-brokerage-service-api
+    - secretName: letsencrypt-brokerage-service-api-dev
       hosts:
-        - brokerage-service-api.paidiver.site
+        - brokerage-service-api-dev.paidiver.site
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-brokerage-service-api
+    cert-manager.io/cluster-issuer: letsencrypt-brokerage-service-api-dev
 
 resources:
   limits:
@@ -24,5 +22,5 @@ image:
   tag: latest
 
 env:
-  bodcAnnotationsApiUrl: "https://annotations.bodc.ac.uk/api"
+  bodcAnnotationsApiUrl: "https://annotationsdev.bodc.ac.uk/api"
   jnccAnnotationsApiUrl: "https://annotations-api.paidiver.site/api"

@@ -43,5 +43,5 @@ ingress:
   enabled: false
 
 env:
-  bodcAnnotationsApiUrl: "https://annotationsdev.bodc.ac.uk/api"
-  jnccAnnotationsApiUrl: "https://annotations-api.paidiver.site"
+  bodcAnnotationsApiUrl: ""
+  jnccAnnotationsApiUrl: ""

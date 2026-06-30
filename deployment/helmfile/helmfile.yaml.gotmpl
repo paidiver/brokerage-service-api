@@ -39,7 +39,7 @@ releases:
   - name: {{ requiredEnv "RELEASE_NAME" | quote }}
     namespace: {{ $namespace | quote }}
     createNamespace: false
-    chart: ./api
+    chart: ../charts/api
     values:
       - env/default/values.yaml
       - env/{{ .Values.mode }}/values.yaml

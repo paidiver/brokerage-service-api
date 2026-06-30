@@ -9,7 +9,7 @@ https://github.com/paidiver/brokerage-service-api
 
 These instructions guide you through deploying the application to JASMIN using Helm and Helmfile. They assume a Kubernetes cluster is already available and accessible.
 
-Run the commands below from the `charts/` directory.
+Run the JASMIN Helmfile commands below from the `deployment/helmfile/` directory.
 
 ---
 
@@ -40,7 +40,7 @@ Docker is only required if you are building images locally. Normal deployments p
 
 ## Environments
 
-The main deployment entrypoint is [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
+The main deployment entrypoint is [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl).
 
 The configured JASMIN environments include:
 
@@ -51,7 +51,7 @@ Environment-specific values live under `env/<environment>/values.yaml`.
 
 For `dev`, Helmfile deploys into the configured namespace with `-dev` appended. For example, `paidiver-st3` becomes `paidiver-st3-dev`. The ClusterIssuer name also gets the same suffix.
 
-For `live`, Helmfile uses the namespace and ClusterIssuer name exactly as configured in [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
+For `live`, Helmfile uses the namespace and ClusterIssuer name exactly as configured in [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl).
 
 ---
 
@@ -59,13 +59,13 @@ For `live`, Helmfile uses the namespace and ClusterIssuer name exactly as config
 
 ### 1. Configure Environment Variables
 
-Copy the example environment file in the `/charts` path and edit the values:
+Copy the example environment file in `deployment/helmfile/` and edit the values:
 
 ```bash
 cp .env.example .env
 ```
 
-Set the values required by [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl):
+Set the values required by [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl):
 
 - `RELEASE_NAME`: Helm release name, for example `brokerage-service-api`
 - `CLUSTER_ISSUER_NAME`: base JASMIN ClusterIssuer name, for example `letsencrypt-brokerage-service-api`
@@ -95,7 +95,7 @@ Check that your shell is pointing at the intended cluster:
 kubectl config get-contexts
 ```
 
-Helmfile creates or updates the namespace, GHCR pull secret, and ClusterIssuer during the `presync` hook. If an old GHCR secret exists with an incompatible Kubernetes secret type, Helmfile recreates it. You do not need to apply [utils/ghcr-pull-secret.yaml](utils/ghcr-pull-secret.yaml) or [utils/cluster-issuer.yaml](utils/cluster-issuer.yaml) manually.
+Helmfile creates or updates the namespace, GHCR pull secret, and ClusterIssuer during the `presync` hook. If an old GHCR secret exists with an incompatible Kubernetes secret type, Helmfile recreates it. You do not need to apply [helmfile/utils/ghcr-pull-secret.yaml](helmfile/utils/ghcr-pull-secret.yaml) or [helmfile/utils/cluster-issuer.yaml](helmfile/utils/cluster-issuer.yaml) manually.
 
 ---
 
@@ -166,7 +166,7 @@ Examples:
 The release workflow:
 
 - Reads the version from the Git tag
-- Patches `charts/api/Chart.yaml` during packaging
+- Patches `deployment/charts/api/Chart.yaml` during packaging
 - Packages the chart
 - Publishes it via `helm/chart-releaser-action`
 
