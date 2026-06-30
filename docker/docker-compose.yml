@@ -196,7 +196,6 @@ services:
             fi
 
             export API_AUTH_TOKEN
-
             export API_BASE_URL="http://annotations-api-bodc:8000"
             BASE_PATH="$${BASE_PATH:-/app/examples}"
             python /app/examples/ingest_data.py \
@@ -313,7 +312,6 @@ services:
     networks:
       - shared_services
 
-
   worms-cache-seed:
     image: ghcr.io/paidiver/worms-cache:latest
     env_file:
@@ -331,7 +329,6 @@ services:
       bash -c '
         python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Taxon\"); raise SystemExit(0 if Model.objects.exists() else 42)"
         status=$$?
-
         if [ "$$status" -eq 0 ]; then
           echo "Worms cache database already has data; skipping ingest_worms"
         elif [ "$$status" -eq 42 ]; then
@@ -358,7 +355,6 @@ services:
     restart: unless-stopped
     networks:
       - shared_services
-
 
 volumes:
   annotations_pg_data_jncc:

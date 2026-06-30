@@ -142,7 +142,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            f"/api/annotations/worms_cache/ajax_by_name_part/{self._path_param(name_part)}/",
+            f"/annotations/worms_cache/ajax_by_name_part/{self._path_param(name_part)}/",
             response_schema=list[TaxonWormsLike],
             params=params,
         )
