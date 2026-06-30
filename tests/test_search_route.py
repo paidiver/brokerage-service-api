@@ -20,6 +20,7 @@ async def test_seach_route(mocker: MockerFixture, client: "httpx.AsyncClient") -
         "count": 1,
         "next": "next-url",
         "previous": "prev-url",
+        "result_metadata": {"bodc_results": 0, "jncc_results": 0, "total_results": 0},
         "results": {"summary": None, "annotations": []},
     }
 
