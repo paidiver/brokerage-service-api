@@ -2,6 +2,11 @@
 
 Brokerage Service API provides a federated api access to multiple services.
 
+The app is available in these links:
+
+- Development: [https://brokerage-service-api-dev.paidiver.site](https://brokerage-service-api-dev.paidiver.site)
+- Live: [https://brokerage-service-api.paidiver.site](https://brokerage-service-api.paidiver.site)
+
 ## Requirements
 
 ### Runtime
