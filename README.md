@@ -193,6 +193,9 @@ git push origin docker-vX.X.X
 
 The [`charts/`](charts/) directory contains the Helm chart used to deploy this application.
 
+After following the steps below, to deploy the application, go to the [charts/README.md](charts/README.md) file for instructions.
+
+
 Helm chart releases are automated and driven by Git tags.
 
 To release a new Helm chart version, create a tag using the following format:
