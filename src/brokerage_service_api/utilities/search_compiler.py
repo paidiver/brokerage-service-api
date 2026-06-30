@@ -17,6 +17,7 @@ ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT, "BODC": BODC_ANNOTATIONS_API
 class UnknownFlavourError(Exception):
     """Raised when an unknown upstream is referenced."""
 
+
 class InvalidPageNumberError(Exception):
     """Raised when a page number is requested that is too large."""
 
@@ -121,8 +122,7 @@ def results_with_pagination_applied(
         specified_annotation_batch = batched_annotations[page_number - 1]
     except IndexError:
         raise InvalidPageNumberError from None
-    
-        
+
     paginated_results = Results(summary=all_results.summary, annotations=specified_annotation_batch)
     return SearchResults(count=count, results=paginated_results)
 
