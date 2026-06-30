@@ -61,13 +61,26 @@ async def search_taxonomies(
 
 @router.get("/annotations/search", response_model=SearchResults)
 def brokerage_search(params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
-    """Route to provide access to the brokerage search feature.
+    """Search for annotations across brokerage services.
+
+    Queries both the BODC and JNCC Annotations APIs and returns the
+    aggregated search results.
+
+    Results can be ordered using the ``order_by`` field. Supported values are:
+
+    - ``label_aphia_id``
+    - ``annotation_creation_datetime``
+    - ``label_name``
+
+    Args:
+        params: Search parameters provided as query parameters.
 
     Returns:
-        SearchResults: A SearchResults instance
+        SearchResults: Aggregated search results.
 
     Raises:
-        HTTPException: Will return a 500 and simple error message if any issues are encountered upstream.
+        HTTPException: If an error occurs during the search, returns an HTTP
+            500 response with an error message.
     """
     try:
         return fetch_combined_results_from_annotation_apis(params=params)

@@ -28,10 +28,21 @@ class AnnotationsAPIFetcher:
         self._summary: Summary | None = None
         self._make_request()
 
-    def order_results(self, ordering_key: str) -> None:
+    def order_results(self) -> None:
         """Perform an in-place sort of the internal _results list."""
-        if ordering_key == "aphia_id":
+        # If no order_by is passed, return with no action taken.
+        if self.params.order_by is None:
+            return
+
+        # Retrieve the ordering key and check if it matches the available ordering.
+        order_by_key = self.params.order_by
+
+        if order_by_key == "label_aphia_id":
             self._results.sort(key=lambda result: result.label_aphia_id)
+        if order_by_key == "annotation_creation_datetime":
+            self._results.sort(key=lambda result: result.annotation_creation_datetime)
+        if order_by_key == "label_name":
+            self._results.sort(key=lambda result: result.label_name)
 
     def _make_request(self) -> None:
         """Make request to the upstream API and store the results in the class if available."""
@@ -65,6 +76,8 @@ class AnnotationsAPIFetcher:
             self._results = [
                 Result.construct_instance_from_raw_response(result, source=self.flavour) for result in annotations
             ]
+            # This is only called when we have a result set.
+            self.order_results()
 
     @property
     def results(self) -> list[Result]:

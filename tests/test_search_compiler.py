@@ -236,11 +236,45 @@ def test_search_compiler_with_ordering_by_aphia_id(
         flavour="BODC",
         params=AnnotationSearchRequest(
             aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
-            order_by="aphia_id",
+            order_by="label_aphia_id",
         ),
     )
 
-    instance.order_results(ordering_key="aphia_id")
-
     returned_aphia_ids = [result.label_aphia_id for result in instance.results]
     assert returned_aphia_ids == sorted(returned_aphia_ids)
+
+
+def test_search_compiler_with_ordering_by_annotation_creation_datetime(
+    mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
+) -> None:
+    """Test that ordering by annotation_creation_datetime works as expected."""
+    mock_request = mocker.patch("brokerage_service_api.utilities.search_compiler.rq.get")
+    mock_request.return_value.json.return_value = mock_assorted_aphia_ids_response
+
+    instance = AnnotationsAPIFetcher(
+        flavour="BODC",
+        params=AnnotationSearchRequest(
+            aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
+            order_by="annotation_creation_datetime",
+        ),
+    )
+    returned_datetimes = [result.annotation_creation_datetime for result in instance.results]
+    assert returned_datetimes == sorted(returned_datetimes)
+
+
+def test_search_compiler_with_ordering_by_label_name(
+    mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
+) -> None:
+    """Test that ordering by annotation_creation_datetime works as expected."""
+    mock_request = mocker.patch("brokerage_service_api.utilities.search_compiler.rq.get")
+    mock_request.return_value.json.return_value = mock_assorted_aphia_ids_response
+
+    instance = AnnotationsAPIFetcher(
+        flavour="BODC",
+        params=AnnotationSearchRequest(
+            aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
+            order_by="label_name",
+        ),
+    )
+    returned_label_names = [result.label_name for result in instance.results]
+    assert returned_label_names == sorted(returned_label_names)
