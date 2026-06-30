@@ -3,27 +3,39 @@ environments:
     values:
       - mode: "dev"
       - name: dev
+      - releaseName: {{ env "RELEASE_NAME" | default "brokerage-service-api" | quote }}
         context: seai-admin@seai
         config: env/dev/values.yaml
       - namespace: "paidiver-st3"
-      - clusterIssuerName: {{ requiredEnv "CLUSTER_ISSUER_NAME" | quote }}
+      - clusterIssuerName: {{ env "CLUSTER_ISSUER_NAME" | default "letsencrypt-brokerage-service-api" | quote }}
+      - ghcrSecretName: {{ env "GHCR_SECRET_NAME" | default "brokerage-service-api-ghcr-pull-secret" | quote }}
       - chartVersion: "0.0.1-a9"
 
   live:
     values:
       - mode: "live"
       - name: live
+      - releaseName: {{ env "RELEASE_NAME" | default "brokerage-service-api" | quote }}
         context: seai-admin@seai
         config: env/live/values.yaml
       - namespace: "paidiver-st3"
-      - clusterIssuerName: {{ requiredEnv "CLUSTER_ISSUER_NAME" | quote }}
+      - clusterIssuerName: {{ env "CLUSTER_ISSUER_NAME" | default "letsencrypt-brokerage-service-api" | quote }}
+      - ghcrSecretName: {{ env "GHCR_SECRET_NAME" | default "brokerage-service-api-ghcr-pull-secret" | quote }}
       - chartVersion: "0.0.1-a9"
+
+  local:
+    values:
+      - mode: "local"
+      - name: local
+      - releaseName: "brokerage-service-api"
+      - config: env/local/values.yaml
+      - namespace: "paidiver-st3"
 
 ---
 
 {{ $env := .Environment.Values }}
 {{ $namespace := $env.namespace }}
-{{ $clusterIssuerName := $env.clusterIssuerName }}
+{{ $clusterIssuerName := index $env "clusterIssuerName" | default "" }}
 {{ if eq $env.mode "dev" }}
 {{ $namespace = printf "%s-dev" $namespace }}
 {{ $clusterIssuerName = printf "%s-dev" $clusterIssuerName }}
@@ -31,20 +43,25 @@ environments:
 
 helmDefaults:
   historyMax: 3
-  createNamespace: false
-  kubeContext: {{ $env.context | quote }}
+  createNamespace: {{ if eq $env.mode "local" }}true{{ else }}false{{ end }}
+{{ with (index $env "context") }}
+  kubeContext: {{ . | quote }}
+{{ end }}
 
 releases:
 
-  - name: {{ requiredEnv "RELEASE_NAME" | quote }}
+  - name: {{ $env.releaseName | quote }}
     namespace: {{ $namespace | quote }}
-    createNamespace: false
+    createNamespace: {{ if eq $env.mode "local" }}true{{ else }}false{{ end }}
     chart: ../charts/api
     values:
       - env/default/values.yaml
       - env/{{ .Values.mode }}/values.yaml
+{{ if ne $env.mode "local" }}
       - image:
-          imagePullSecret: {{ requiredEnv "GHCR_SECRET_NAME" | quote }}
+          imagePullSecret: {{ $env.ghcrSecretName | quote }}
+{{ end }}
+{{ if ne $env.mode "local" }}
     hooks:
       - events: ["presync"]
         showlogs: true
@@ -56,24 +73,24 @@ releases:
 
             namespace={{ $namespace | quote }}
             cluster_issuer_name={{ $clusterIssuerName | quote }}
+            ghcr_secret_name={{ $env.ghcrSecretName | quote }}
 
-            : "${GHCR_SECRET_NAME:?GHCR_SECRET_NAME must be set}"
             : "${GHCR_USERNAME:?GHCR_USERNAME must be set}"
             : "${GHCR_TOKEN:?GHCR_TOKEN must be set}"
 
             echo "Ensuring namespace '${namespace}' exists..."
             kubectl create namespace "${namespace}" --dry-run=client -o yaml | kubectl apply -f -
 
-            echo "Ensuring GHCR pull secret '${GHCR_SECRET_NAME}' exists in namespace '${namespace}'..."
-            existing_secret_type=$(kubectl get secret "${GHCR_SECRET_NAME}" \
+            echo "Ensuring GHCR pull secret '${ghcr_secret_name}' exists in namespace '${namespace}'..."
+            existing_secret_type=$(kubectl get secret "${ghcr_secret_name}" \
               --namespace "${namespace}" \
               -o jsonpath='{.type}' 2>/dev/null || true)
             if [ -n "${existing_secret_type}" ] && [ "${existing_secret_type}" != "kubernetes.io/dockerconfigjson" ]; then
-              echo "Existing secret '${GHCR_SECRET_NAME}' has immutable type '${existing_secret_type}'; recreating it..."
-              kubectl delete secret "${GHCR_SECRET_NAME}" --namespace "${namespace}"
+              echo "Existing secret '${ghcr_secret_name}' has immutable type '${existing_secret_type}'; recreating it..."
+              kubectl delete secret "${ghcr_secret_name}" --namespace "${namespace}"
             fi
 
-            kubectl create secret docker-registry "${GHCR_SECRET_NAME}" \
+            kubectl create secret docker-registry "${ghcr_secret_name}" \
               --namespace "${namespace}" \
               --docker-server ghcr.io \
               --docker-username "${GHCR_USERNAME}" \
@@ -83,3 +100,4 @@ releases:
 
             echo "Ensuring ClusterIssuer '${cluster_issuer_name}' exists..."
             sed "s/__CLUSTER_ISSUER_NAME__/${cluster_issuer_name}/g" utils/cluster-issuer.yaml | kubectl apply -f -
+{{ end }}

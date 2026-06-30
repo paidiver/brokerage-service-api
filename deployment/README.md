@@ -2,14 +2,14 @@
 
 ## Introduction
 
-Brokerage Service API provides a federated api access to multiple annotations apis. It is deployed to JASMIN using Helm and Helmfile.
+Brokerage Service API provides federated API access to multiple annotations APIs. It can be deployed to JASMIN or a local Kubernetes cluster using Helmfile.
 
 The application source code and Helm charts are hosted under
 https://github.com/paidiver/brokerage-service-api
 
-These instructions guide you through deploying the application to JASMIN using Helm and Helmfile. They assume a Kubernetes cluster is already available and accessible.
+These instructions guide you through deploying the application using Helm and Helmfile. They assume a Kubernetes cluster is already available and accessible.
 
-Run the JASMIN Helmfile commands below from the `deployment/helmfile/` directory.
+Run the Helmfile commands below from the `deployment/helmfile/` directory.
 
 ---
 
@@ -19,6 +19,7 @@ Run the JASMIN Helmfile commands below from the `deployment/helmfile/` directory
 - [Environments](#environments)
 - [Initial Setup](#initial-setup)
 - [Deploy](#deploy)
+- [Deploy Locally](#deploy-locally)
 - [Check The Deployment](#check-the-deployment)
 - [Chart Releases](#chart-releases)
 
@@ -47,11 +48,17 @@ The configured JASMIN environments include:
 - `dev`
 - `live`
 
+The local Kubernetes environment is:
+
+- `local`
+
 Environment-specific values live under `env/<environment>/values.yaml`.
 
 For `dev`, Helmfile deploys into the configured namespace with `-dev` appended. For example, `paidiver-st3` becomes `paidiver-st3-dev`. The ClusterIssuer name also gets the same suffix.
 
 For `live`, Helmfile uses the namespace and ClusterIssuer name exactly as configured in [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl).
+
+For `local`, Helmfile deploys to `brokerage-service-api-local`, disables ingress and image pull secrets, and skips the JASMIN secret and ClusterIssuer hooks.
 
 ---
 
@@ -65,7 +72,7 @@ Copy the example environment file in `deployment/helmfile/` and edit the values:
 cp .env.example .env
 ```
 
-Set the values required by [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl):
+Set the values required by [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl) for JASMIN `dev` and `live` deployments:
 
 - `RELEASE_NAME`: Helm release name, for example `brokerage-service-api`
 - `CLUSTER_ISSUER_NAME`: base JASMIN ClusterIssuer name, for example `letsencrypt-brokerage-service-api`
@@ -96,6 +103,8 @@ kubectl config get-contexts
 ```
 
 Helmfile creates or updates the namespace, GHCR pull secret, and ClusterIssuer during the `presync` hook. If an old GHCR secret exists with an incompatible Kubernetes secret type, Helmfile recreates it. You do not need to apply [helmfile/utils/ghcr-pull-secret.yaml](helmfile/utils/ghcr-pull-secret.yaml) or [helmfile/utils/cluster-issuer.yaml](helmfile/utils/cluster-issuer.yaml) manually.
+
+The local environment does not require these variables.
 
 ---
 
@@ -130,20 +139,81 @@ The `presync` hook runs as part of `apply`. It ensures the namespace exists, cre
 
 ---
 
+## Deploy Locally
+
+Use this path for a local Kubernetes cluster such as kind or Minikube.
+
+The local values file [helmfile/env/local/values.yaml](helmfile/env/local/values.yaml) uses a local image named `brokerage-service-api:local`, disables ingress, and does not configure an image pull secret.
+
+- Build The Local Image
+
+From `deployment/helmfile/`, build the image using the repository root as the Docker context:
+
+```bash
+docker build -f ../../docker/Dockerfile -t brokerage-service-api:local ../..
+```
+
+- Copy the image into your local Kubernetes cluster:
+
+```bash
+kind load docker-image brokerage-service-api:local
+```
+
+- Apply The Local Environment
+
+```bash
+helmfile -e local apply
+```
+
+- Check And Connect
+
+```bash
+kubectl get pods -n "$NAMESPACE"
+kubectl get svc -n "$NAMESPACE"
+kubectl port-forward -n "$NAMESPACE" svc/brokerage-service-api-service 8080:80
+```
+
+Health endpoint:
+
+```text
+http://localhost:8080/health/
+```
+
+API schema and documentation:
+
+```text
+http://localhost:8080/docs/
+```
+
+- Remove the local release:
+
+```bash
+helmfile -e local destroy
+```
+
+---
+
 ## Check The Deployment
+
+For local:
+
+```bash
+kubectl get pods -n "$NAMESPACE"
+kubectl get svc -n "$NAMESPACE"
+```
 
 For dev:
 
 ```bash
-kubectl get pods -n paidiver-st3-dev
-kubectl get ingress -n paidiver-st3-dev
+kubectl get pods -n "$NAMESPACE"-dev
+kubectl get ingress -n "$NAMESPACE"-dev
 ```
 
 For live:
 
 ```bash
-kubectl get pods -n paidiver-st3
-kubectl get ingress -n paidiver-st3
+kubectl get pods -n "$NAMESPACE"
+kubectl get ingress -n "$NAMESPACE"
 ```
 
 ---
