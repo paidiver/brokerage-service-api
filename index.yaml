@@ -43,4 +43,18 @@ entries:
     urls:
     - https://github.com/paidiver/brokerage-service-api/releases/download/docker-v0.0.1-a7/brokerage-service-api-0.0.1-a7.tgz
     version: 0.0.1-a7
-generated: "2026-06-26T14:53:14.903092257Z"
+  - apiVersion: v2
+    appVersion: 0.0.1-a10
+    created: "2026-06-30T15:38:56.547644675Z"
+    description: A Helm chart for the Brokerage Service API (A FastAPI Service)
+    digest: 149a317cfb90c1cdd8bb02ac51c21e17d4c4a0b38d5af74b8e7e534db6fa8264
+    maintainers:
+    - email: tobias.ferreira@noc.ac.uk
+      name: soutobias
+      url: bodc.ac.uk
+    name: brokerage-service-api
+    type: application
+    urls:
+    - https://github.com/paidiver/brokerage-service-api/releases/download/docker-v0.0.1-a10/brokerage-service-api-0.0.1-a10.tgz
+    version: 0.0.1-a10
+generated: "2026-06-30T15:38:56.547655796Z"
