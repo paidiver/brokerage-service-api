@@ -127,6 +127,8 @@ class AnnotationSearchRequest(BaseModel):
             str: A urlencoded query string.
         """
         dumped_model = self.model_dump(exclude_none=True)
+        dumped_model.pop("page")
+        dumped_model.pop("page_size")
 
         if "aphia_ids" not in dumped_model:
             return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")
