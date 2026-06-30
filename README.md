@@ -141,159 +141,101 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
-
 ## Deployment
 
-The [charts](charts/) directory contains Helm charts and files that can be used to deploy this app.
+The repository includes two release workflows:
 
-### Helm Chart Versioning & Release Process
+* **Docker image releases**, published to GitHub Container Registry
+* **Helm chart releases**, published from the [`charts/`](charts/) directory
 
-Helm chart releases are automated and driven by Git tags.
+### Docker images
 
-To release a new Helm Chart version, create a Git tag in the format:
+Docker images are published to:
 
-`vMAJOR.MINOR.PATCH[-PRERELEASE]`
+`ghcr.io/paidiver/brokerage-service-api`
 
-Examples:
-- `v1.2.3` → stable release
-- `v1.3.0-alpha.1` → prerelease
+#### Latest image
 
-The workflow triggers on tag creation.
-The CI workflow:
+A new `latest` Docker image is built and published automatically on every push to `main`.
 
-- Reads the tag version (1.2.3 from v1.2.3)
-- Patches charts/api/Chart.yaml at package time (does not commit to the repo)
-- Packages the Helm chart with the correct version
-- Publishes the chart via [helm/chart-releaser-action](https://github.com/helm/chart-releaser-action)
+#### Versioned development images
 
-Whenever you make any change to a Chart, you must update the version in `Chart.yaml`.
+Versioned Docker images can be released manually using Git tags.
 
-* Increment the version to a higher value (e.g. `0.0.0-dev` → `0.0.1-dev`)
-* This is required because the lint process checks that the new version is greater than the previous one
-* If the version is not increased, linting will fail and the release will not run
+To release a new Docker image, create a tag using the following format:
 
-> Note: The `Chart.yaml` version does not need to match the Git tag, but it must always be higher than the previous version.
-
-To tag a git commit:
-
-```bash
-git tag vX.X.X
-git push origin vX.X.X
+```text
+docker-vMAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-
-## Releasing Docker Images
-
-### Production release
-A new `latest` Docker image is build and published to https://ghcr.io/paidiver/annotations-api on each push to main.
-
-### Development release
-Development versions of Docker images can be released manually, driven by Git tags.
-To release a new Docker image, create a Git tag in the format:
-
-`docker-vMAJOR.MINOR.PATCH[-PRERELEASE]`
-
 Examples:
-- `v1.2.3` → stable release
-- `v1.3.0-alpha.1` → prerelease
 
-The workflow triggers on tag creation.
-The CI workflow:
+```text
+docker-v1.2.3
+docker-v1.3.0-alpha.1
+```
 
-- Reads the tag version (1.2.3 from docker-v1.2.3)
-- Builds a new Docker image
-- Tags the Docker image with the tag version as well as the tagged commit SHA
-- Pushes the images to the GitHub Container Repository
+When the tag is pushed, the CI workflow:
 
-To tag a git commit:
+1. Reads the version from the tag, for example `1.2.3` from `docker-v1.2.3`
+2. Builds a new Docker image
+3. Tags the image with the version and the commit SHA
+4. Pushes the image to GitHub Container Registry
+
+To create and push a Docker release tag:
 
 ```bash
 git tag docker-vX.X.X
 git push origin docker-vX.X.X
 ```
 
+### Helm charts
 
-## Deploying locally with Kubernetes
+The [`charts/`](charts/) directory contains the Helm chart used to deploy this application.
 
-For local Kubernetes, use Helm directly against the API chart. The Helmfile in [charts/helmfile.yaml.gotmpl](charts/helmfile.yaml.gotmpl) is intended for the JASMIN `dev` and `live` deployments because it creates namespaces, GHCR pull secrets, and ClusterIssuers.
+Helm chart releases are automated and driven by Git tags.
 
-The local values file is [charts/env/local/values.yaml](charts/env/local/values.yaml). It disables ingress and image pull secrets, and uses a local image named `brokerage-service-api:local`.
+To release a new Helm chart version, create a tag using the following format:
 
-### 1. Build the local image
+```text
+vMAJOR.MINOR.PATCH[-PRERELEASE]
+```
+
+Examples:
+
+```text
+v1.2.3
+v1.3.0-alpha.1
+```
+
+When the tag is pushed, the CI workflow:
+
+1. Reads the version from the tag, for example `1.2.3` from `v1.2.3`
+2. Patches `charts/api/Chart.yaml` at package time
+3. Packages the Helm chart with the correct version
+4. Publishes the chart using [`helm/chart-releaser-action`](https://github.com/helm/chart-releaser-action)
+
+To create and push a Helm chart release tag:
 
 ```bash
-docker build -f docker/Dockerfile -t brokerage-service-api:local .
+git tag vX.X.X
+git push origin vX.X.X
 ```
 
-If you use `kind`, load the image into the cluster:
+### Helm chart versioning
 
-```bash
-kind load docker-image brokerage-service-api:local
+Whenever you change the Helm chart, update the `version` field in `Chart.yaml`.
+
+For example:
+
+```text
+0.0.0-dev → 0.0.1-dev
 ```
 
-If you use Minikube, build inside the Minikube Docker daemon instead:
+This is required because the lint process checks that the new chart version is greater than the previous one. If the chart version is not increased, linting will fail and the release will not run.
 
-```bash
-eval "$(minikube docker-env)"
-docker build -f docker/Dockerfile -t brokerage-service-api:local .
-```
+> Note: The `Chart.yaml` version does not need to match the Git tag, but it must always be higher than the previous chart version.
 
-### 2. Install or upgrade the chart
-
-```bash
-helm upgrade --install brokerage-service-api charts/api \
-  --namespace brokerage-service-api-local \
-  --create-namespace \
-  -f charts/env/local/values.yaml
-```
-
-To use a published GHCR image instead of a local image:
-
-```bash
-helm upgrade --install brokerage-service-api charts/api \
-  --namespace brokerage-service-api-local \
-  --create-namespace \
-  -f charts/env/local/values.yaml \
-  --set image.repository=ghcr.io/paidiver/brokerage-service-api \
-  --set image.tag=latest
-```
-
-To point the local deployment at different upstream services, override the chart values:
-
-```bash
-helm upgrade --install brokerage-service-api charts/api \
-  --namespace brokerage-service-api-local \
-  --create-namespace \
-  -f charts/env/local/values.yaml \
-  --set env.bodcAnnotationsApiUrl=https://annotationsdev.bodc.ac.uk/api \
-  --set env.jnccAnnotationsApiUrl=https://annotations-api.paidiver.site
-```
-
-### 3. Check and connect
-
-```bash
-kubectl get pods -n brokerage-service-api-local
-kubectl get svc -n brokerage-service-api-local
-kubectl port-forward -n brokerage-service-api-local svc/brokerage-service-api-service 8080:80
-```
-
-Health endpoint:
-
-```
-http://localhost:8080/health/
-```
-
-API schema and documentation:
-
-```
-http://localhost:8080/docs/
-```
-
-To remove the local release:
-
-```bash
-helm uninstall brokerage-service-api -n brokerage-service-api-local
-```
 
 ## Upstream Sources
 
