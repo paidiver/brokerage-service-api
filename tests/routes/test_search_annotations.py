@@ -3,6 +3,7 @@
 import httpx
 import pytest
 from brokerage_service_api.models.search_model import SearchResults
+from brokerage_service_api.utilities.search_compiler import InvalidPageNumberError
 from pytest_mock import MockerFixture
 
 
@@ -38,3 +39,16 @@ async def test_search_router_with_exception_raised(mocker: MockerFixture, client
     assert response.json() == {
         "detail": "An error occured whilst fetching the search results. Some error being raised!"
     }
+
+
+@pytest.mark.anyio
+async def test_search_router_with_invalid_page(mocker: MockerFixture, client: "httpx.AsyncClient") -> None:
+    """Test the seach route returns the expected content if an invalid page is passed in."""
+    mocker.patch(
+        "brokerage_service_api.api.routes.search.fetch_combined_results_from_annotation_apis",
+        side_effect=InvalidPageNumberError("Some error being raised!"),
+    )
+    response = await client.get("/api/annotations/search", params={"aphia_ids": 123})
+    expected_status_code_with_error = 500
+    assert response.status_code == expected_status_code_with_error
+    assert response.json() == {"detail": "Invalid page."}
