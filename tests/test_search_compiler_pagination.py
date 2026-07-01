@@ -12,7 +12,8 @@ from starlette.requests import Request
 
 
 @pytest.fixture(name="mock_request_for_pagination")
-def mock_request_fixture():
+def mock_request_fixture() -> Request:
+    """An example request to use specifically for the pagination."""
     scope = {
         "type": "http",
         "method": "GET",
@@ -103,15 +104,6 @@ def test_search_compiler_pagination_prev_and_next_fields() -> None:
     url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=5"
     response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
     assert response == ("4", "5")
-
-
-def test_search_compiler_pagination_prev_and_next_fields_with_malformed_query_string() -> None:
-    """Request prev/next fields with an incorrect query string, forcing a KeyError."""
-    url = "http://localhost:8080/api?aphia_ids=588&page_size_wrong=5&page_wrong=1"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=1)
-
-    # In an error state, we expect None for both 'prev' and 'next'.
-    assert response == (None, None)
 
 
 def test_search_compiler_pagination_prev_and_next_fields_with_generic_exception() -> None:

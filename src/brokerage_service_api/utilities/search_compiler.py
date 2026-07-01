@@ -118,11 +118,10 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
     page 3, then 3 will be returned.
 
     """
-    # Define the 'prev' and 'next' as None, unless logic dictates they need to be changed.
+    # Define the 'prev' and 'next' as None, unless further logic dictates they need to be changed.
     prev, next_ = None, None
-
-    # Fetch the incoming request URL.
     request_fields = parse_qs(request_url)
+    minimum_page_value = 2
 
     try:
         current_page_value = int(request_fields["page"][0])
@@ -130,28 +129,52 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
         # If no page is set in the query, assume page 1.
         current_page_value = 1
     except Exception:
-        print("Unable to parse 'page' from query string.")
-        return
+        return prev, next_
 
-
-    if current_page_value >= 2:
+    if current_page_value >= minimum_page_value:
         prev = str(current_page_value - 1)
     elif current_page_value == 1:
         prev = None
 
-    # If the current page is the maximum allowable page, then return this.
+    # If the current page is the maximum allowable page, then set to that.
     if current_page_value == maximum_allowed_page:
         next_ = str(current_page_value)
 
-    # If the current page is less than the maxium allowable, increment by +1 and return.
+    # If the current page is less than the maxium allowable, increment by 1.
     elif current_page_value < maximum_allowed_page:
         next_ = str(current_page_value + 1)
 
     return prev, next_
 
 
+def construct_previous_and_next_urls(
+    incoming_url: str, previous_value: str | None, next_value: str | None
+) -> str | None:
+    """Use the incoming URL, and the potential previous/next values to form the new URLS.
+
+    Args:
+        incoming_url: the incoming URL.
+        previous_value: If a string, make a new url with the value.
+        next_value: If a string, make a new url with the value
+
+    Returns:
+    Either a url, or None.
+    """
+    previous_url = re.sub("&page=\\d+", f"&page={previous_value}", incoming_url) if previous_value is not None else None
+
+    if next_value is not None:
+        if "&page=" in incoming_url:
+            next_url = re.sub(r"&page=\d+", f"&page={next_value}", incoming_url)
+        else:
+            next_url = incoming_url + f"&page={next_value}"
+    else:
+        next_url = None
+
+    return previous_url, next_url
+
+
 def results_with_pagination_applied(
-    count: int, all_results: Results, page_size: int, page_number: int | None, request
+    count: int, all_results: Results, page_size: int, page_number: int | None, request: Request
 ) -> Results:
     """Apply pagination to the results and return a subset.
 
@@ -168,23 +191,15 @@ def results_with_pagination_applied(
     # Batch the annotations into the required size (100 is the default).
     batched_annotations = list(batched(all_results.annotations, n=page_size))
 
+    # Fetch the values needed for the previous and next URL's.
     prev_field, next_field = construct_prev_and_next_response_fields(
         request_url=str(request.url), maximum_allowed_page=len(batched_annotations)
     )
 
-    incoming_url = str(request.url)
-    if prev_field is not None:
-        previous_url = re.sub(r"&page=\d+", f"&page={prev_field}", incoming_url)
-    else:
-        previous_url = None
-
-    if next_field is not None:
-        if "&page=" in incoming_url:
-            next_url = re.sub(r"&page=\d+", f"&page={next_field}", incoming_url)
-        else:
-            next_url = incoming_url + f"&page={next_field}"
-    else:
-        next_url = None
+    # Use the values from the previous function calls to now build the previous and next URL's.
+    previous_url, next_url = construct_previous_and_next_urls(
+        incoming_url=str(request.url), previous_value=prev_field, next_value=next_field
+    )
 
     # If no page number is passed, then just return the first page of results.
     # This is the default path, so the user will just see 100 results or less.
