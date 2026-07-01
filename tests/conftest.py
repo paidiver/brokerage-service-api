@@ -6,7 +6,7 @@ import httpx
 import pytest
 from brokerage_service_api.api.app import create_app
 from brokerage_service_api.models.sources import SourceConfig
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 DEFAULT_PORT = 8000
 
@@ -77,6 +77,19 @@ def jncc_source() -> SourceConfig:
         base_url="http://jncc-api:8000/",
         enabled=True,
     )
+
+
+@pytest.fixture(name="mock_request_for_pagination")
+def mock_request_fixture() -> Request:
+    """A sample mock request to use for the pagination tests."""
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "path": "/annotations/search",
+        "query_string": b"aphia_ids=588&page_size=5&page=2",
+        "headers": [],
+    }
+    return Request(scope)
 
 
 @pytest.fixture(name="mock_assorted_aphia_ids_response")

@@ -6,6 +6,7 @@ from itertools import batched
 from urllib.parse import parse_qs
 
 import requests as rq
+from fastapi import Request
 
 from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
@@ -146,7 +147,6 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
     elif current_page_value < maximum_allowed_page:
         next_ = str(current_page_value + 1)
 
-
     return prev, next_
 
 
@@ -160,6 +160,7 @@ def results_with_pagination_applied(
         all_results: All the upstream results, to perform the pagination upon.
         page_size: The number of results on one page.
         page_number: The page number to return.
+        request: The raw request object.
 
     Returns:
     A SearchResults object with a subset of the results, and the prev|next fields populated.
@@ -205,11 +206,12 @@ def results_with_pagination_applied(
     return SearchResults(previous=previous_url, next=next_url, count=count, results=paginated_results)
 
 
-def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest, request) -> SearchResults:
+def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest, request: Request) -> SearchResults:
     """Call both annotations apis and return the combined results.
 
     Args:
         params: A model with all the required params to send upstream to the BODC/JNCC API's.
+        request: The raw request object.
 
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.

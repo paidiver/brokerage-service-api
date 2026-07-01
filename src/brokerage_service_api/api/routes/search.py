@@ -76,6 +76,7 @@ def brokerage_search(request: Request, params: Annotated[AnnotationSearchRequest
     - ``label_name``
 
     Args:
+        request: The raw request object.
         params: Search parameters provided as query parameters.
 
     Returns:
