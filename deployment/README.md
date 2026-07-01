@@ -106,6 +106,23 @@ Helmfile creates or updates the namespace, GHCR pull secret, and ClusterIssuer d
 
 The local environment does not require these variables.
 
+### 3. Update Helm Repositories and Docker Image Tag
+
+```bash
+helm repo add brokerage-service-api https://paidiver.github.io/brokerage-service-api
+helm repo update
+```
+
+To list available chart versions:
+
+```bash
+helm search repo -l brokerage-service-api
+```
+
+Set the required `chartVersion` in [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
+
+Also set the `image.tag` in the releases values to the correct version.
+
 ---
 
 ## Deploy

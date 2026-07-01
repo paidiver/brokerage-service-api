@@ -10,16 +10,6 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-brokerage-service-api
 
-resources:
-  limits:
-    cpu: 400m
-    memory: 600Mi
-  requests:
-    cpu: 400m
-    memory: 600Mi
-
-image:
-  tag: latest
 
 env:
   bodcAnnotationsApiUrl: "https://annotations.bodc.ac.uk/api"

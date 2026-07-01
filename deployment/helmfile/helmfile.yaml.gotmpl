@@ -60,6 +60,7 @@ releases:
 {{ if ne $env.mode "local" }}
       - image:
           imagePullSecret: {{ $env.ghcrSecretName | quote }}
+          tag: latest
 {{ end }}
 {{ if ne $env.mode "local" }}
     hooks:
