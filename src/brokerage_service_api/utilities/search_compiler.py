@@ -109,15 +109,17 @@ def results_with_pagination_applied(
     Returns:
     A SearchResults object with a subset of the results, and the prev|next fields populated.
     """
-    # Batch the annotations into the required size (100 is the default).
+    # Batch the annotations into the required size (100 is the default as ).
     batched_annotations = list(batched(all_results.annotations, n=page_size))
 
     # If no page number is passed, then just return the first page of results.
+    # This is the default path, so the user will just see 100 results or less.
     if page_number is None:
         return SearchResults(
             count=count, results=Results(summary=all_results.summary, annotations=batched_annotations[0])
         )
 
+    # If the user passes a page number, return that specific batch or raise an error if not applicable.
     try:
         specified_annotation_batch = batched_annotations[page_number - 1]
     except IndexError:
@@ -127,7 +129,7 @@ def results_with_pagination_applied(
     return SearchResults(count=count, results=paginated_results)
 
 
-def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest) -> SearchResults:
+def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest, request) -> SearchResults:
     """Call both annotations apis and return the combined results.
 
     Args:
@@ -151,4 +153,3 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest)
         count=len(all_annotations), all_results=all_results, page_size=params.page_size, page_number=params.page
     )
 
-    return SearchResults(count=len(all_annotations), results=all_results)

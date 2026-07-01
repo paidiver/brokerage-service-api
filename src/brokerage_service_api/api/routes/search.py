@@ -63,7 +63,7 @@ async def search_taxonomies(
 
 
 @router.get("/annotations/search", response_model=SearchResults)
-def brokerage_search(params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
+def brokerage_search(request, params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
     """Search for annotations across brokerage services.
 
     Queries both the BODC and JNCC Annotations APIs and returns the
@@ -86,7 +86,7 @@ def brokerage_search(params: Annotated[AnnotationSearchRequest, Query()]) -> Sea
             500 response with an error message.
     """
     try:
-        return fetch_combined_results_from_annotation_apis(params=params)
+        return fetch_combined_results_from_annotation_apis(params=params, request=request)
     except InvalidPageNumberError:
         raise HTTPException(status_code=500, detail="Invalid page.") from None
     except Exception as exc:
