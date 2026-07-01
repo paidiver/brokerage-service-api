@@ -1,5 +1,6 @@
 """FastAPI module that represent the root of the API."""
 
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -43,6 +44,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         title="Brokerage Service API",
         version="0.1.0",
+        root_path=os.getenv("FASTAPI_ROOT_PATH", ""),
         openapi_url="/openapi.json",
         docs_url="/docs",
         openapi_version="3.0.3",

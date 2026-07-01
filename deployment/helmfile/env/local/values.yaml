@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: brokerage-service-api
+  tag: local
+  pullPolicy: IfNotPresent
+  imagePullSecret: ""
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 600Mi
+  requests:
+    cpu: 500m
+    memory: 600Mi
+
+env:
+  bodcAnnotationsApiUrl: "https://annotationsdev.bodc.ac.uk/api"
+  jnccAnnotationsApiUrl: "https://annotations-api.paidiver.site/api"

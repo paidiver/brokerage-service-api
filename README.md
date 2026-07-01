@@ -2,6 +2,11 @@
 
 Brokerage Service API provides a federated api access to multiple services.
 
+The app is available in these links:
+
+- Development: [https://brokerage-service-api-dev.paidiver.site](https://brokerage-service-api-dev.paidiver.site)
+- Live: [https://brokerage-service-api.paidiver.site](https://brokerage-service-api.paidiver.site)
+
 ## Requirements
 
 ### Runtime
@@ -19,8 +24,8 @@ Brokerage Service API provides a federated api access to multiple services.
 ```text
 .
 ├── docker
-│   ├── docker-compose.yml # Docker compose file for local development
-│   └── Dockerfile      # Dockerfile for the API service
+│   ├── docker-compose.yml # Docker compose file for local development
+│   └── Dockerfile      # Dockerfile for the API service
 ├── LICENSE
 ├── pyproject.toml      # Project metadata & dependencies (Poetry)
 ├── README.md
@@ -37,7 +42,7 @@ Brokerage Service API provides a federated api access to multiple services.
 │       ├── schemas # Pydantic schemas
 │       └── upstream # Clients for upstream services
 ├── tests # Test suite
-│   └── __init__.py
+│   └── __init__.py
 └── tox.ini
 ```
 
@@ -141,6 +146,105 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
+## Deployment
+
+The repository includes two release workflows:
+
+* **Docker image releases**, published to GitHub Container Registry
+* **Helm chart releases**, published from the [`deployment/charts/`](deployment/charts/) directory
+
+### Docker images
+
+Docker images are published to:
+
+`ghcr.io/paidiver/brokerage-service-api`
+
+#### Latest image
+
+A new `latest` Docker image is built and published automatically on every push to `main`.
+
+#### Versioned development images
+
+Versioned Docker images can be released manually using Git tags.
+
+To release a new Docker image, create a tag using the following format:
+
+```text
+docker-vMAJOR.MINOR.PATCH[-PRERELEASE]
+```
+
+Examples:
+
+```text
+docker-v1.2.3
+docker-v1.3.0-alpha.1
+```
+
+When the tag is pushed, the CI workflow:
+
+1. Reads the version from the tag, for example `1.2.3` from `docker-v1.2.3`
+2. Builds a new Docker image
+3. Tags the image with the version and the commit SHA
+4. Pushes the image to GitHub Container Registry
+
+To create and push a Docker release tag:
+
+```bash
+git tag docker-vX.X.X
+git push origin docker-vX.X.X
+```
+
+### Helm charts
+
+The [`deployment/charts/`](deployment/charts/) directory contains the Helm chart used to deploy this application.
+
+After following the steps below, go to the [deployment/README.md](deployment/README.md) file for deployment instructions.
+
+
+Helm chart releases are automated and driven by Git tags.
+
+To release a new Helm chart version, create a tag using the following format:
+
+```text
+vMAJOR.MINOR.PATCH[-PRERELEASE]
+```
+
+Examples:
+
+```text
+v1.2.3
+v1.3.0-alpha.1
+```
+
+When the tag is pushed, the CI workflow:
+
+1. Reads the version from the tag, for example `1.2.3` from `v1.2.3`
+2. Patches `deployment/charts/api/Chart.yaml` at package time
+3. Packages the Helm chart with the correct version
+4. Publishes the chart using [`helm/chart-releaser-action`](https://github.com/helm/chart-releaser-action)
+
+To create and push a Helm chart release tag:
+
+```bash
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+### Helm chart versioning
+
+Whenever you change the Helm chart, update the `version` field in `Chart.yaml`.
+
+For example:
+
+```text
+0.0.0-dev → 0.0.1-dev
+```
+
+This is required because the lint process checks that the new chart version is greater than the previous one. If the chart version is not increased, linting will fail and the release will not run.
+
+> Note: The `Chart.yaml` version does not need to match the Git tag, but it must always be higher than the previous chart version.
+
+
 ## Upstream Sources
 
 Upstream API sources are managed within the configuration file located at [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). This file is parsed and loaded into the application's memory during initialization (startup) and remains immutable throughout the application's lifespan.
@@ -177,15 +281,15 @@ sources:
 
 To onboard a new upstream source, follow these steps:
 
-#### 1. Update the YAML Configuration: 
+#### 1. Update the YAML Configuration:
 
-Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name. 
+Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name.
 
-#### 2. Define Environment Variables: 
+#### 2. Define Environment Variables:
 
 Declare the environment variable name and its value in your locally managed [.env] file.
 
-#### 3. Register the Environment Mapping: 
+#### 3. Register the Environment Mapping:
 
 Add a new key-value entry to the `ENV_SOURCE_URL_MAP` dictionary inside [*fixtures/constants.py*](./src/brokerage_service_api/fixtures/constants.py). This maps the source identifier to its environment variable name and an isolated container fallback URL.
 
