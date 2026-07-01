@@ -1,12 +1,12 @@
 """Tests for the JNCC/BODC search compiler pagination logic."""
 
 import pytest
-from starlette.requests import Request
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.utilities.search_compiler import (
     fetch_combined_results_from_annotation_apis,
 )
 from pytest_mock import MockerFixture
+from starlette.requests import Request
 
 
 @pytest.fixture(name="mock_request_for_pagination")
@@ -19,6 +19,7 @@ def mock_request_fixture():
         "headers": [],
     }
     return Request(scope)
+
 
 def test_search_compiler_pagination_with_page_size_1_to_10(
     mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture, mock_request_for_pagination: MockerFixture
@@ -50,7 +51,8 @@ def test_search_compiler_pagination_with_varying_page_numbers(
     # The '588' does nothing in this test case as the BODC/JNCC api's are mocked to return the same 10 results.
     uuids = [
         fetch_combined_results_from_annotation_apis(
-            params=AnnotationSearchRequest(aphia_ids=[588], page=page_number, page_size=1), request=mock_request_for_pagination
+            params=AnnotationSearchRequest(aphia_ids=[588], page=page_number, page_size=1),
+            request=mock_request_for_pagination,
         )
         .results.annotations[0]
         .uuid
@@ -58,8 +60,6 @@ def test_search_compiler_pagination_with_varying_page_numbers(
     ]
 
     assert len(uuids) == len(set(uuids)), "Duplicate UUID's detected!"
-
-
 
 
 def test_search_compiler_pagination_prev_and_next_fields(
@@ -74,4 +74,3 @@ def test_search_compiler_pagination_prev_and_next_fields(
         params=AnnotationSearchRequest(aphia_ids=[588], page_size=10, page=1), request=mock_request_for_pagination
     )
     print(combined_results)
-

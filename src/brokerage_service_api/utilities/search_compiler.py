@@ -1,8 +1,10 @@
 """Code to call the upstream annotations API's and compile the results."""
 
 import os
+import re
 from itertools import batched
 from urllib.parse import parse_qs
+
 import requests as rq
 
 from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
@@ -97,11 +99,11 @@ class AnnotationsAPIFetcher:
 
 def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_page: int) -> tuple[str | None]:
     """Use the incoming URL to construct the 'prev' and 'next' fields in the response.
-    
+
     'prev' will stay as None if any the following conditions are met:
         - page is 1
         - An error is raised whilst parsing for the page value
-    
+
     'prev' will change if the current page is > 1.
 
     -----------------
@@ -110,7 +112,7 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
 
     'next_' will stay as the current value if it is the maximum allowed value. For example if the
     user is on page 2, and this is the last page, then 2 will be returned.
-    
+
     'next_' will update by +1 if allowable. For example is there are 4 batches of results, and the user is on
     page 3, then 3 will be returned.
 
@@ -120,31 +122,36 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
 
     # Fetch the incoming request URL.
     request_fields = parse_qs(request_url)
-    print("IN", request_fields, maximum_allowed_page)
-    
+
     try:
         current_page_value = int(request_fields["page"][0])
     except KeyError:
-        print("'page' does not exist in query string.")
+        # If no page is set in the query, assume page 1.
+        current_page_value = 1
     except Exception:
         print("Unable to parse 'page' from query string.")
-    else:
-        prev = str(current_page_value - 1) if current_page_value >= 2 else str(current_page_value)
-        
-        # If the current page is the maximum allowable page, then return this.
-        if current_page_value == maximum_allowed_page:
-            next_ = str(current_page_value)
+        return
 
-        # If the current page is less than the maxium allowable, increment by +1 and return.
-        elif current_page_value < maximum_allowed_page:
-            next_ = str(current_page_value + 1)
+
+    if current_page_value >= 2:
+        prev = str(current_page_value - 1)
+    elif current_page_value == 1:
+        prev = None
+
+    # If the current page is the maximum allowable page, then return this.
+    if current_page_value == maximum_allowed_page:
+        next_ = str(current_page_value)
+
+    # If the current page is less than the maxium allowable, increment by +1 and return.
+    elif current_page_value < maximum_allowed_page:
+        next_ = str(current_page_value + 1)
 
 
     return prev, next_
 
+
 def results_with_pagination_applied(
-    count: int, all_results: Results, page_size: int, page_number: int | None,
-    request
+    count: int, all_results: Results, page_size: int, page_number: int | None, request
 ) -> Results:
     """Apply pagination to the results and return a subset.
 
@@ -157,19 +164,35 @@ def results_with_pagination_applied(
     Returns:
     A SearchResults object with a subset of the results, and the prev|next fields populated.
     """
-  
-
     # Batch the annotations into the required size (100 is the default).
     batched_annotations = list(batched(all_results.annotations, n=page_size))
 
-    prev_field, next_field = construct_prev_and_next_response_fields(request_url=str(request.url),
-                                                                     maximum_allowed_page=len(batched_annotations))
+    prev_field, next_field = construct_prev_and_next_response_fields(
+        request_url=str(request.url), maximum_allowed_page=len(batched_annotations)
+    )
+
+    incoming_url = str(request.url)
+    if prev_field is not None:
+        previous_url = re.sub(r"&page=\d+", f"&page={prev_field}", incoming_url)
+    else:
+        previous_url = None
+
+    if next_field is not None:
+        if "&page=" in incoming_url:
+            next_url = re.sub(r"&page=\d+", f"&page={next_field}", incoming_url)
+        else:
+            next_url = incoming_url + f"&page={next_field}"
+    else:
+        next_url = None
 
     # If no page number is passed, then just return the first page of results.
     # This is the default path, so the user will just see 100 results or less.
     if page_number is None:
         return SearchResults(
-            count=count, results=Results(summary=all_results.summary, annotations=batched_annotations[0])
+            previous=previous_url,
+            next=next_url,
+            count=count,  #
+            results=Results(summary=all_results.summary, annotations=batched_annotations[0]),
         )
 
     # If the user passes a page number, return that specific batch or raise an error if not applicable.
@@ -179,10 +202,7 @@ def results_with_pagination_applied(
         raise InvalidPageNumberError from None
 
     paginated_results = Results(summary=all_results.summary, annotations=specified_annotation_batch)
-    return SearchResults(previous=prev_field,
-                         next=next_field,
-                         count=count, 
-                         results=paginated_results)
+    return SearchResults(previous=previous_url, next=next_url, count=count, results=paginated_results)
 
 
 def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest, request) -> SearchResults:
@@ -210,7 +230,5 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest,
         all_results=all_results,
         page_size=params.page_size,
         page_number=params.page,
-        request=request
+        request=request,
     )
-
-
