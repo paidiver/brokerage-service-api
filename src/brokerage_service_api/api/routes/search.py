@@ -63,7 +63,7 @@ async def search_taxonomies(
 
 
 @router.get("/annotations/search", response_model=SearchResults)
-def brokerage_search(request, params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
+def brokerage_search(request: Request, params: Annotated[AnnotationSearchRequest, Query()]) -> SearchResults:
     """Search for annotations across brokerage services.
 
     Queries both the BODC and JNCC Annotations APIs and returns the
