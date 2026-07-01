@@ -1,7 +1,7 @@
 """Models for the brokerage search endpoint."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -85,10 +85,29 @@ class Results(BaseModel):
     annotations: list[Result]
 
 
+class ResultMetadata(BaseModel):
+    """A representation of the search result metadata."""
+
+    total_results: int = 0
+    bodc_results: int = 0
+    jncc_results: int = 0
+
+    def model_post_init(self, context: Any) -> None:
+        """Define the total results as the sum of BODC + JNCC results."""
+        self.total_results = self.bodc_results + self.jncc_results
+
+
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
 
     count: int
     next: str | None = None
     previous: str | None = None
+    result_metadata: ResultMetadata | None = None
     results: Results
+
+    def model_post_init(self, context: Any) -> None:
+        """Post initialise the result metadata using the results."""
+        bodc_results = sum(1 for result in self.results.annotations if result.source == "BODC")
+        jncc_results = sum(1 for result in self.results.annotations if result.source == "JNCC")
+        self.result_metadata = ResultMetadata(bodc_results=bodc_results, jncc_results=jncc_results)
