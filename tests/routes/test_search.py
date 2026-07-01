@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from brokerage_service_api.models.sources import SourceConfig
+from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import TaxaNamePartParams, TaxonWormsLike
 from brokerage_service_api.upstream.annotations import UpstreamResponse
 from starlette import status
@@ -85,8 +85,8 @@ async def test_search_taxa_by_name_success(
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "results" in data
-    assert data["results"][0]["ok"] is True
-    assert data["results"][1]["ok"] is True
+    assert len(data["results"]) == 2
+    assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
 
 
 @pytest.mark.anyio
@@ -115,8 +115,7 @@ async def test_search_taxa_with_empty_results(client: "httpx_type.AsyncClient", 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "results" in data
-    assert len(data["results"]) == 1
-    assert data["results"][0]["data"] == []
+    assert data["results"] == []
 
 
 @pytest.mark.anyio
@@ -142,10 +141,7 @@ async def test_search_taxa_request_error_handling(client: "httpx_type.AsyncClien
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data["results"]) == 1
-    assert data["results"][0]["ok"] is False
-    assert data["results"][0]["status_code"] is None
-    assert data["results"][0]["error"]["type"] == "ConnectTimeout"
+    assert data["results"] == []
 
 
 @pytest.mark.anyio
@@ -175,10 +171,7 @@ async def test_search_taxa_http_status_error_handling(
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data["results"]) == 1
-    assert data["results"][0]["ok"] is False
-    assert data["results"][0]["status_code"] is None
-    assert data["results"][0]["error"]["type"] == "HTTPStatusError"
+    assert data["results"] == []
 
 
 @pytest.mark.anyio
@@ -245,14 +238,16 @@ async def test_search_taxa_response_structure(client: "httpx_type.AsyncClient", 
     assert isinstance(data["results"], list)
 
     result = data["results"][0]
-    assert "source" in result
-    assert "method" in result
-    assert "path" in result
+    assert "AphiaID" in result
+    assert "scientificname" in result
     assert "url" in result
-    assert "ok" in result
-    assert "status_code" in result
-    assert "data" in result
-    assert "error" in result
+    assert "status" in result
+    assert "rank" in result
+    assert "valid_AphiaID" in result
+    assert "valid_name" in result
+    assert "modified" in result
+    assert "cached_at" in result
+    assert "parent_AphiaID" in result
 
 
 @pytest.mark.anyio
@@ -285,8 +280,8 @@ async def test_search_taxa_filter_by_single_source(
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data["results"]) == 1
-    assert data["results"][0]["source"]["name"] == "bodc"
+    assert len(data["results"]) == 2
+    assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
     mock_search.assert_called_once()
 
 
@@ -331,8 +326,8 @@ async def test_search_taxa_filter_by_multiple_sources(
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    source_names = {result["source"]["name"] for result in data["results"]}
-    assert source_names == {"bodc", "jncc"}
+    assert len(data["results"]) == 2
+    assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
 
 
 @pytest.mark.anyio

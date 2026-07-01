@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 import pytest
-from brokerage_service_api.models.sources import SourceConfig
+from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.upstream import (
     AnnotationApiClient,
     AnnotationSearchParams,
@@ -83,7 +83,7 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
         assert response.data.results.annotations[0].image_filename == "image-1.jpg"
         assert response.data.results.annotations[0].label_aphia_id == COD_APHIA_ID
         assert response.error is None
-        assert response.path == "/api/annotations/search/"
+        assert response.path == "/annotations/search/"
         assert seen_requests[0].url == (
             "http://bodc-api:8000/api/annotations/search/"
             "?page=2&aphia_ids%5B%5D=126436&aphia_ids%5B%5D=141433&calculate_summary=true"
@@ -111,7 +111,7 @@ def test_client_encodes_path_params(jncc_source: SourceConfig) -> None:
         assert response.ok is True
         assert response.path == "/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
         assert seen_requests[0].url == (
-            "http://jncc-api:8000/annotations/worms_cache/ajax_by_name_part/Abra%20alba/?combine_vernaculars=true"
+            "http://jncc-api:8000/api/annotations/worms_cache/ajax_by_name_part/Abra%20alba/?combine_vernaculars=true"
         )
 
     run(exercise())
@@ -204,7 +204,7 @@ def test_client_returns_error_metadata_for_request_errors() -> None:
     source = SourceConfig(
         name="example",
         label="Example",
-        base_url="https://example.test/",
+        base_url="https://example.test/api",
     )
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -245,6 +245,7 @@ def test_client_methods_map_to_expected_paths(bodc_source: SourceConfig) -> None
             await client.get_annotation("annotation-1")
             await client.list_labels()
             await client.get_label("label-1")
+            await client.health_check()
 
     run(exercise())
 
@@ -260,6 +261,7 @@ def test_client_methods_map_to_expected_paths(bodc_source: SourceConfig) -> None
         "/api/annotations/annotations/annotation-1/",
         "/api/labels/labels/",
         "/api/labels/labels/label-1/",
+        "/api/health/",
     ]
 
 
