@@ -13,7 +13,6 @@ from brokerage_service_api.utilities.search_compiler import (
     InvalidPageNumberError,
     fetch_combined_results_from_annotation_apis,
 )
-from brokerage_service_api.utilities.search_compiler import fetch_combined_results_from_annotation_apis
 from brokerage_service_api.utilities.source import calculate_available_sources
 
 router = APIRouter()

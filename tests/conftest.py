@@ -5,9 +5,8 @@ from collections.abc import AsyncGenerator, Generator
 import httpx
 import pytest
 from brokerage_service_api.api.app import create_app
-from fastapi import FastAPI, Request
 from brokerage_service_api.schemas.source import SourceConfig
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 DEFAULT_PORT = 8000
 
