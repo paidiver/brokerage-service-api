@@ -115,7 +115,7 @@ def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_pa
     user is on page 2, and this is the last page, then 2 will be returned.
 
     'next_' will update by +1 if allowable. For example is there are 4 batches of results, and the user is on
-    page 3, then 3 will be returned.
+    page 3, then 4 will be returned.
 
     """
     # Define the 'prev' and 'next' as None, unless further logic dictates they need to be changed.
