@@ -1,15 +1,18 @@
 """Code to call the upstream annotations API's and compile the results."""
 
+import asyncio
 import os
 import re
 from itertools import batched
+from typing import Any
 from urllib.parse import parse_qs
 
-import requests as rq
 from fastapi import Request
 
 from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
-from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
+from brokerage_service_api.schemas.source import SourceConfig
+from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
+from brokerage_service_api.upstream.annotations import AnnotationApiClient
 
 JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api/annotations/search/")
 BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api/annotations/search/")
@@ -58,34 +61,83 @@ class AnnotationsAPIFetcher:
         if endpoint is None:
             raise UnknownFlavourError(f"{self.flavour} is not recognised.")
 
+        source = SourceConfig(name=self.flavour.lower(), label=self.flavour, base_url=endpoint, enabled=True)
+        upstream_params = self._build_upstream_params(self.params)
+
         try:
-            response = rq.get(f"{endpoint}{self.params.to_query_string()}", timeout=30)
-            response.raise_for_status()
-        except rq.RequestException as exc:
-            # Exit early if the request fails.
+            response = asyncio.run(self._request_annotations(source=source, params=upstream_params))
+        except Exception as exc:
             print(f"Something went wrong calling the {self.flavour} annotations API {exc}.")
             return
 
-        try:
-            results = response.json().get("results")
-        except ValueError:
-            # Exit early if the JSON is malformed in the response.
-            print(f"{self.flavour} returned invalid JSON.")
+        if not getattr(response, "ok", False):
+            error_message = getattr(getattr(response, "error", None), "message", None)
+            if error_message is None:
+                error_message = str(getattr(response, "error", ""))
+            print(f"Something went wrong calling the {self.flavour} annotations API {error_message}.")
             return
 
-        # Exit early if there is no 'results' object entry in the JSON.
+        data = getattr(response, "data", None)
+        if data is None:
+            return
+
+        results = getattr(data, "results", None)
         if results is None:
             return
 
-        if (summary := results.get("summary")) is not None:
-            self._summary = Summary(**summary)
+        summary = getattr(results, "summary", None)
+        if summary is not None:
+            self._summary = Summary(**summary.model_dump())
 
-        if (annotations := results.get("annotations")) is not None:
-            self._results = [
-                Result.construct_instance_from_raw_response(result, source=self.flavour) for result in annotations
-            ]
-            # This is only called when we have a result set.
+        annotations = getattr(results, "annotations", None)
+        if annotations is not None:
+            self._results = [self._construct_result_from_annotation(result, source=self.flavour) for result in annotations]
             self.order_results()
+
+    async def _request_annotations(self, source: SourceConfig, params: AnnotationSearchParams) -> Any:
+        """Fetch annotations using the shared upstream client."""
+        client = AnnotationApiClient(source)
+        try:
+            return await client.search_annotations(params)
+        finally:
+            await client.aclose()
+
+    @staticmethod
+    def _build_upstream_params(params: AnnotationSearchRequest) -> AnnotationSearchParams:
+        """Convert the brokerage search request into upstream client parameters."""
+        return AnnotationSearchParams(
+            aphia_ids=params.aphia_ids,
+            page=params.page,
+            page_size=params.page_size,
+            calculate_summary=params.calculate_summary,
+            deployment=params.deployment,
+            exclude_annotation_set=params.exclude_annotation_set,
+            exclude_aphia_ids=params.exclude_aphia_ids,
+            exclude_image_set=params.exclude_image_set,
+            fauna_attraction=params.fauna_attraction,
+            image_set_name=params.image_set_name,
+            include_descendants=params.include_descendants,
+            marine_zone=params.marine_zone,
+            max_lat=params.max_lat,
+            max_lon=params.max_lon,
+            min_lat=params.min_lat,
+            min_lon=params.min_lon,
+            name_part=params.name_part,
+            platform=params.platform,
+            project=params.project,
+            return_image_annotation_name_info=params.return_image_annotation_name_info,
+        )
+
+    @staticmethod
+    def _construct_result_from_annotation(raw_response: Any, source: str) -> Result:
+        """Build a brokerage Result from an upstream annotation object."""
+        if hasattr(raw_response, "model_dump"):
+            annotation_data = raw_response.model_dump()
+        else:
+            annotation_data = dict(raw_response)
+
+        annotation_data["annotation_creation_datetime"] = annotation_data.pop("creation_datetime", None)
+        return Result.construct_instance_from_raw_response(annotation_data, source=source)
 
     @property
     def results(self) -> list[Result]:
