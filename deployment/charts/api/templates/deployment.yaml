@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "brokerage-service-api.fullname" . }}
+  labels:
+    app: {{ include "brokerage-service-api.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: {{ .Values.componentName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: {{ .Values.componentName }}
+    spec:
+      {{- with .Values.image.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ . | quote }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: brokerage-service-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: BODC_ANNOTATIONS_API_URL
+              value: {{ .Values.env.bodcAnnotationsApiUrl | quote }}
+            - name: JNCC_ANNOTATIONS_API_URL
+              value: {{ .Values.env.jnccAnnotationsApiUrl | quote }}
+          command: ["uvicorn", "brokerage_service_api.api.app:app"]
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8020"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.container.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

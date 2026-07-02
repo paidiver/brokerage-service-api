@@ -27,7 +27,7 @@ services:
         condition: service_started
     networks:
       - shared_services
- 
+
   annotations-api-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -50,7 +50,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
+
   annotations-api-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -73,7 +73,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
+
   annotations-migrate-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -88,7 +88,7 @@ services:
     command: python manage.py migrate
     networks:
       - shared_services
- 
+
   annotations-migrate-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -103,7 +103,7 @@ services:
     command: python manage.py migrate
     networks:
       - shared_services
- 
+
   annotations-seed-data-jncc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -127,21 +127,21 @@ services:
           echo "Annotations database already has data; skipping ingest seed"
         else
           status=$$?
- 
+
           if [ "$$status" -eq 42 ]; then
             echo "Annotations database is empty; creating user/token and running ingest_data"
             random_password=$$(openssl rand -base64 12)
             random_username=$$(openssl rand -hex 6)
             user_output=$$(python manage.py create_user_with_token "$$random_username" "$$random_password" 2>&1)
             echo "$$user_output"
- 
+
             API_AUTH_TOKEN=$$(printf "%s\n" "$$user_output" | sed -n "s/.*API token.*: //p" | tail -n 1)
- 
+
             if [ -z "$$API_AUTH_TOKEN" ]; then
               echo "Could not extract API token from create_user_with_token output"
               exit 1
             fi
- 
+
             export API_AUTH_TOKEN
             export API_BASE_URL="http://annotations-api-jncc:8000"
             BASE_PATH="$${BASE_PATH:-/app/examples}"
@@ -156,7 +156,7 @@ services:
       '
     networks:
       - shared_services
- 
+
   annotations-seed-data-bodc:
     image: ghcr.io/paidiver/annotations-api:latest
     env_file:
@@ -180,23 +180,22 @@ services:
           echo "Annotations database already has data; skipping ingest seed"
         else
           status=$$?
- 
+
           if [ "$$status" -eq 42 ]; then
             echo "Annotations database is empty; creating user/token and running ingest_data"
             random_password=$$(openssl rand -base64 12)
             random_username=$$(openssl rand -hex 6)
             user_output=$$(python manage.py create_user_with_token "$$random_username" "$$random_password" 2>&1)
             echo "$$user_output"
- 
+
             API_AUTH_TOKEN=$$(printf "%s\n" "$$user_output" | sed -n "s/.*API token.*: //p" | tail -n 1)
- 
+
             if [ -z "$$API_AUTH_TOKEN" ]; then
               echo "Could not extract API token from create_user_with_token output"
               exit 1
             fi
- 
+
             export API_AUTH_TOKEN
- 
             export API_BASE_URL="http://annotations-api-bodc:8000"
             BASE_PATH="$${BASE_PATH:-/app/examples}"
             python /app/examples/ingest_data.py \
@@ -210,7 +209,7 @@ services:
       '
     networks:
       - shared_services
- 
+
   annotations-api-db-jncc:
     image: postgis/postgis:16-3.5
     container_name: annotations-api-db-jncc
@@ -232,7 +231,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
+
   annotations-api-db-bodc:
     image: postgis/postgis:16-3.5
     container_name: annotations-api-db-bodc
@@ -254,7 +253,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
+
   worms-db:
     image: postgres:18
     container_name: worms-cache-db
@@ -275,7 +274,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
+
   worms-cache-migrate:
     image: ghcr.io/paidiver/worms-cache:latest
     env_file:
@@ -290,7 +289,7 @@ services:
     command: python manage.py migrate
     networks:
       - shared_services
- 
+
   worms-cache:
     image: ghcr.io/paidiver/worms-cache:latest
     env_file:
@@ -312,8 +311,7 @@ services:
       retries: 10
     networks:
       - shared_services
- 
- 
+
   worms-cache-seed:
     image: ghcr.io/paidiver/worms-cache:latest
     env_file:
@@ -331,7 +329,6 @@ services:
       bash -c '
         python manage.py shell -c "from django.apps import apps; Model = apps.get_model(\"api\", \"Taxon\"); raise SystemExit(0 if Model.objects.exists() else 42)"
         status=$$?
- 
         if [ "$$status" -eq 0 ]; then
           echo "Worms cache database already has data; skipping ingest_worms"
         elif [ "$$status" -eq 42 ]; then
@@ -358,13 +355,12 @@ services:
     restart: unless-stopped
     networks:
       - shared_services
- 
- 
+
 volumes:
   annotations_pg_data_jncc:
   annotations_pg_data_bodc:
   worms_pg_data:
- 
+
 networks:
   shared_services:
     driver: bridge

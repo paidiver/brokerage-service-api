@@ -1,5 +1,6 @@
 """FastAPI module that represent the root of the API."""
 
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -12,7 +13,7 @@ from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
 from brokerage_service_api.api.routes import brokerage_search_router, source_health_router
-from brokerage_service_api.registry import get_source_registry
+from brokerage_service_api.utilities.source import get_source_registry
 
 
 class HealthResponse(BaseModel):
@@ -43,6 +44,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         title="Brokerage Service API",
         version="0.1.0",
+        root_path=os.getenv("FASTAPI_ROOT_PATH", ""),
         openapi_url="/openapi.json",
         docs_url="/docs",
         openapi_version="3.0.3",
@@ -126,7 +128,7 @@ def create_app() -> FastAPI:
     app.include_router(
         source_health_router,
         prefix="/api",
-        tags=["Health Check"],
+        tags=["Sources"],
     )
 
     app.include_router(

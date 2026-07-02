@@ -1,6 +1,6 @@
 """Clients and configuration for upstream services."""
 
-from brokerage_service_api.models.sources import SourceConfig, UpstreamTimeout
+from brokerage_service_api.schemas.source import SourceConfig, UpstreamTimeout
 from brokerage_service_api.schemas.upstream import (
     Annotation,
     AnnotationSearchParams,
