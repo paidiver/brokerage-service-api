@@ -9,7 +9,7 @@ from urllib.parse import quote
 import httpx
 from pydantic import TypeAdapter, ValidationError
 
-from brokerage_service_api.models.sources import SourceConfig
+from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import (
     Annotation,
     AnnotationExportData,
@@ -55,6 +55,16 @@ class UpstreamResponse(Generic[ResponseDataT]):
     status_code: int | None
     data: ResponseDataT | None = None
     error: UpstreamError | None = None
+
+    def raise_for_status(self) -> None:
+        """Raise an exception if the upstream request was not successful."""
+        if not self.ok:
+            error_message = self.error.message if self.error else "No error details"
+            raise httpx.HTTPStatusError(
+                f"Upstream failed with status {self.status_code}: {error_message}",
+                request=httpx.Request(self.method, self.url),
+                response=httpx.Response(self.status_code or 0, request=httpx.Request(self.method, self.url)),
+            )
 
 
 class AnnotationApiClient:
@@ -105,7 +115,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            "/api/annotations/search/",
+            "/annotations/search/",
             response_schema=PaginatedSearchResultItemList,
             params=params,
         )
@@ -123,7 +133,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            "/api/annotations/search/grouped/",
+            "/annotations/search/grouped/",
             response_schema=PaginatedGroupedSearchResultItemList,
             params=params,
         )
@@ -148,6 +158,17 @@ class AnnotationApiClient:
             params=params,
         )
 
+    async def health_check(self) -> UpstreamResponse[dict]:
+        """Check the health of the upstream API.
+
+        Returns:
+            An UpstreamResponse object containing the response data or error information.
+        """
+        return await self._get(
+            "/health/",
+            response_schema=dict,
+        )
+
     async def list_image_sets(self, params: PaginationParams | None = None) -> UpstreamResponse[PaginatedImageSetList]:
         """List image sets.
 
@@ -157,7 +178,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get("/api/images/image_sets/", response_schema=PaginatedImageSetList, params=params)
+        return await self._get("/images/image_sets/", response_schema=PaginatedImageSetList, params=params)
 
     async def get_image_set(self, image_set_id: str) -> UpstreamResponse[ImageSet]:
         """Get an image set by ID.
@@ -169,7 +190,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            f"/api/images/image_sets/{self._path_param(image_set_id)}/",
+            f"/images/image_sets/{self._path_param(image_set_id)}/",
             response_schema=ImageSet,
         )
 
@@ -182,7 +203,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get("/api/images/images/", response_schema=PaginatedImageList, params=params)
+        return await self._get("/images/images/", response_schema=PaginatedImageList, params=params)
 
     async def get_image(self, image_id: str) -> UpstreamResponse[Image]:
         """Get an image by ID.
@@ -193,7 +214,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get(f"/api/images/images/{self._path_param(image_id)}/", response_schema=Image)
+        return await self._get(f"/images/images/{self._path_param(image_id)}/", response_schema=Image)
 
     async def list_annotation_sets(
         self,
@@ -208,7 +229,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            "/api/annotations/annotation_sets/",
+            "/annotations/annotation_sets/",
             response_schema=PaginatedAnnotationSetList,
             params=params,
         )
@@ -226,7 +247,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            f"/api/annotations/annotation_sets/{self._path_param(annotation_set_id)}/",
+            f"/annotations/annotation_sets/{self._path_param(annotation_set_id)}/",
             response_schema=AnnotationSet,
         )
 
@@ -242,7 +263,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get("/api/annotations/annotations/", response_schema=PaginatedAnnotationList, params=params)
+        return await self._get("/annotations/annotations/", response_schema=PaginatedAnnotationList, params=params)
 
     async def export_annotation_data(
         self,
@@ -268,7 +289,7 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get(
-            f"/api/annotations/annotations/{self._path_param(annotation_id)}/",
+            f"/annotations/annotations/{self._path_param(annotation_id)}/",
             response_schema=Annotation,
         )
 
@@ -281,7 +302,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get("/api/labels/labels/", response_schema=PaginatedLabelList, params=params)
+        return await self._get("/labels/labels/", response_schema=PaginatedLabelList, params=params)
 
     async def get_label(self, label_id: str) -> UpstreamResponse[Label]:
         """Get a label by ID.
@@ -292,7 +313,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get(f"/api/labels/labels/{self._path_param(label_id)}/", response_schema=Label)
+        return await self._get(f"/labels/labels/{self._path_param(label_id)}/", response_schema=Label)
 
     async def _get(
         self,

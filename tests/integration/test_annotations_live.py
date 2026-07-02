@@ -6,10 +6,10 @@ import os
 from collections.abc import Iterable
 
 import pytest
-from brokerage_service_api.models.sources import SourceConfig
-from brokerage_service_api.registry import get_source_registry
+from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, PaginationParams
 from brokerage_service_api.upstream import AnnotationApiClient, UpstreamResponse
+from brokerage_service_api.utilities.source import get_source_registry
 from dotenv import load_dotenv
 from starlette import status
 

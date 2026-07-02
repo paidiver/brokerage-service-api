@@ -5,7 +5,7 @@ from collections.abc import AsyncGenerator, Generator
 import httpx
 import pytest
 from brokerage_service_api.api.app import create_app
-from brokerage_service_api.models.sources import SourceConfig
+from brokerage_service_api.schemas.source import SourceConfig
 from fastapi import FastAPI
 
 DEFAULT_PORT = 8000
@@ -59,7 +59,7 @@ def bodc_source() -> SourceConfig:
     return SourceConfig(
         name="bodc",
         label="British Oceanographic Data Centre",
-        base_url="http://bodc-api:8000/",
+        base_url="http://bodc-api:8000/api",
         enabled=True,
     )
 
@@ -74,6 +74,6 @@ def jncc_source() -> SourceConfig:
     return SourceConfig(
         name="jncc",
         label="Joint Nature Conservation Committee",
-        base_url="http://jncc-api:8000/",
+        base_url="http://jncc-api:8000/api",
         enabled=True,
     )
