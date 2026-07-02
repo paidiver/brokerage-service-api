@@ -112,6 +112,7 @@ IMAGE_SET_FIELDS = [
     ("image-set-long-max", "", "image_set_long_max"),
 ]
 
+
 def build_annotation_export_zip(
     *,
     annotations: list[dict[str, Any]],

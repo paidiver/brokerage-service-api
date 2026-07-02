@@ -144,9 +144,7 @@ def test_build_annotation_export_zip_writes_transposed_set_csvs_with_uris() -> N
                 "image_platform_uri": "https://example.org/platform",
                 "image_sensor_name": "Sensor One",
                 "image_sensor_uri": "https://example.org/sensor",
-                "image_creators": [
-                    {"name": "Image Creator One", "uri": "https://example.org/image-creator-one"}
-                ],
+                "image_creators": [{"name": "Image Creator One", "uri": "https://example.org/image-creator-one"}],
                 "image_pi_name": "Image PI One",
                 "image_pi_uri": "https://example.org/image-pi",
                 "image_license_name": "Image License One",

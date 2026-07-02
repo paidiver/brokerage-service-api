@@ -42,14 +42,11 @@ async def export_annotations(
             detail="No matching upstream sources found.",
         )
 
-    upstream_params = AnnotationSearchParams(
-        **params.model_dump(exclude={"sources"}, exclude_none=True)
-    )
+    upstream_params = AnnotationSearchParams(**params.model_dump(exclude={"sources"}, exclude_none=True))
 
     try:
         tasks = [
-            AnnotationApiClient(source).export_annotation_data(params=upstream_params)
-            for source in available_sources
+            AnnotationApiClient(source).export_annotation_data(params=upstream_params) for source in available_sources
         ]
         upstream_responses = await asyncio.gather(*tasks)
     except (httpx.RequestError, httpx.HTTPStatusError) as exc:
