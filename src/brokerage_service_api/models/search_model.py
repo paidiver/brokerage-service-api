@@ -11,7 +11,7 @@ class Result(BaseModel):
     """A representation of an individual result."""
 
     source: Literal["BODC", "JNCC"]
-    uuid: str
+    uuid: UUID
     image_filename: str
     image_handle: str
     image_uuid: UUID

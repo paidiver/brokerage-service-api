@@ -14,8 +14,8 @@ from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
 
-JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api/annotations/search/")
-BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api/annotations/search/")
+JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api")
+BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api")
 
 ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT, "BODC": BODC_ANNOTATIONS_API_ENDPOINT}
 
@@ -63,7 +63,6 @@ class AnnotationsAPIFetcher:
 
         source = SourceConfig(name=self.flavour.lower(), label=self.flavour, base_url=endpoint, enabled=True)
         upstream_params = self._build_upstream_params(self.params)
-
         try:
             response = asyncio.run(self._request_annotations(source=source, params=upstream_params))
         except Exception as exc:
