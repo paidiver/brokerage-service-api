@@ -331,6 +331,20 @@ class Label(UpstreamModel):
     annotation_set_id: UUID
 
 
+class CreatorExportItem(BaseModel):
+    """A representation of a creator item to export."""
+    name: str | None = None
+    uri: str | None = None
+
+
+class AnnotationExportData(BaseModel):
+    """A representation of the data to export from the annotations API."""
+    annotations: list[dict] = []
+    images: list[dict] = []
+    annotation_sets: list[dict] = []
+    image_sets: list[dict] = []
+
+
 type PaginatedGroupedSearchResultItemList = SearchPaginatedResponse[GroupedSearchResultRow]
 type PaginatedSearchResultItemList = SearchPaginatedResponse[SearchResultRow]
 type PaginatedImageSetList = PaginatedResponse[ImageSet]
