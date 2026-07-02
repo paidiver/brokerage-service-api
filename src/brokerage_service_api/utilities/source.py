@@ -6,11 +6,14 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
+import httpx
 import yaml
+from fastapi import Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from brokerage_service_api.fixtures.constants import ENV_SOURCE_URL_MAP
-from brokerage_service_api.models.sources import SourceConfig
+from brokerage_service_api.schemas.source import SourceConfig
+from brokerage_service_api.upstream.annotations import AnnotationApiClient
 
 DEFAULT_SOURCES_FILE = Path(__file__).resolve().parent.parent / "fixtures" / "source.yaml"
 
@@ -86,3 +89,44 @@ def get_source_registry() -> SourceRegistry:
         SourceRegistry: The validated and cached registry of sources.
     """
     return load_sources()
+
+
+async def check_source_health(source: SourceConfig) -> dict:
+    """Check the health status of a source API.
+
+    Args:
+        source (SourceConfig): The source configuration object.
+
+    Returns:
+        dict: A dictionary with the health status of the source.
+    """
+    try:
+        response = await AnnotationApiClient(source).health_check()
+        response.raise_for_status()
+
+        status = response.data.get("status", "unknown")
+
+        return {"source_name": source.name, "source_label": source.label, "base_url": source.base_url, "status": status}
+    except httpx.HTTPStatusError:
+        return {
+            "source_name": source.name,
+            "source_label": source.label,
+            "base_url": source.base_url,
+            "status": "unhealthy",
+        }
+
+
+def calculate_available_sources(request: Request, sources: list[str] | None) -> list[SourceConfig]:
+    """Calculate the available sources based on the request and provided source names.
+
+    Args:
+        request: The incoming request object.
+        sources: Optional list of source names to filter the search.
+
+    Returns:
+        List of SourceConfig: The list of available sources based on the request and provided source names.
+    """
+    configured_sources = request.app.state.sources
+    if sources:
+        return [source for source in configured_sources if source.name in sources]
+    return configured_sources
