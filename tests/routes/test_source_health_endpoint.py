@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
-import httpx
 import pytest
 from brokerage_service_api.api.app import app
 from brokerage_service_api.schemas.source import SourceConfig
@@ -140,6 +139,7 @@ class TestGetSourcesEndpoint:
         jncc_source: SourceConfig,
     ) -> None:
         """Test successful retrieval of all sources health status."""
+        LEN_SOURCES = 2
         client = TestClient(app, raise_server_exceptions=False)
         mock_sources = [bodc_source, jncc_source]
 
@@ -183,7 +183,7 @@ class TestGetSourcesEndpoint:
 
             assert bodc_result["status"] == "healthy"
             assert jncc_result["status"] == "healthy"
-            assert mock_health_check.await_count == 2
+            assert mock_health_check.await_count == LEN_SOURCES
 
     def test_get_sources_empty(self) -> None:
         """Test retrieval when no sources are configured."""

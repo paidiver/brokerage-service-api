@@ -3,7 +3,6 @@
 import asyncio
 from typing import Annotated
 
-import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from brokerage_service_api.models.search_model import SearchResults
@@ -61,9 +60,7 @@ async def search_taxonomies(
     """Search for taxonomies using the external API."""
     available_sources = calculate_available_sources(request, sources)
 
-    tasks = [
-        AnnotationApiClient(source).search_taxa_by_name_part(name_part, params) for source in available_sources
-    ]
+    tasks = [AnnotationApiClient(source).search_taxa_by_name_part(name_part, params) for source in available_sources]
     results = await asyncio.gather(*tasks)
 
     flattened_results = flatten_unique(

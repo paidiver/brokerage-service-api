@@ -48,6 +48,7 @@ async def test_search_taxa_by_name_success(
     client: "httpx_type.AsyncClient", bodc_source: SourceConfig, jncc_source: SourceConfig
 ) -> None:
     """Test successful taxonomy search returns results from all sources."""
+    LEN_RESULTS = 2
     upstream_response_1 = UpstreamResponse(
         source=bodc_source,
         method="GET",
@@ -85,7 +86,7 @@ async def test_search_taxa_by_name_success(
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "results" in data
-    assert len(data["results"]) == 2
+    assert len(data["results"]) == LEN_RESULTS
     assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
 
 
@@ -255,6 +256,7 @@ async def test_search_taxa_filter_by_single_source(
     client: "httpx_type.AsyncClient", bodc_source: SourceConfig, jncc_source: SourceConfig
 ) -> None:
     """Test that sources query parameter filters results to specific source."""
+    LEN_RESULTS = 2
     upstream_response = UpstreamResponse(
         source=bodc_source,
         method="GET",
@@ -280,7 +282,7 @@ async def test_search_taxa_filter_by_single_source(
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data["results"]) == 2
+    assert len(data["results"]) == LEN_RESULTS
     assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
     mock_search.assert_called_once()
 
@@ -290,6 +292,7 @@ async def test_search_taxa_filter_by_multiple_sources(
     client: "httpx_type.AsyncClient", bodc_source: SourceConfig, jncc_source: SourceConfig
 ) -> None:
     """Test that sources parameter can filter by multiple sources."""
+    LEN_RESULTS = 2
     upstream_response_bodc = UpstreamResponse(
         source=bodc_source,
         method="GET",
@@ -326,7 +329,7 @@ async def test_search_taxa_filter_by_multiple_sources(
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data["results"]) == 2
+    assert len(data["results"]) == LEN_RESULTS
     assert {result["AphiaID"] for result in data["results"]} == {1066, 1071}
 
 
