@@ -11,10 +11,9 @@ from brokerage_service_api.utilities.annotation_export import build_annotation_e
 
 def _read_zip_csv(zip_bytes: bytes, filename: str) -> list[list[str]]:
     """Read a CSV file from ZIP bytes."""
-    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as archive:
-        with archive.open(filename) as csv_file:
-            text = io.TextIOWrapper(csv_file, encoding="utf-8", newline="")
-            return list(csv.reader(text))
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as archive, archive.open(filename) as csv_file:
+        text = io.TextIOWrapper(csv_file, encoding="utf-8", newline="")
+        return list(csv.reader(text))
 
 
 def test_build_annotation_export_zip_contains_expected_files() -> None:
