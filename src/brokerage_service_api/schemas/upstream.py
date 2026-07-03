@@ -130,7 +130,7 @@ class AnnotationSearchRequest(BaseModel):
 
         # If aphia ID's are in the model, then format them to suit the upstream API's.
         dumped_model.pop("aphia_ids")
-        dumped_model_as_string = f"?{self.aphia_ids_in_query_string}" f"&{urlencode(dumped_model)}".replace(
+        dumped_model_as_string = f"?{self.aphia_ids_in_query_string}&{urlencode(dumped_model)}".replace(
             "True", "true"
         ).replace("False", "false")
 
@@ -329,6 +329,22 @@ class Label(UpstreamModel):
     name_is_lowest: bool | None = None
     identification_qualifier: str | None = None
     annotation_set_id: UUID
+
+
+class CreatorExportItem(BaseModel):
+    """A representation of a creator item to export."""
+
+    name: str | None = None
+    uri: str | None = None
+
+
+class AnnotationExportData(BaseModel):
+    """A representation of the data to export from the annotations API."""
+
+    annotations: list[dict] = []
+    images: list[dict] = []
+    annotation_sets: list[dict] = []
+    image_sets: list[dict] = []
 
 
 type PaginatedGroupedSearchResultItemList = SearchPaginatedResponse[GroupedSearchResultRow]

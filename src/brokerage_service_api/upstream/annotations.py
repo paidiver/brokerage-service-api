@@ -12,6 +12,7 @@ from pydantic import TypeAdapter, ValidationError
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import (
     Annotation,
+    AnnotationExportData,
     AnnotationSearchParams,
     AnnotationSet,
     Image,
@@ -263,6 +264,20 @@ class AnnotationApiClient:
             An UpstreamResponse object containing the response data or error information.
         """
         return await self._get("/annotations/annotations/", response_schema=PaginatedAnnotationList, params=params)
+
+    async def export_annotation_data(
+        self,
+        params: AnnotationSearchParams | None = None,
+    ) -> UpstreamResponse[AnnotationExportData]:
+        """Export annotation data.
+
+        Args:
+            params: Optional query parameters to include in the request.
+
+        Returns:
+            An UpstreamResponse object containing the response data or error information.
+        """
+        return await self._get("/annotations/search/export-data/", response_schema=AnnotationExportData, params=params)
 
     async def get_annotation(self, annotation_id: str) -> UpstreamResponse[Annotation]:
         """Get an annotation by ID.
