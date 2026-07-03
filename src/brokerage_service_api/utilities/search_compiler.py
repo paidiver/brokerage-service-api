@@ -1,8 +1,8 @@
 """Code to call the upstream annotations API's and compile the results."""
 
 import asyncio
-import os
 import re
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from itertools import batched
 from typing import Any
@@ -10,12 +10,11 @@ from urllib.parse import parse_qs
 
 from fastapi import Request
 
-from brokerage_service_api.models.search_model import Result, Results, SearchResults, Summary
+from brokerage_service_api.models.search_model import Result, ResultMetadata, Results, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
 from brokerage_service_api.utilities.source import get_source_registry
-
 
 
 class InvalidPageNumberError(Exception):
@@ -222,6 +221,10 @@ def results_with_pagination_applied(
     Returns:
     A SearchResults object with a subset of the results, and the prev|next fields populated.
     """
+    # Prepare the result metadata using all the results.
+    source_count = Counter(result.source for result in all_results.annotations)
+    result_metadata = ResultMetadata.construct_result_metadata_with_generic_sources(raw_data=source_count)
+
     # Batch the annotations into the required size (100 is the default).
     batched_annotations = list(batched(all_results.annotations, n=page_size))
 
@@ -243,6 +246,7 @@ def results_with_pagination_applied(
             next=next_url,
             count=count,  #
             results=Results(summary=all_results.summary, annotations=batched_annotations[0]),
+            result_metadata=result_metadata,
         )
 
     # If the user passes a page number, return that specific batch or raise an error if not applicable.
@@ -252,7 +256,9 @@ def results_with_pagination_applied(
         raise InvalidPageNumberError from None
 
     paginated_results = Results(summary=all_results.summary, annotations=specified_annotation_batch)
-    return SearchResults(previous=previous_url, next=next_url, count=count, results=paginated_results)
+    return SearchResults(
+        previous=previous_url, next=next_url, count=count, results=paginated_results, result_metadata=result_metadata
+    )
 
 
 def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest, request: Request) -> SearchResults:

@@ -1,7 +1,6 @@
 """Models for the brokerage search endpoint."""
 
 from datetime import datetime
-from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -97,12 +96,15 @@ class ResultMetadata(BaseModel):
     """A representation of the search result metadata."""
 
     total_results: int = 0
-    bodc_results: int = 0
-    jncc_results: int = 0
+    results_from_individual_sources: dict[str, int] = {}
 
-    def model_post_init(self, context: Any) -> None:
-        """Define the total results as the sum of BODC + JNCC results."""
-        self.total_results = self.bodc_results + self.jncc_results
+    @classmethod
+    def construct_result_metadata_with_generic_sources(cls, raw_data: dict[str:int]) -> "ResultMetadata":
+        """Construct the instance using any, appending '_results' to the end."""
+        prepared_data = {f"{source}_results": count for source, count in raw_data.items()}
+        if prepared_data:
+            return cls(total_results=sum(prepared_data.values()), results_from_individual_sources=prepared_data)
+        return cls()
 
 
 class SearchResults(BaseModel):
@@ -113,9 +115,3 @@ class SearchResults(BaseModel):
     previous: str | None = None
     result_metadata: ResultMetadata | None = None
     results: Results
-
-    def model_post_init(self, context: Any) -> None:
-        """Post initialise the result metadata using the results."""
-        bodc_results = sum(1 for result in self.results.annotations if result.source == "BODC")
-        jncc_results = sum(1 for result in self.results.annotations if result.source == "JNCC")
-        self.result_metadata = ResultMetadata(bodc_results=bodc_results, jncc_results=jncc_results)
