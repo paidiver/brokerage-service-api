@@ -1,6 +1,7 @@
 """Code to call the upstream annotations API's and compile the results."""
 
 import asyncio
+import logging
 import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -15,6 +16,8 @@ from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
 from brokerage_service_api.utilities.source import get_source_registry
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidPageNumberError(Exception):
@@ -42,9 +45,9 @@ class AnnotationsAPIFetcher:
 
         if order_by_key == "label_aphia_id":
             self._results.sort(key=lambda result: result.label_aphia_id)
-        if order_by_key == "annotation_creation_datetime":
+        elif order_by_key == "annotation_creation_datetime":
             self._results.sort(key=lambda result: result.annotation_creation_datetime)
-        if order_by_key == "label_name":
+        elif order_by_key == "label_name":
             self._results.sort(key=lambda result: result.label_name)
 
     def _make_request(self) -> None:
@@ -56,7 +59,7 @@ class AnnotationsAPIFetcher:
             error_message = getattr(getattr(response, "error", None), "message", None)
             if error_message is None:
                 error_message = str(getattr(response, "error", ""))
-            print("Something went wrong", error_message)
+            logger.error("Something went wrong %s", error_message)
             return
 
         data = getattr(response, "data", None)
@@ -230,13 +233,26 @@ def results_with_pagination_applied(
 
     # Fetch the values needed for the previous and next URL's.
     prev_field, next_field = construct_prev_and_next_response_fields(
-        request_url=str(request.url), maximum_allowed_page=len(batched_annotations)
+        request_url=str(request.query_params), maximum_allowed_page=len(batched_annotations)
     )
 
     # Use the values from the previous function calls to now build the previous and next URL's.
     previous_url, next_url = construct_previous_and_next_urls(
-        incoming_url=str(request.url), previous_value=prev_field, next_value=next_field
+        incoming_url=str(request.query_params), previous_value=prev_field, next_value=next_field
     )
+
+    # If there are no results, return an empty page for the first page request,
+    # otherwise raise an invalid page number error for any page other than 1.
+    if not batched_annotations:
+        if page_number in (None, 1):
+            return SearchResults(
+                previous=previous_url,
+                next=next_url,
+                count=count,
+                results=Results(summary=all_results.summary, annotations=[]),
+                result_metadata=result_metadata,
+            )
+        raise InvalidPageNumberError from None
 
     # If no page number is passed, then just return the first page of results.
     # This is the default path, so the user will just see 100 results or less.
@@ -244,7 +260,7 @@ def results_with_pagination_applied(
         return SearchResults(
             previous=previous_url,
             next=next_url,
-            count=count,  #
+            count=count,
             results=Results(summary=all_results.summary, annotations=batched_annotations[0]),
             result_metadata=result_metadata,
         )

@@ -1,9 +1,9 @@
 """Tests for the JNCC/BODC search compiler."""
 
+import logging
 from types import SimpleNamespace
 
 import pytest
-from _pytest.capture import CaptureFixture
 from brokerage_service_api.models.search_model import Result, ResultMetadata, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
@@ -13,6 +13,7 @@ from brokerage_service_api.utilities.search_compiler import (
 )
 from pydantic import HttpUrl
 from pytest_mock import MockerFixture
+from starlette.requests import Request
 
 
 @pytest.fixture(name="mock_response_for_558")
@@ -162,7 +163,7 @@ def test_annotations_api_fetcher_with_summary(
 def test_annotations_api_fetcher_with_failed_request(
     mock_annotation_client: MockerFixture,
     mock_source_config: MockerFixture,
-    capsys: CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test that upstream request failures are handled gracefully."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -178,15 +179,17 @@ def test_annotations_api_fetcher_with_failed_request(
             calculate_summary=True,
         ),
     )
-    instance._make_request()
+    with caplog.at_level(logging.ERROR):
+        instance._make_request()
+
     assert instance.results == []
-    assert "Something went wrong 500 Server Error" in capsys.readouterr().out
+    assert "Something went wrong 500 Server Error" in caplog.text
 
 
 def test_annotations_api_fetcher_with_failed_request_and_missing_error(
     mock_annotation_client: MockerFixture,
     mock_source_config: MockerFixture,
-    capsys: CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test that upstream request failure is handled correcly when 'error' is missing in the response."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -202,9 +205,11 @@ def test_annotations_api_fetcher_with_failed_request_and_missing_error(
             calculate_summary=True,
         ),
     )
-    instance._make_request()
+    with caplog.at_level(logging.ERROR):
+        instance._make_request()
+
     assert instance.results == []
-    assert "Something went wrong" in capsys.readouterr().out
+    assert "Something went wrong" in caplog.text
 
 
 def test_annotations_api_fetcher_with_response_data_none_returns_no_results(
@@ -247,6 +252,38 @@ def test_annotations_api_fetcher_with_response_results_none_returns_no_results(
 
     assert instance.results == []
     assert instance.summary is None
+
+
+def test_fetch_combined_results_with_empty_annotations_returns_empty_search_results(
+    mock_annotation_client: MockerFixture,
+) -> None:
+    """Test that pagination handles empty upstream results without crashing."""
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=[])),
+        error=None,
+    )
+
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "path": "/annotations/search",
+        "query_string": b"aphia_ids=588&page_size=5",
+        "headers": [],
+    }
+    request = Request(scope)
+
+    combined_results = fetch_combined_results_from_annotation_apis(
+        params=AnnotationSearchRequest(aphia_ids=[588]), request=request
+    )
+
+    assert isinstance(combined_results, SearchResults)
+    assert combined_results.count == 0
+    assert combined_results.results.annotations == []
+    assert combined_results.results.summary is None
+    assert combined_results.previous is None
+    assert combined_results.next is None
+    assert combined_results.result_metadata.total_results == 0
 
 
 def test_aggregation_of_both_upstream_apis(
