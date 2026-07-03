@@ -1,7 +1,7 @@
 """Models for the brokerage search endpoint."""
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -10,7 +10,7 @@ from pydantic import BaseModel
 class Result(BaseModel):
     """A representation of an individual result."""
 
-    source: Literal["BODC", "JNCC"]
+    source: str
     uuid: UUID
     image_filename: str
     image_handle: str
@@ -69,13 +69,21 @@ class Summary(BaseModel):
     n_image_sets: int
 
     def __add__(self, other: "Summary") -> "Summary":
-        """Override the + operator to allow for merging of Summary instances."""
+        if not isinstance(other, Summary):
+            return NotImplemented
+
         return Summary(
             n_annotations=self.n_annotations + other.n_annotations,
             n_images=self.n_images + other.n_images,
             n_annotation_sets=self.n_annotation_sets + other.n_annotation_sets,
             n_image_sets=self.n_image_sets + other.n_image_sets,
         )
+
+    def __radd__(self, other: int):
+        """Needed for the sum() function to work on a list of Summary objects."""
+        if other == 0:
+            return self
+        return self.__add__(other)
 
 
 class Results(BaseModel):

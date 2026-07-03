@@ -3,6 +3,7 @@
 import asyncio
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from itertools import batched
 from typing import Any
 from urllib.parse import parse_qs
@@ -13,15 +14,12 @@ from brokerage_service_api.models.search_model import Result, Results, SearchRes
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
+from brokerage_service_api.utilities.source import get_source_registry
 
 JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api")
 BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api")
 
 ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT, "BODC": BODC_ANNOTATIONS_API_ENDPOINT}
-
-
-class UnknownFlavourError(Exception):
-    """Raised when an unknown upstream is referenced."""
 
 
 class InvalidPageNumberError(Exception):
@@ -31,13 +29,12 @@ class InvalidPageNumberError(Exception):
 class AnnotationsAPIFetcher:
     """Methods to fetch from upstream API's and return data."""
 
-    def __init__(self, flavour: str, params: AnnotationSearchRequest):
+    def __init__(self, source: SourceConfig, params: AnnotationSearchRequest):
         """Initialise the class and make an attempt to call the upstream API."""
-        self.flavour: str = flavour
+        self.source: SourceConfig = source
         self.params: AnnotationSearchRequest = params
         self._results: list[Result] = []
         self._summary: Summary | None = None
-        self._make_request()
 
     def order_results(self) -> None:
         """Perform an in-place sort of the internal _results list."""
@@ -57,23 +54,14 @@ class AnnotationsAPIFetcher:
 
     def _make_request(self) -> None:
         """Make request to the upstream API and store the results in the class if available."""
-        endpoint = ENDPOINTS.get(self.flavour)
-        if endpoint is None:
-            raise UnknownFlavourError(f"{self.flavour} is not recognised.")
-
-        source = SourceConfig(name=self.flavour.lower(), label=self.flavour, base_url=endpoint, enabled=True)
         upstream_params = self._build_upstream_params(self.params)
-        try:
-            response = asyncio.run(self._request_annotations(source=source, params=upstream_params))
-        except Exception as exc:
-            print(f"Something went wrong calling the {self.flavour} annotations API {exc}.")
-            return
 
+        response = asyncio.run(self._request_annotations(source=self.source, params=upstream_params))
         if not getattr(response, "ok", False):
             error_message = getattr(getattr(response, "error", None), "message", None)
             if error_message is None:
                 error_message = str(getattr(response, "error", ""))
-            print(f"Something went wrong calling the {self.flavour} annotations API {error_message}.")
+            print("Something went wrong", error_message)
             return
 
         data = getattr(response, "data", None)
@@ -90,7 +78,9 @@ class AnnotationsAPIFetcher:
 
         annotations = getattr(results, "annotations", None)
         if annotations is not None:
-            self._results = [self._construct_result_from_annotation(result, source=self.flavour) for result in annotations]
+            self._results = [
+                self._construct_result_from_annotation(result, source=self.source.name) for result in annotations
+            ]
             self.order_results()
 
     async def _request_annotations(self, source: SourceConfig, params: AnnotationSearchParams) -> Any:
@@ -130,10 +120,7 @@ class AnnotationsAPIFetcher:
     @staticmethod
     def _construct_result_from_annotation(raw_response: Any, source: str) -> Result:
         """Build a brokerage Result from an upstream annotation object."""
-        if hasattr(raw_response, "model_dump"):
-            annotation_data = raw_response.model_dump()
-        else:
-            annotation_data = dict(raw_response)
+        annotation_data = raw_response.model_dump() if hasattr(raw_response, "model_dump") else dict(raw_response)
 
         annotation_data["annotation_creation_datetime"] = annotation_data.pop("creation_datetime", None)
         return Result.construct_instance_from_raw_response(annotation_data, source=source)
@@ -282,15 +269,30 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest,
     Returns:
         SearchResults: An instance with the results built from both the BODC and JNCC API's.
     """
-    jncc, bodc = (
-        AnnotationsAPIFetcher(flavour="JNCC", params=params),
-        AnnotationsAPIFetcher(flavour="BODC", params=params),
-    )
+    # Use the source registry to determine what sources to pull from.
+    sources_to_pull_results_from = get_source_registry().list()
 
-    all_annotations = jncc.results + bodc.results
+    # Setup instances of the API Fetcher according to what sources we have.
+    api_fetchers = [AnnotationsAPIFetcher(source=source, params=params) for source in sources_to_pull_results_from]
 
-    combined_summary = (jncc.summary + bodc.summary) if jncc.summary is not None and bodc.summary is not None else None
-    all_results = Results(summary=combined_summary, annotations=all_annotations)
+    # Make the requests to the sources.
+    with ThreadPoolExecutor() as executor:
+        executor.map(lambda w: w._make_request(), api_fetchers)
+
+    # Aggregate all the annotations and summaries in a single place.
+    all_annotations, all_summaries = [], []
+
+    # For each source ->
+    for fetcher in api_fetchers:
+        # If it has a summary, add it to 'all_summaries'.
+        if isinstance(fetcher.summary, Summary):
+            all_summaries.append(fetcher.summary)
+
+        # Go through all the results and add to 'all_annotations'.
+        for result in fetcher.results:
+            all_annotations.append(result)
+
+    all_results = Results(summary=sum(all_summaries) if all_summaries else None, annotations=all_annotations)
 
     # Perform any pagination that is required
     return results_with_pagination_applied(

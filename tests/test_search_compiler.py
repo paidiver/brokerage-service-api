@@ -15,7 +15,7 @@ from pytest_mock import MockerFixture
 
 
 @pytest.fixture(name="mock_annotation_client")
-def mock_annotation_client_fixture(mocker: MockerFixture):
+def mock_annotation_client_fixture(mocker: MockerFixture) -> MockerFixture:
     """Mock the shared upstream annotations client used by the search compiler."""
     client = mocker.Mock()
     client.search_annotations = mocker.AsyncMock()
@@ -97,13 +97,15 @@ def mock_response_for_558_with_summary() -> dict:
 
 
 def test_annotations_api_fetcher_with_single_aphia_id(
-    mock_annotation_client,
+    mock_annotation_client: MockerFixture,
     mock_response_for_558: dict,
 ) -> None:
     """Test that a single Aphia ID request returns expected annotation results."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])),
+        data=SimpleNamespace(
+            results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])
+        ),
         error=None,
     )
 
@@ -125,13 +127,18 @@ def test_annotations_api_fetcher_with_single_aphia_id(
 
 
 def test_annotations_api_fetcher_with_summary(
-    mock_annotation_client,
+    mock_annotation_client: MockerFixture,
     mock_response_for_558_with_summary: dict,
 ) -> None:
     """Test that summary data is returned when requested."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=mock_response_for_558_with_summary["results"]["summary"], annotations=[mock_response_for_558_with_summary["results"]["annotations"][0]])),
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=mock_response_for_558_with_summary["results"]["summary"],
+                annotations=[mock_response_for_558_with_summary["results"]["annotations"][0]],
+            )
+        ),
         error=None,
     )
 
@@ -166,7 +173,7 @@ def test_annotations_api_fetcher_with_invalid_flavour() -> None:
 
 
 def test_annotations_api_fetcher_with_failed_request(
-    mock_annotation_client,
+    mock_annotation_client: MockerFixture,
     capsys: CaptureFixture[str],
 ) -> None:
     """Test that upstream request failures are handled gracefully."""
@@ -190,7 +197,7 @@ def test_annotations_api_fetcher_with_failed_request(
 
 
 def test_annotations_api_fetcher_with_json_decode_error(
-    mock_annotation_client,
+    mock_annotation_client: MockerFixture,
     capsys: CaptureFixture[str],
 ) -> None:
     """Test handling of missing data from the upstream client."""
@@ -209,10 +216,12 @@ def test_annotations_api_fetcher_with_json_decode_error(
 
 
 def test_annotations_api_fetcher_with_empty_results(
-    mock_annotation_client,
+    mock_annotation_client: MockerFixture,
 ) -> None:
     """Test that an empty API response returns no results."""
-    mock_annotation_client.search_annotations.return_value = SimpleNamespace(ok=True, data=SimpleNamespace(results=None), error=None)
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True, data=SimpleNamespace(results=None), error=None
+    )
 
     instance = AnnotationsAPIFetcher(
         flavour="BODC",
@@ -226,13 +235,15 @@ def test_annotations_api_fetcher_with_empty_results(
 
 
 def test_aggregation_of_both_upstream_apis(
-    mock_annotation_client, mock_response_for_558: dict, mock_request_for_pagination: MockerFixture
+    mock_annotation_client: MockerFixture, mock_response_for_558: dict, mock_request_for_pagination: MockerFixture
 ) -> None:
     """Test that results from both upstream APIs are combined correctly."""
     expected_count = 2
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])),
+        data=SimpleNamespace(
+            results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])
+        ),
         error=None,
     )
 
@@ -245,7 +256,7 @@ def test_aggregation_of_both_upstream_apis(
 
 
 def test_search_compiler_with_ordering_by_aphia_id(
-    mock_annotation_client, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
 ) -> None:
     """Test that ordering by aphia_id works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -267,7 +278,7 @@ def test_search_compiler_with_ordering_by_aphia_id(
 
 
 def test_search_compiler_with_ordering_by_annotation_creation_datetime(
-    mock_annotation_client, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
 ) -> None:
     """Test that ordering by annotation_creation_datetime works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -288,7 +299,7 @@ def test_search_compiler_with_ordering_by_annotation_creation_datetime(
 
 
 def test_search_compiler_with_ordering_by_label_name(
-    mock_annotation_client, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
 ) -> None:
     """Test that ordering by annotation_creation_datetime works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -309,7 +320,9 @@ def test_search_compiler_with_ordering_by_label_name(
 
 
 def test_search_compiler_result_metadata(
-    mock_annotation_client, mock_assorted_aphia_ids_response: MockerFixture, mock_request_for_pagination: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_request_for_pagination: MockerFixture,
 ) -> None:
     """Test that the result metadata is formed and returned correctly."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
