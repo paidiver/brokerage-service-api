@@ -21,7 +21,7 @@ class Result(BaseModel):
     annotation_creation_datetime: datetime
     annotation_shape: str
     annotation_coordinates: list[list[int | float]]
-    annotation_dimension_pixels: float | int
+    annotation_dimension_pixels: float | int | None
     annotator_name: str
     annotation_set_uuid: UUID
     annotation_set_name: str

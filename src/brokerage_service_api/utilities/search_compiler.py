@@ -16,10 +16,6 @@ from brokerage_service_api.schemas.upstream import AnnotationSearchParams, Annot
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
 from brokerage_service_api.utilities.source import get_source_registry
 
-JNCC_ANNOTATIONS_API_ENDPOINT = os.getenv("JNCC_SEARCH_ENDPOINT", "http://localhost:8018/api")
-BODC_ANNOTATIONS_API_ENDPOINT = os.getenv("BODC_SEARCH_ENDPOINT", "http://localhost:8019/api")
-
-ENDPOINTS = {"JNCC": JNCC_ANNOTATIONS_API_ENDPOINT, "BODC": BODC_ANNOTATIONS_API_ENDPOINT}
 
 
 class InvalidPageNumberError(Exception):
