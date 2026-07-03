@@ -180,7 +180,73 @@ def test_annotations_api_fetcher_with_failed_request(
     )
     instance._make_request()
     assert instance.results == []
+    assert "Something went wrong 500 Server Error" in capsys.readouterr().out
+
+
+def test_annotations_api_fetcher_with_failed_request_and_missing_error(
+    mock_annotation_client: MockerFixture,
+    mock_source_config: MockerFixture,
+    capsys: CaptureFixture[str],
+) -> None:
+    """Test that upstream request failure is handled correcly when 'error' is missing in the response."""
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=False,
+        data=None,
+        error=None,
+    )
+
+    instance = AnnotationsAPIFetcher(
+        source=mock_source_config,
+        params=AnnotationSearchRequest(
+            aphia_ids=[588],
+            calculate_summary=True,
+        ),
+    )
+    instance._make_request()
+    assert instance.results == []
     assert "Something went wrong" in capsys.readouterr().out
+
+
+def test_annotations_api_fetcher_with_response_data_none_returns_no_results(
+    mock_annotation_client: MockerFixture,
+    mock_source_config: MockerFixture,
+) -> None:
+    """Test that a valid upstream response with no data returns no results."""
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=None,
+        error=None,
+    )
+
+    instance = AnnotationsAPIFetcher(
+        source=mock_source_config,
+        params=AnnotationSearchRequest(aphia_ids=[588]),
+    )
+    instance._make_request()
+
+    assert instance.results == []
+    assert instance.summary is None
+
+
+def test_annotations_api_fetcher_with_response_results_none_returns_no_results(
+    mock_annotation_client: MockerFixture,
+    mock_source_config: MockerFixture,
+) -> None:
+    """Test that a valid upstream response with no results returns no results."""
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(results=None),
+        error=None,
+    )
+
+    instance = AnnotationsAPIFetcher(
+        source=mock_source_config,
+        params=AnnotationSearchRequest(aphia_ids=[588]),
+    )
+    instance._make_request()
+
+    assert instance.results == []
+    assert instance.summary is None
 
 
 def test_aggregation_of_both_upstream_apis(
@@ -202,6 +268,42 @@ def test_aggregation_of_both_upstream_apis(
 
     assert isinstance(combined_results, SearchResults)
     assert combined_results.count == expected_count
+
+
+def test_fetch_combined_results_appends_source_summaries(
+    mocker: MockerFixture,
+    mock_annotation_client: MockerFixture,
+    mock_response_for_558: dict,
+    mock_request_for_pagination: MockerFixture,
+) -> None:
+    """Test that summary objects from each source are appended and combined."""
+    summary = Summary(n_annotations=1, n_images=1, n_annotation_sets=1, n_image_sets=1)
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(
+            results=SimpleNamespace(summary=summary, annotations=[mock_response_for_558["results"]["annotations"][0]])
+        ),
+        error=None,
+    )
+
+    source_a = SourceConfig(name="bodc", label="BODC", base_url="http://bodc-api:8000/api", enabled=True)
+    source_b = SourceConfig(name="jncc", label="JNCC", base_url="http://jncc-api:8000/api", enabled=True)
+    mocker.patch(
+        "brokerage_service_api.utilities.search_compiler.get_source_registry",
+        return_value=SimpleNamespace(list=lambda: [source_a, source_b]),
+    )
+
+    combined_results = fetch_combined_results_from_annotation_apis(
+        params=AnnotationSearchRequest(aphia_ids=[588]), request=mock_request_for_pagination
+    )
+    expected_result = 2
+    assert combined_results.results.summary == Summary(
+        n_annotations=expected_result,
+        n_images=expected_result,
+        n_annotation_sets=expected_result,
+        n_image_sets=expected_result,
+    )
+    assert combined_results.count == expected_result
 
 
 def test_search_compiler_with_ordering_by_aphia_id(

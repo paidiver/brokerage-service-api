@@ -7,6 +7,7 @@ from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.utilities.search_compiler import (
     InvalidPageNumberError,
     construct_prev_and_next_response_fields,
+    construct_previous_and_next_urls,
     fetch_combined_results_from_annotation_apis,
 )
 from pytest_mock import MockerFixture
@@ -135,9 +136,28 @@ def test_search_compiler_pagination_prev_and_next_fields() -> None:
     assert response == ("4", "5")
 
 
+def test_search_compiler_pagination_with_no_page_param_sets_first_page_next() -> None:
+    """Ensure missing page params default to page 1 and still return the next page."""
+    url = "http://localhost:8080/api?aphia_ids=588&page_size=5"
+    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
+    assert response == (None, "2")
+
+
 def test_search_compiler_pagination_prev_and_next_fields_with_generic_exception() -> None:
     """Request prev/next fields with an incorrect query string, and ensure the default of None is returned for both."""
     url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=ten"
     response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=1)
     # In an error state, we expect None for both 'prev' and 'next'.
     assert response == (None, None)
+
+
+def test_construct_previous_and_next_urls_adds_page_param_when_missing() -> None:
+    """Ensure the next URL is constructed correctly when the incoming URL has no page parameter."""
+    previous_url, next_url = construct_previous_and_next_urls(
+        incoming_url="http://localhost:8080/api?aphia_ids=588&page_size=5",
+        previous_value=None,
+        next_value="2",
+    )
+
+    assert previous_url is None
+    assert next_url == "http://localhost:8080/api?aphia_ids=588&page_size=5&page=2"
