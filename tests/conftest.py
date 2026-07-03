@@ -7,6 +7,7 @@ import pytest
 from brokerage_service_api.api.app import create_app
 from brokerage_service_api.schemas.source import SourceConfig
 from fastapi import FastAPI, Request
+from pytest_mock import MockerFixture
 
 DEFAULT_PORT = 8000
 
@@ -62,6 +63,16 @@ def bodc_source() -> SourceConfig:
         base_url="http://bodc-api:8000/api",
         enabled=True,
     )
+
+
+@pytest.fixture(name="mock_annotation_client")
+def mock_annotation_client_fixture(mocker: MockerFixture) -> MockerFixture:
+    """Mock the shared upstream annotations client used by the search compiler."""
+    client = mocker.Mock()
+    client.search_annotations = mocker.AsyncMock()
+    client.aclose = mocker.AsyncMock()
+    mocker.patch("brokerage_service_api.utilities.search_compiler.AnnotationApiClient", return_value=client)
+    return client
 
 
 @pytest.fixture

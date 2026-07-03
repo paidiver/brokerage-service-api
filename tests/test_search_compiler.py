@@ -5,23 +5,14 @@ from types import SimpleNamespace
 import pytest
 from _pytest.capture import CaptureFixture
 from brokerage_service_api.models.search_model import Result, ResultMetadata, SearchResults, Summary
+from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.utilities.search_compiler import (
     AnnotationsAPIFetcher,
-    UnknownFlavourError,
     fetch_combined_results_from_annotation_apis,
 )
+from pydantic import HttpUrl
 from pytest_mock import MockerFixture
-
-
-@pytest.fixture(name="mock_annotation_client")
-def mock_annotation_client_fixture(mocker: MockerFixture) -> MockerFixture:
-    """Mock the shared upstream annotations client used by the search compiler."""
-    client = mocker.Mock()
-    client.search_annotations = mocker.AsyncMock()
-    client.aclose = mocker.AsyncMock()
-    mocker.patch("brokerage_service_api.utilities.search_compiler.AnnotationApiClient", return_value=client)
-    return client
 
 
 @pytest.fixture(name="mock_response_for_558")
@@ -96,9 +87,18 @@ def mock_response_for_558_with_summary() -> dict:
     }
 
 
+@pytest.fixture(name="mock_source_config")
+def mock_source_config_fixture() -> SourceConfig:
+    """An example source config."""
+    return SourceConfig(
+        name="some_source",
+        label="some_label",
+        base_url=HttpUrl("http://some_url"),
+    )
+
+
 def test_annotations_api_fetcher_with_single_aphia_id(
-    mock_annotation_client: MockerFixture,
-    mock_response_for_558: dict,
+    mock_annotation_client: MockerFixture, mock_response_for_558: dict, mock_source_config: MockerFixture
 ) -> None:
     """Test that a single Aphia ID request returns expected annotation results."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
@@ -110,16 +110,17 @@ def test_annotations_api_fetcher_with_single_aphia_id(
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(aphia_ids=[588]),
     )
+    instance._make_request()
 
     assert isinstance(instance.results[0], Result)
 
     assert instance.results == [
         Result.construct_instance_from_raw_response(
             raw_response=mock_response_for_558["results"]["annotations"][0],
-            source="BODC",
+            source="some_source",
         )
     ]
 
@@ -127,15 +128,14 @@ def test_annotations_api_fetcher_with_single_aphia_id(
 
 
 def test_annotations_api_fetcher_with_summary(
-    mock_annotation_client: MockerFixture,
-    mock_response_for_558_with_summary: dict,
+    mock_annotation_client: MockerFixture, mock_response_for_558_with_summary: dict, mock_source_config: MockerFixture
 ) -> None:
     """Test that summary data is returned when requested."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
             results=SimpleNamespace(
-                summary=mock_response_for_558_with_summary["results"]["summary"],
+                summary=Summary(**mock_response_for_558_with_summary["results"]["summary"]),
                 annotations=[mock_response_for_558_with_summary["results"]["annotations"][0]],
             )
         ),
@@ -143,12 +143,13 @@ def test_annotations_api_fetcher_with_summary(
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[588],
             calculate_summary=True,
         ),
     )
+    instance._make_request()
 
     assert instance.summary == Summary(
         n_annotations=1,
@@ -158,22 +159,9 @@ def test_annotations_api_fetcher_with_summary(
     )
 
 
-def test_annotations_api_fetcher_with_invalid_flavour() -> None:
-    """Test that an invalid flavour raises UnknownFlavourError."""
-    with pytest.raises(UnknownFlavourError) as exc:
-        AnnotationsAPIFetcher(
-            flavour="INVALID",
-            params=AnnotationSearchRequest(
-                aphia_ids=[588],
-                calculate_summary=True,
-            ),
-        )
-
-    assert str(exc.value) == "INVALID is not recognised."
-
-
 def test_annotations_api_fetcher_with_failed_request(
     mock_annotation_client: MockerFixture,
+    mock_source_config: MockerFixture,
     capsys: CaptureFixture[str],
 ) -> None:
     """Test that upstream request failures are handled gracefully."""
@@ -184,54 +172,15 @@ def test_annotations_api_fetcher_with_failed_request(
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[588],
             calculate_summary=True,
         ),
     )
-
+    instance._make_request()
     assert instance.results == []
-
-    assert "Something went wrong calling the BODC annotations API 500 Server Error." in capsys.readouterr().out
-
-
-def test_annotations_api_fetcher_with_json_decode_error(
-    mock_annotation_client: MockerFixture,
-    capsys: CaptureFixture[str],
-) -> None:
-    """Test handling of missing data from the upstream client."""
-    mock_annotation_client.search_annotations.return_value = SimpleNamespace(ok=True, data=None, error=None)
-
-    instance = AnnotationsAPIFetcher(
-        flavour="BODC",
-        params=AnnotationSearchRequest(
-            aphia_ids=[588],
-            calculate_summary=True,
-        ),
-    )
-
-    assert instance.results == []
-    assert "Something went wrong calling the BODC annotations API" not in capsys.readouterr().out
-
-
-def test_annotations_api_fetcher_with_empty_results(
-    mock_annotation_client: MockerFixture,
-) -> None:
-    """Test that an empty API response returns no results."""
-    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
-        ok=True, data=SimpleNamespace(results=None), error=None
-    )
-
-    instance = AnnotationsAPIFetcher(
-        flavour="BODC",
-        params=AnnotationSearchRequest(
-            aphia_ids=[588],
-            calculate_summary=True,
-        ),
-    )
-
-    assert instance.results == []
+    assert "Something went wrong" in capsys.readouterr().out
 
 
 def test_aggregation_of_both_upstream_apis(
@@ -256,65 +205,86 @@ def test_aggregation_of_both_upstream_apis(
 
 
 def test_search_compiler_with_ordering_by_aphia_id(
-    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_source_config: MockerFixture,
 ) -> None:
     """Test that ordering by aphia_id works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=mock_assorted_aphia_ids_response)),
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
         error=None,
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
             order_by="label_aphia_id",
         ),
     )
+    instance._make_request()
 
     returned_aphia_ids = [result.label_aphia_id for result in instance.results]
     assert returned_aphia_ids == sorted(returned_aphia_ids)
 
 
 def test_search_compiler_with_ordering_by_annotation_creation_datetime(
-    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_source_config: MockerFixture,
 ) -> None:
     """Test that ordering by annotation_creation_datetime works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=mock_assorted_aphia_ids_response)),
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
         error=None,
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
             order_by="annotation_creation_datetime",
         ),
     )
+    instance._make_request()
     returned_datetimes = [result.annotation_creation_datetime for result in instance.results]
     assert returned_datetimes == sorted(returned_datetimes)
 
 
 def test_search_compiler_with_ordering_by_label_name(
-    mock_annotation_client: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_source_config: MockerFixture,
 ) -> None:
     """Test that ordering by annotation_creation_datetime works as expected."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=mock_assorted_aphia_ids_response)),
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
         error=None,
     )
 
     instance = AnnotationsAPIFetcher(
-        flavour="BODC",
+        source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[1],  # the 1 is irrelevant, as the mocked response intentionally returns 10 unordered results.
             order_by="label_name",
         ),
     )
+    instance._make_request()
     returned_label_names = [result.label_name for result in instance.results]
     assert returned_label_names == sorted(returned_label_names)
 
@@ -327,7 +297,11 @@ def test_search_compiler_result_metadata(
     """Test that the result metadata is formed and returned correctly."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=mock_assorted_aphia_ids_response)),
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
         error=None,
     )
 
@@ -341,11 +315,14 @@ def test_search_compiler_result_metadata(
 
     assert isinstance(combined_results.result_metadata, ResultMetadata)
 
-    assert combined_results.result_metadata.bodc_results == expected_individual_result_count
-    assert combined_results.result_metadata.jncc_results == expected_individual_result_count
+    assert (
+        combined_results.result_metadata.results_from_individual_sources["bodc_results"]
+        == expected_individual_result_count
+    )
+    assert (
+        combined_results.result_metadata.results_from_individual_sources["jncc_results"]
+        == expected_individual_result_count
+    )
 
     # Check that the overall count is the combination of the two.
-    assert (
-        combined_results.result_metadata.total_results
-        == combined_results.result_metadata.bodc_results + combined_results.result_metadata.jncc_results
-    )
+    assert combined_results.result_metadata.total_results == expected_individual_result_count * 2

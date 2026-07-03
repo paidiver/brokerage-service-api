@@ -1,5 +1,7 @@
 """Tests for the JNCC/BODC search compiler pagination logic."""
 
+from types import SimpleNamespace
+
 import pytest
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.utilities.search_compiler import (
@@ -25,13 +27,22 @@ def mock_request_fixture() -> Request:
 
 
 def test_search_compiler_pagination_with_page_size_1_to_10(
-    mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture, mock_request_for_pagination: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_request_for_pagination: MockerFixture,
 ) -> None:
     """Call upon the search endpoint requesting a range of differing page sizes, and verify they are correct."""
-    mock_request = mocker.patch("brokerage_service_api.utilities.search_compiler.rq.get")
-    mock_request.return_value.json.return_value = mock_assorted_aphia_ids_response
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
+        error=None,
+    )
 
-    # The '588' does nothing in this test case as the BODC/JNCC api's are mocked to return the same 10 results.
+    # The '588' does nothing in this test case as the APIs are mocked to return the same 10 results per source.
     for page_size in range(1, 11):
         combined_results = fetch_combined_results_from_annotation_apis(
             params=AnnotationSearchRequest(aphia_ids=[588], page_size=page_size), request=mock_request_for_pagination
@@ -40,11 +51,20 @@ def test_search_compiler_pagination_with_page_size_1_to_10(
 
 
 def test_search_compiler_pagination_with_invalid_page_number(
-    mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture, mock_request_for_pagination: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_request_for_pagination: MockerFixture,
 ) -> None:
     """Call upon the search endpoint with an invalid page number to check the correct error is raised."""
-    mock_request = mocker.patch("brokerage_service_api.utilities.search_compiler.rq.get")
-    mock_request.return_value.json.return_value = mock_assorted_aphia_ids_response
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
+        error=None,
+    )
 
     with pytest.raises(InvalidPageNumberError):
         fetch_combined_results_from_annotation_apis(
@@ -53,7 +73,9 @@ def test_search_compiler_pagination_with_invalid_page_number(
 
 
 def test_search_compiler_pagination_with_varying_page_numbers(
-    mocker: MockerFixture, mock_assorted_aphia_ids_response: MockerFixture, mock_request_for_pagination: MockerFixture
+    mock_annotation_client: MockerFixture,
+    mock_assorted_aphia_ids_response: MockerFixture,
+    mock_request_for_pagination: MockerFixture,
 ) -> None:
     """Call upon the search endpoint requesting a range of differing page numbers, and verify they are different.
 
@@ -61,10 +83,17 @@ def test_search_compiler_pagination_with_varying_page_numbers(
     The test will check that the results on each page are unique, and give some validation that the
     pagination system is working.
     """
-    mock_request = mocker.patch("brokerage_service_api.utilities.search_compiler.rq.get")
-    mock_request.return_value.json.return_value = mock_assorted_aphia_ids_response
+    mock_annotation_client.search_annotations.return_value = SimpleNamespace(
+        ok=True,
+        data=SimpleNamespace(
+            results=SimpleNamespace(
+                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
+            )
+        ),
+        error=None,
+    )
 
-    # The '588' does nothing in this test case as the BODC/JNCC api's are mocked to return the same 10 results.
+    # The '588' does nothing in this test case as the BODC/JNCC apis are mocked to return the same 10 results.
     uuids = [
         fetch_combined_results_from_annotation_apis(
             params=AnnotationSearchRequest(aphia_ids=[588], page=page_number, page_size=1),
