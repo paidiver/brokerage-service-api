@@ -38,6 +38,9 @@ class AnnotationSearchRequest(BaseModel):
     """A representation of the request to search to forward to the BODC/JNCC API's."""
 
     aphia_ids: list[int] | None = Field(default=None, description="A list of Aphia ID's to search for.")
+    order_by: Literal["label_aphia_id", "annotation_creation_datetime", "label_name"] | None = Field(
+        default=None, description="The field upon which to order the results by."
+    )
     calculate_summary: bool | None = Field(
         default=None, description="If true, include a summary of the search results."
     )
@@ -89,8 +92,8 @@ class AnnotationSearchRequest(BaseModel):
         min_length=3,
         description="Partial name to search for in labels. Must contain at least 3 characters.",
     )
-    page: int | None = Field(default=None, description="A page number within the paginated result set.")
-    page_size: int | None = Field(default=None, description="Number of results to return per page.")
+    page: int | None = Field(default=None, ge=1, description="A page number within the paginated result set.")
+    page_size: int | None = Field(default=100, description="Number of results to return per page.")
     platform: str | None = Field(
         default=None,
         min_length=3,
@@ -124,6 +127,7 @@ class AnnotationSearchRequest(BaseModel):
             str: A urlencoded query string.
         """
         dumped_model = self.model_dump(exclude_none=True)
+        dumped_model = {k: v for k, v in dumped_model.items() if k not in ("page", "page_size")}
 
         if "aphia_ids" not in dumped_model:
             return f"?{urlencode(dumped_model)}".replace("True", "true").replace("False", "false")

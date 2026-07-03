@@ -1,7 +1,6 @@
 """Models for the brokerage search endpoint."""
 
 from datetime import datetime
-from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -10,8 +9,8 @@ from pydantic import BaseModel
 class Result(BaseModel):
     """A representation of an individual result."""
 
-    source: Literal["BODC", "JNCC"]
-    uuid: str
+    source: str
+    uuid: UUID
     image_filename: str
     image_handle: str
     image_uuid: UUID
@@ -21,7 +20,7 @@ class Result(BaseModel):
     annotation_creation_datetime: datetime
     annotation_shape: str
     annotation_coordinates: list[list[int | float]]
-    annotation_dimension_pixels: float | int
+    annotation_dimension_pixels: float | int | None
     annotator_name: str
     annotation_set_uuid: UUID
     annotation_set_name: str
@@ -69,13 +68,21 @@ class Summary(BaseModel):
     n_image_sets: int
 
     def __add__(self, other: "Summary") -> "Summary":
-        """Override the + operator to allow for merging of Summary instances."""
+        if not isinstance(other, Summary):
+            return NotImplemented
+
         return Summary(
             n_annotations=self.n_annotations + other.n_annotations,
             n_images=self.n_images + other.n_images,
             n_annotation_sets=self.n_annotation_sets + other.n_annotation_sets,
             n_image_sets=self.n_image_sets + other.n_image_sets,
         )
+
+    def __radd__(self, other: int):
+        """Needed for the sum() function to work on a list of Summary objects."""
+        if other == 0:
+            return self
+        return self.__add__(other)
 
 
 class Results(BaseModel):
@@ -85,10 +92,26 @@ class Results(BaseModel):
     annotations: list[Result]
 
 
+class ResultMetadata(BaseModel):
+    """A representation of the search result metadata."""
+
+    total_results: int = 0
+    results_from_individual_sources: dict[str, int] = {}
+
+    @classmethod
+    def construct_result_metadata_with_generic_sources(cls, raw_data: dict[str:int]) -> "ResultMetadata":
+        """Construct the instance using any, appending '_results' to the end."""
+        prepared_data = {f"{source}_results": count for source, count in raw_data.items()}
+        if prepared_data:
+            return cls(total_results=sum(prepared_data.values()), results_from_individual_sources=prepared_data)
+        return cls()
+
+
 class SearchResults(BaseModel):
     """A representation of an aggregation of individual results."""
 
     count: int
     next: str | None = None
     previous: str | None = None
+    result_metadata: ResultMetadata | None = None
     results: Results
