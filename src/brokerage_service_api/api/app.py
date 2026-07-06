@@ -12,8 +12,14 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
-from brokerage_service_api.api.routes import brokerage_search_router, export_router, source_health_router, download_images_router
+from brokerage_service_api.api.routes import (
+    brokerage_search_router,
+    download_images_router,
+    export_router,
+    source_health_router,
+)
 from brokerage_service_api.utilities.source import get_source_registry
+
 
 class HealthResponse(BaseModel):
     """Health check response model."""
@@ -141,11 +147,7 @@ def create_app() -> FastAPI:
         prefix="/api",
         tags=["Brokerage Export Endpoints"],
     )
-    app.include_router(
-        download_images_router,
-        prefix="/api",
-        tags=["demo"]
-    )
+    app.include_router(download_images_router, prefix="/api", tags=["demo"])
 
     return app
 
