@@ -1,5 +1,6 @@
 """FastAPI module that represent the root of the API."""
 
+import logging
 import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -10,9 +11,11 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
+from redis.exceptions import RedisError
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
 from brokerage_service_api.api.routes import brokerage_search_router, export_router, source_health_router
+from brokerage_service_api.utilities.redis import create_redis_client, redis_enabled, redis_ttl
 from brokerage_service_api.utilities.source import get_source_registry
 
 
@@ -38,7 +41,18 @@ def create_app() -> FastAPI:
         except FileNotFoundError:
             print("Warning: sources.yaml file not found!")
             app.state.sources = {}
-        yield
+        app.state.redis_ttl = redis_ttl()
+        app.state.redis = create_redis_client() if redis_enabled() else None
+        try:
+            if app.state.redis is not None:
+                try:
+                    await app.state.redis.ping()
+                except (RedisError, OSError):
+                    logging.getLogger(__name__).warning("Redis unavailable; continuing without cached responses")
+            yield
+        finally:
+            if app.state.redis is not None:
+                await app.state.redis.aclose()
 
     app = FastAPI(
         lifespan=lifespan,

@@ -93,8 +93,8 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
     run(exercise())
 
 
-def test_client_encodes_path_params(jncc_source: SourceConfig) -> None:
-    """Path parameters should be URL encoded before the upstream call."""
+def test_client_encodes_taxonomy_query_params(jncc_source: SourceConfig) -> None:
+    """Taxonomy names should be encoded as query parameters in the upstream call."""
     seen_requests: list[httpx.Request] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -109,9 +109,9 @@ def test_client_encodes_path_params(jncc_source: SourceConfig) -> None:
             )
 
         assert response.ok is True
-        assert response.path == "/annotations/worms_cache/ajax_by_name_part/Abra%20alba/"
+        assert response.path == "/taxonomy/worms/taxa/"
         assert seen_requests[0].url == (
-            "http://jncc-api:8000/api/annotations/worms_cache/ajax_by_name_part/Abra%20alba/?combine_vernaculars=true"
+            "http://jncc-api:8000/api/taxonomy/worms/taxa/?name_part=Abra+alba&combine_vernaculars=true"
         )
 
     run(exercise())
@@ -275,3 +275,36 @@ def test_search_params_reject_unknown_and_invalid_values() -> None:
 
     with pytest.raises(ValidationError):
         AnnotationSearchParams(q="cod")
+
+
+def test_client_uses_current_export_endpoint(bodc_source: SourceConfig) -> None:
+    """Export requests must use the current URL and preserve search filters."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/annotations/search/export/"
+        assert request.url.params["name_part"] == "Abra alba"
+        return httpx.Response(status.HTTP_200_OK, json={}, request=request)
+
+    async def exercise() -> None:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
+            response = await client.export_annotation_data(AnnotationSearchParams(name_part="Abra alba"))
+        assert response.ok is True
+        assert response.path == "/annotations/search/export/"
+
+    run(exercise())
+
+
+def test_client_taxonomy_lookup_without_optional_params(jncc_source: SourceConfig) -> None:
+    """Encode punctuation in names without requiring optional lookup parameters."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/taxonomy/worms/taxa/"
+        assert dict(request.url.params) == {"name_part": "Abra / alba & test"}
+        return httpx.Response(status.HTTP_200_OK, json=[], request=request)
+
+    async def exercise() -> None:
+        async with AnnotationApiClient(jncc_source, transport=httpx.MockTransport(handler)) as client:
+            response = await client.search_taxa_by_name_part("Abra / alba & test")
+        assert response.ok is True
+
+    run(exercise())

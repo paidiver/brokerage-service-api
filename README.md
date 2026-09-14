@@ -102,6 +102,12 @@ CACHED_WORMS_API_TOKEN=mysecrettoken
 POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 POSTGRES_PORT=5432
+
+# Local DEV: Redis
+REDIS_BACKEND=fake
+REDIS_URL=redis://localhost:6379/0
+REDIS_ENABLED=true
+REDIS_DEFAULT_TTL_SECONDS=300
 ```
 
 ### 2. Build and run the stack
@@ -327,6 +333,28 @@ docker compose -f docker/docker-compose.yml run --rm app tox -e py313
 ```
 
 Coverage reports are written to `coverage_reports/`.
+
+## Redis
+
+The API creates one async Redis client at startup, checks it with `PING`, and
+closes it at shutdown. Routes can inject it with `Depends(get_redis)` from
+`brokerage_service_api.utilities.redis`, or access `request.app.state.redis`.
+The client returns decoded strings. `/api/sources` responses are cached using keys
+that include query parameters and source configuration. Set `REDIS_ENABLED=false`
+to disable caching, or `REDIS_DEFAULT_TTL_SECONDS=300` to configure the lifetime.
+
+Local runs default to `REDIS_BACKEND=fake`, using `fakeredis` without a server.
+Fake data is isolated per application process and lost on restart, so use real
+Redis when multiple workers need shared state.
+
+To connect to a server, set `REDIS_BACKEND=redis` and
+`REDIS_URL=redis://localhost:6379/0`. Export these variables in your shell, or
+start Uvicorn with `--env-file .env` to load them from a file. If real Redis is unreachable, the API starts and cache failures fall back to
+normal upstream calls. Subsequent requests can use Redis when it recovers.
+
+Docker Compose explicitly selects real Redis at `redis://redis:6379/0`, waits
+for its health check, and persists data in the `redis_data` volume. Redis is
+accessible within the Compose network, with no host port exposed.
 
 ## API Examples
 
