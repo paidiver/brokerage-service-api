@@ -27,6 +27,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: REDIS_ENABLED
+              value: {{ .Values.redis.cacheEnabled | quote }}
+            - name: REDIS_DEFAULT_TTL_SECONDS
+              value: {{ .Values.redis.defaultTtlSeconds | quote }}
+            - name: REDIS_BACKEND
+              value: {{ .Values.redis.backend | quote }}
+            - name: REDIS_URL
+              value: {{ include "brokerage-service-api.redisUrl" . | quote }}
             - name: BODC_ANNOTATIONS_API_URL
               value: {{ .Values.env.bodcAnnotationsApiUrl | quote }}
             - name: JNCC_ANNOTATIONS_API_URL

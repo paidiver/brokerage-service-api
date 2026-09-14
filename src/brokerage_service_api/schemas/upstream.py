@@ -167,6 +167,8 @@ class AnnotationSearchParams(PaginationParams):
 class TaxaNamePartParams(QueryParamModel):
     """Query parameters for WoRMS taxa name-part lookup."""
 
+    name_part: str | None = None
+
     combine_vernaculars: bool | None = None
 
 

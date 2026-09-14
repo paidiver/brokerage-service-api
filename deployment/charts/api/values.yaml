@@ -45,3 +45,20 @@ ingress:
 env:
   bodcAnnotationsApiUrl: ""
   jnccAnnotationsApiUrl: ""
+
+# Set enabled=false and backend=fake for an in-memory development instance.
+# For an external server, set enabled=false, backend=redis and url.
+redis:
+  enabled: true
+  cacheEnabled: true
+  defaultTtlSeconds: 300
+  backend: redis
+  url: ""
+  image: redis:7-alpine
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

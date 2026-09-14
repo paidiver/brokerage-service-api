@@ -10,8 +10,8 @@ import requests
 BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 AUTH_TOKEN = os.getenv("API_AUTH_TOKEN", "")
 
-IMAGE_SET_ENDPOINT = f"{BASE_URL}/api/ingest/image-set"
-ANNOTATION_ENDPOINT = f"{BASE_URL}/api/annotations/upload_annotation/"
+IMAGE_SET_ENDPOINT = f"{BASE_URL}/api/ingest/image-sets/"
+ANNOTATION_ENDPOINT = f"{BASE_URL}/api/ingest/annotation-sets/"
 
 XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 

@@ -152,10 +152,11 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
+        query = (params or TaxaNamePartParams()).model_copy(update={"name_part": name_part})
         return await self._get(
-            f"/annotations/worms_cache/ajax_by_name_part/{self._path_param(name_part)}/",
+            "/taxonomy/worms/taxa/",
             response_schema=list[TaxonWormsLike],
-            params=params,
+            params=query,
         )
 
     async def health_check(self) -> UpstreamResponse[dict]:
@@ -277,7 +278,7 @@ class AnnotationApiClient:
         Returns:
             An UpstreamResponse object containing the response data or error information.
         """
-        return await self._get("/annotations/search/export-data/", response_schema=AnnotationExportData, params=params)
+        return await self._get("/annotations/search/export/", response_schema=AnnotationExportData, params=params)
 
     async def get_annotation(self, annotation_id: str) -> UpstreamResponse[Annotation]:
         """Get an annotation by ID.

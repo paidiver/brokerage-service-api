@@ -12,11 +12,16 @@ services:
     restart: always
     env_file:
       - ../.env
+    environment:
+      REDIS_BACKEND: redis
+      REDIS_URL: redis://redis:6379/0
     volumes:
       - ../:/code:Z
     ports:
       - "8020:8020"
     depends_on:
+      redis:
+        condition: service_healthy
       annotations-seed-data-jncc:
         condition: service_completed_successfully
       annotations-seed-data-bodc:
@@ -25,6 +30,20 @@ services:
         condition: service_healthy
       taxamatch:
         condition: service_started
+    networks:
+      - shared_services
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - shared_services
 
@@ -357,6 +376,7 @@ services:
       - shared_services
 
 volumes:
+  redis_data:
   annotations_pg_data_jncc:
   annotations_pg_data_bodc:
   worms_pg_data:
