@@ -5,17 +5,17 @@ import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.exception_handlers import request_validation_exception_handler
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from redis.exceptions import RedisError
 
-from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
+from brokerage_service_api.api.exceptions import add_exception_handlers
 from brokerage_service_api.api.routes import brokerage_search_router, export_router, source_health_router
 from brokerage_service_api.api.routes.search_sessions import router as search_sessions_router
+from brokerage_service_api.schemas.response import ProblemDetails
 from brokerage_service_api.utilities.redis import create_redis_client, redis_enabled, redis_ttl
 from brokerage_service_api.utilities.source import get_source_registry
 
@@ -23,7 +23,23 @@ from brokerage_service_api.utilities.source import get_source_registry
 class HealthResponse(BaseModel):
     """Health check response model."""
 
-    ping: str
+    status: str
+
+
+def problem_openapi(app: FastAPI) -> dict:
+    """Document problem responses with their actual media type."""
+    if app.openapi_schema is None:
+        schema = get_openapi(title=app.title, version=app.version, routes=app.routes, servers=app.servers)
+        for path in schema["paths"].values():
+            for operation in path.values():
+                if not isinstance(operation, dict):
+                    continue
+                for response in operation.get("responses", {}).values():
+                    content = response.get("content", {})
+                    if "application/problem+json" in content:
+                        content.pop("application/json", None)
+        app.openapi_schema = schema
+    return app.openapi_schema
 
 
 def create_app() -> FastAPI:
@@ -63,6 +79,14 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json",
         docs_url="/docs",
         openapi_version="3.0.3",
+        responses={
+            code: {
+                "model": ProblemDetails,
+                "description": "Problem Details",
+                "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/ProblemDetails"}}},
+            }
+            for code in (400, 401, 403, 404, 405, 422, 429, 500, 502, 503, 504)
+        },
     )
 
     origins = ["*"]
@@ -76,45 +100,6 @@ def create_app() -> FastAPI:
         expose_headers=["Location", "Retry-After"],
     )
 
-    @app.exception_handler(AppException)
-    async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
-        """Handle application exceptions.
-
-        Args:
-            request (Request): The incoming request.
-            exc (AppException): The application exception to handle.
-
-        Returns:
-            JSONResponse: A JSON response with the error details.
-        """
-        return JSONResponse(
-            status_code=exc.status_code,
-            content={"error": exc.detail, "type": exc.__class__.__name__, "path": str(request.url)},
-        )
-
-    @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-        """Handle request validation errors.
-
-        Args:
-            request (Request): The incoming request.
-            exc (RequestValidationError): The validation error to handle.
-
-        Returns:
-            JSONResponse: A JSON response with the error details.
-        """
-        return (
-            JSONResponse(
-                status_code=400,
-                content={
-                    "code": "InvalidParameterValue",
-                    "description": str(exc),
-                },
-            )
-            if request.url.path.startswith("/v1/ogc")
-            else await request_validation_exception_handler(request, exc)
-        )
-
     @app.get("/", include_in_schema=False)
     async def main() -> RedirectResponse:
         """Redirect to docs.
@@ -124,7 +109,7 @@ def create_app() -> FastAPI:
         """
         return RedirectResponse(url="/docs")
 
-    add_exception_handlers(app, DEFAULT_STATUS_CODES)
+    add_exception_handlers(app)
 
     @app.get(
         "/health",
@@ -133,13 +118,13 @@ def create_app() -> FastAPI:
         operation_id="healthCheck",
         tags=["Health Check"],
     )
-    async def health() -> dict:
+    async def health() -> HealthResponse:
         """Health check.
 
         Returns:
             dict: A dictionary with a "status" key and "ok" value to indicate the service is healthy.
         """
-        return {"status": "ok"}
+        return HealthResponse(status="ok")
 
     app.include_router(
         source_health_router,
@@ -161,6 +146,7 @@ def create_app() -> FastAPI:
         tags=["Brokerage Export Endpoints"],
     )
 
+    app.openapi = lambda: problem_openapi(app)
     return app
 
 

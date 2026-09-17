@@ -8,7 +8,7 @@ from pathlib import Path
 
 import httpx
 import yaml
-from fastapi import Request
+from fastapi import HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from brokerage_service_api.fixtures.constants import ENV_SOURCE_URL_MAP
@@ -101,7 +101,8 @@ async def check_source_health(source: SourceConfig) -> dict:
         dict: A dictionary with the health status of the source.
     """
     try:
-        response = await AnnotationApiClient(source).health_check()
+        async with AnnotationApiClient(source) as client:
+            response = await client.health_check()
         response.raise_for_status()
 
         status = response.data.get("status", "unknown")
@@ -128,5 +129,12 @@ def calculate_available_sources(request: Request, sources: list[str] | None) -> 
     """
     configured_sources = request.app.state.sources
     if sources:
-        return [source for source in configured_sources if source.name in sources]
+        unknown = set(sources) - {source.name for source in configured_sources}
+        if unknown:
+            raise HTTPException(
+                422, detail={"code": "unknown_source", "message": "Unknown sources: " + ", ".join(sorted(unknown))}
+            )
+        configured_sources = [source for source in configured_sources if source.name in sources]
+    if not configured_sources:
+        raise HTTPException(503, detail={"code": "no_sources", "message": "No upstream sources are configured."})
     return configured_sources

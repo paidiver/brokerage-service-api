@@ -176,10 +176,10 @@ class TestGetSourcesEndpoint:
 
             assert response.status_code == status.HTTP_200_OK
             data = response.json()
-            assert "sources" in data
+            assert "results" in data
 
-            bodc_result = next(s for s in data["sources"] if s["source_name"] == "bodc")
-            jncc_result = next(s for s in data["sources"] if s["source_name"] == "jncc")
+            bodc_result = next(s for s in data["results"] if s["source_name"] == "bodc")
+            jncc_result = next(s for s in data["results"] if s["source_name"] == "jncc")
 
             assert bodc_result["status"] == "healthy"
             assert jncc_result["status"] == "healthy"
@@ -198,6 +198,6 @@ class TestGetSourcesEndpoint:
 
             assert response.status_code == status.HTTP_200_OK
             data = response.json()
-            assert "sources" in data
-            assert len(data["sources"]) == 0
+            assert "results" in data
+            assert len(data["results"]) == 0
             mock_health_check.assert_not_awaited()

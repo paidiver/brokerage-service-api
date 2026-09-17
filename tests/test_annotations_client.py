@@ -38,27 +38,25 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
                 "count": 1,
                 "next": None,
                 "previous": None,
-                "results": {
-                    "annotations": [
-                        {
-                            "uuid": "11111111-1111-1111-1111-111111111111",
-                            "image_filename": "image-1.jpg",
-                            "image_uuid": "22222222-2222-2222-2222-222222222222",
-                            "label_name": "cod",
-                            "label_aphia_id": COD_APHIA_ID,
-                            "annotation_platform": None,
-                            "creation_datetime": "2024-01-01T12:00:00Z",
-                            "annotation_shape": "point",
-                            "annotation_coordinates": [[1.0, 2.0]],
-                            "annotation_dimension_pixels": None,
-                            "annotator_name": None,
-                            "annotation_set_uuid": "33333333-3333-3333-3333-333333333333",
-                            "annotation_set_name": "Example annotation set",
-                            "image_set_uuid": "44444444-4444-4444-4444-444444444444",
-                            "image_set_name": "Example image set",
-                        },
-                    ],
-                },
+                "results": [
+                    {
+                        "uuid": "11111111-1111-1111-1111-111111111111",
+                        "image_filename": "image-1.jpg",
+                        "image_uuid": "22222222-2222-2222-2222-222222222222",
+                        "label_name": "cod",
+                        "label_aphia_id": COD_APHIA_ID,
+                        "annotation_platform": None,
+                        "creation_datetime": "2024-01-01T12:00:00Z",
+                        "annotation_shape": "point",
+                        "annotation_coordinates": [[1.0, 2.0]],
+                        "annotation_dimension_pixels": None,
+                        "annotator_name": None,
+                        "annotation_set_uuid": "33333333-3333-3333-3333-333333333333",
+                        "annotation_set_name": "Example annotation set",
+                        "image_set_uuid": "44444444-4444-4444-4444-444444444444",
+                        "image_set_name": "Example image set",
+                    }
+                ],
             },
             request=request,
         )
@@ -81,8 +79,8 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
         assert response.method == "GET"
         assert response.data is not None
         assert response.data.count == 1
-        assert response.data.results.annotations[0].image_filename == "image-1.jpg"
-        assert response.data.results.annotations[0].label_aphia_id == COD_APHIA_ID
+        assert response.data.results[0].image_filename == "image-1.jpg"
+        assert response.data.results[0].label_aphia_id == COD_APHIA_ID
         assert response.error is None
         assert response.path == "/annotations/search/"
         assert seen_requests[0].url == (
@@ -100,7 +98,9 @@ def test_client_encodes_taxonomy_query_params(jncc_source: SourceConfig) -> None
 
     def handler(request: httpx.Request) -> httpx.Response:
         seen_requests.append(request)
-        return httpx.Response(status.HTTP_200_OK, json=[], request=request)
+        return httpx.Response(
+            status.HTTP_200_OK, json={"count": 0, "next": None, "previous": None, "results": []}, request=request
+        )
 
     async def exercise() -> None:
         async with AnnotationApiClient(jncc_source, transport=httpx.MockTransport(handler)) as client:
@@ -301,7 +301,9 @@ def test_client_taxonomy_lookup_without_optional_params(jncc_source: SourceConfi
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/api/taxonomy/worms/taxa/"
         assert dict(request.url.params) == {"name_part": "Abra / alba & test"}
-        return httpx.Response(status.HTTP_200_OK, json=[], request=request)
+        return httpx.Response(
+            status.HTTP_200_OK, json={"count": 0, "next": None, "previous": None, "results": []}, request=request
+        )
 
     async def exercise() -> None:
         async with AnnotationApiClient(jncc_source, transport=httpx.MockTransport(handler)) as client:
@@ -327,13 +329,13 @@ def test_search_accepts_info_annotation_sets(bodc_source: SourceConfig) -> None:
             status.HTTP_200_OK,
             json={
                 "count": 0,
-                "results": {
-                    "annotations": [],
+                "results": [],
+                "meta": {
                     "info": {
                         "image_sets": [],
                         "annotation_sets": [annotation_set],
                         "aphia_ids": [{"aphia_id": COD_APHIA_ID, "scientific_name": "Gadus morhua", "rank": "Species"}],
-                    },
+                    }
                 },
             },
             request=request,
@@ -343,6 +345,6 @@ def test_search_accepts_info_annotation_sets(bodc_source: SourceConfig) -> None:
         async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.search_annotations(AnnotationSearchParams(name_part="act", add_info=True))
             assert response.ok, response.error
-            assert response.data.results.info.model_dump(mode="json")["annotation_sets"] == [annotation_set]
+            assert response.data.meta.info.model_dump(mode="json")["annotation_sets"] == [annotation_set]
 
     run(exercise())

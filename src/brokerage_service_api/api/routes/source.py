@@ -9,6 +9,8 @@ from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from redis.exceptions import RedisError
 
+from brokerage_service_api.schemas.response import CollectionResponse
+from brokerage_service_api.schemas.source import SourceHealth
 from brokerage_service_api.utilities.source import check_source_health
 
 router = APIRouter()
@@ -16,6 +18,7 @@ router = APIRouter()
 
 @router.get(
     "/sources",
+    response_model=CollectionResponse[SourceHealth],
     summary="Get the health status of source APIs",
     description="Retrieve the health status of all configured source APIs.",
 )
@@ -36,21 +39,21 @@ async def get_sources(request: Request) -> dict:
         "sources": jsonable_encoder(sources_config),
     }
     cache_key = (
-        "brokerage:sources:v1:" + hashlib.sha256(json.dumps(cache_key_data, sort_keys=True).encode()).hexdigest()
+        "brokerage:sources:v2:" + hashlib.sha256(json.dumps(cache_key_data, sort_keys=True).encode()).hexdigest()
     )
     if client is not None:
         try:
             cached = await client.get(cache_key)
             if cached is not None:
                 response = json.loads(cached)
-                if isinstance(response, dict) and isinstance(response.get("sources"), list):
+                if isinstance(response, dict) and isinstance(response.get("results"), list):
                     return response
         except (RedisError, OSError, ValueError, TypeError):
             logging.getLogger(__name__).warning("Redis cache read failed; checking upstream sources")
     tasks = [check_source_health(source) for source in sources_config]
     results = await asyncio.gather(*tasks)
 
-    response = {"sources": results}
+    response = {"count": len(results), "next": None, "previous": None, "results": results}
     if client is not None:
         try:
             await client.set(cache_key, json.dumps(jsonable_encoder(response)), ex=request.app.state.redis_ttl)

@@ -2,16 +2,13 @@
 
 import asyncio
 import logging
-import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from itertools import batched
 from typing import Any
-from urllib.parse import parse_qs
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 
-from brokerage_service_api.models.search_model import Result, ResultMetadata, Results, SearchResults, Summary
+from brokerage_service_api.models.search_model import Result, Results, SearchMetadata, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest, SearchResultInfo
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
@@ -67,7 +64,7 @@ class AnnotationsAPIFetcher:
         order_by_key = self.params.order_by
 
         if order_by_key == "label_aphia_id":
-            self._results.sort(key=lambda result: result.label_aphia_id)
+            self._results.sort(key=lambda result: (result.label_aphia_id is None, result.label_aphia_id))
         elif order_by_key == "annotation_creation_datetime":
             self._results.sort(key=lambda result: result.annotation_creation_datetime)
         elif order_by_key == "label_name":
@@ -75,37 +72,29 @@ class AnnotationsAPIFetcher:
 
     def _make_request(self) -> None:
         """Make request to the upstream API and store the results in the class if available."""
-        upstream_params = self._build_upstream_params(self.params)
-
+        upstream_params = self._build_upstream_params(self.params).model_copy(
+            update={"disable_pagination": True, "page": None}
+        )
         response = asyncio.run(self._request_annotations(source=self.source, params=upstream_params))
-        if not getattr(response, "ok", False):
-            error_message = getattr(getattr(response, "error", None), "message", None)
-            if error_message is None:
-                error_message = str(getattr(response, "error", ""))
-            logger.error("Something went wrong %s", error_message)
-            return
-
-        data = getattr(response, "data", None)
-        if data is None:
-            return
-
-        results = getattr(data, "results", None)
-        if results is None:
-            return
-
+        if not response.ok or response.data is None:
+            raise HTTPException(
+                502, detail={"code": "upstream_failed", "message": "An annotation source failed. Please retry."}
+            )
+        data = response.data
+        if not isinstance(data.results, list) or len(data.results) != data.count or data.next is not None:
+            raise HTTPException(
+                502,
+                detail={
+                    "code": "upstream_invalid",
+                    "message": "An annotation source returned an incomplete collection.",
+                },
+            )
         if self.params.add_info:
-            self._info = getattr(results, "info", None)
-
-        summary = getattr(results, "summary", None)
-        if summary is not None:
-            self._summary = Summary(**summary.model_dump())
-
-        annotations = getattr(results, "annotations", None)
-        if annotations is not None:
-            self._results = [
-                self._construct_result_from_annotation(result, source=self.source.name) for result in annotations
-            ]
-            self.order_results()
+            self._info = data.meta.info
+        if data.meta.summary is not None:
+            self._summary = Summary(**data.meta.summary.model_dump())
+        self._results = [self._construct_result_from_annotation(row, self.source.name) for row in data.results]
+        self.order_results()
 
     async def _request_annotations(self, source: SourceConfig, params: AnnotationSearchParams) -> Any:
         """Fetch annotations using the shared upstream client."""
@@ -166,84 +155,9 @@ class AnnotationsAPIFetcher:
         return self._summary
 
 
-def construct_prev_and_next_response_fields(request_url: str, maximum_allowed_page: int) -> tuple[str | None]:
-    """Use the incoming URL to construct the 'prev' and 'next' fields in the response.
-
-    'prev' will stay as None if any the following conditions are met:
-        - page is 1
-        - An error is raised whilst parsing for the page value
-
-    'prev' will change if the current page is > 1.
-
-    -----------------
-    'next_' will stay as None if the following conditions are met:
-        - An error is raised whilst parsing for the page value
-
-    'next_' will stay as the current value if it is the maximum allowed value. For example if the
-    user is on page 2, and this is the last page, then 2 will be returned.
-
-    'next_' will update by +1 if allowable. For example is there are 4 batches of results, and the user is on
-    page 3, then 4 will be returned.
-
-    """
-    # Define the 'prev' and 'next' as None, unless further logic dictates they need to be changed.
-    prev, next_ = None, None
-    request_fields = parse_qs(request_url)
-    minimum_page_value = 2
-
-    try:
-        current_page_value = int(request_fields["page"][0])
-    except KeyError:
-        # If no page is set in the query, assume page 1.
-        current_page_value = 1
-    except Exception:
-        return prev, next_
-
-    if current_page_value >= minimum_page_value:
-        prev = str(current_page_value - 1)
-    elif current_page_value == 1:
-        prev = None
-
-    # If the current page is the maximum allowable page, then set to that.
-    if current_page_value == maximum_allowed_page:
-        next_ = str(current_page_value)
-
-    # If the current page is less than the maxium allowable, increment by 1.
-    elif current_page_value < maximum_allowed_page:
-        next_ = str(current_page_value + 1)
-
-    return prev, next_
-
-
-def construct_previous_and_next_urls(
-    incoming_url: str, previous_value: str | None, next_value: str | None
-) -> str | None:
-    """Use the incoming URL, and the potential previous/next values to form the new URLS.
-
-    Args:
-        incoming_url: the incoming URL.
-        previous_value: If a string, make a new url with the value.
-        next_value: If a string, make a new url with the value
-
-    Returns:
-    Either a url, or None.
-    """
-    previous_url = re.sub("&page=\\d+", f"&page={previous_value}", incoming_url) if previous_value is not None else None
-
-    if next_value is not None:
-        if "&page=" in incoming_url:
-            next_url = re.sub(r"&page=\d+", f"&page={next_value}", incoming_url)
-        else:
-            next_url = incoming_url + f"&page={next_value}"
-    else:
-        next_url = None
-
-    return previous_url, next_url
-
-
 def results_with_pagination_applied(
     count: int, all_results: Results, page_size: int, page_number: int | None, request: Request
-) -> Results:
+) -> SearchResults:
     """Apply pagination to the results and return a subset.
 
     Args:
@@ -256,58 +170,21 @@ def results_with_pagination_applied(
     Returns:
     A SearchResults object with a subset of the results, and the prev|next fields populated.
     """
-    # Prepare the result metadata using all the results.
-    source_count = Counter(result.source for result in all_results.annotations)
-    result_metadata = ResultMetadata.construct_result_metadata_with_generic_sources(raw_data=source_count)
-
-    # Batch the annotations into the required size (100 is the default).
-    batched_annotations = list(batched(all_results.annotations, n=page_size))
-
-    # Fetch the values needed for the previous and next URL's.
-    prev_field, next_field = construct_prev_and_next_response_fields(
-        request_url=str(request.query_params), maximum_allowed_page=len(batched_annotations)
-    )
-
-    # Use the values from the previous function calls to now build the previous and next URL's.
-    previous_url, next_url = construct_previous_and_next_urls(
-        incoming_url=str(request.query_params), previous_value=prev_field, next_value=next_field
-    )
-
-    # If there are no results, return an empty page for the first page request,
-    # otherwise raise an invalid page number error for any page other than 1.
-    if not batched_annotations:
-        if page_number in (None, 1):
-            return SearchResults(
-                previous=previous_url,
-                next=next_url,
-                count=count,
-                results=Results(summary=all_results.summary, info=all_results.info, annotations=[]),
-                result_metadata=result_metadata,
-            )
-        raise InvalidPageNumberError from None
-
-    # If no page number is passed, then just return the first page of results.
-    # This is the default path, so the user will just see 100 results or less.
-    if page_number is None:
-        return SearchResults(
-            previous=previous_url,
-            next=next_url,
-            count=count,
-            results=Results(summary=all_results.summary, info=all_results.info, annotations=batched_annotations[0]),
-            result_metadata=result_metadata,
-        )
-
-    # If the user passes a page number, return that specific batch or raise an error if not applicable.
-    try:
-        specified_annotation_batch = batched_annotations[page_number - 1]
-    except IndexError:
-        raise InvalidPageNumberError from None
-
-    paginated_results = Results(
-        summary=all_results.summary, info=all_results.info, annotations=specified_annotation_batch
-    )
+    page = page_number or 1
+    total_pages = (count + page_size - 1) // page_size
+    if page < 1 or page > max(1, total_pages):
+        raise InvalidPageNumberError
+    start = (page - 1) * page_size
     return SearchResults(
-        previous=previous_url, next=next_url, count=count, results=paginated_results, result_metadata=result_metadata
+        count=count,
+        next=str(request.url.include_query_params(page=page + 1)) if page < total_pages else None,
+        previous=str(request.url.include_query_params(page=page - 1)) if page > 1 else None,
+        results=all_results.annotations[start : start + page_size],
+        meta=SearchMetadata(
+            summary=all_results.summary,
+            info=all_results.info,
+            source_counts=dict(Counter(row.source for row in all_results.annotations)),
+        ),
     )
 
 
@@ -323,13 +200,15 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest,
     """
     # Use the source registry to determine what sources to pull from.
     sources_to_pull_results_from = get_source_registry().list()
+    if not sources_to_pull_results_from:
+        raise HTTPException(503, detail={"code": "no_sources", "message": "No search sources are configured."})
 
     # Setup instances of the API Fetcher according to what sources we have.
     api_fetchers = [AnnotationsAPIFetcher(source=source, params=params) for source in sources_to_pull_results_from]
 
     # Make the requests to the sources.
     with ThreadPoolExecutor() as executor:
-        executor.map(lambda w: w._make_request(), api_fetchers)
+        list(executor.map(lambda w: w._make_request(), api_fetchers))
 
     # Aggregate all the annotations and summaries in a single place.
     all_annotations, all_summaries = [], []
@@ -344,17 +223,24 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest,
         for result in fetcher.results:
             all_annotations.append(result)
 
+    if params.order_by:
+        all_annotations.sort(
+            key=lambda row: (getattr(row, params.order_by) is None, getattr(row, params.order_by), row.source, row.uuid)
+        )
     all_results = Results(
-        summary=sum(all_summaries) if all_summaries else None,
+        summary=sum(all_summaries) if len(all_summaries) == len(api_fetchers) else None,
         info=merge_search_info([fetcher.info for fetcher in api_fetchers]) if params.add_info else None,
         annotations=all_annotations,
     )
 
     # Perform any pagination that is required
-    return results_with_pagination_applied(
+    response = results_with_pagination_applied(
         count=len(all_annotations),
         all_results=all_results,
         page_size=params.page_size,
         page_number=params.page,
         request=request,
     )
+
+    response.meta.source_counts = {fetcher.source.name: len(fetcher.results) for fetcher in api_fetchers}
+    return response

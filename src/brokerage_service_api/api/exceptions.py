@@ -1,52 +1,74 @@
-"""Custom exceptions for the PostGIS API."""
+"""Consistent RFC 9457 errors for framework and application failures."""
 
 import logging
-from collections.abc import Callable
+from http import HTTPStatus
 
 from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from starlette import status
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+
+from brokerage_service_api.schemas.response import ProblemDetails
 
 logger = logging.getLogger(__name__)
 
 
-def exception_handler_factory(status_code: int) -> Callable:
-    """Create a FastAPI exception handler from a status code.
+def problem_response(
+    status_code: int,
+    detail: str,
+    *,
+    code: str | None = None,
+    errors: list[dict[str, str]] | None = None,
+    headers: dict[str, str] | None = None,
+) -> JSONResponse:
+    """Build a safe machine-readable error while retaining HTTP headers."""
+    code = code or {
+        400: "invalid_parameters",
+        401: "not_authenticated",
+        403: "permission_denied",
+        404: "not_found",
+        405: "method_not_allowed",
+        422: "invalid_parameters",
+        500: "internal_error",
+        502: "upstream_failed",
+        503: "service_unavailable",
+        504: "upstream_timeout",
+    }.get(status_code, "request_failed")
+    body = ProblemDetails(
+        title=HTTPStatus(status_code).phrase, status=status_code, detail=detail, code=code, errors=errors
+    )
+    return JSONResponse(
+        body.model_dump(exclude_none=True),
+        status_code=status_code,
+        media_type="application/problem+json",
+        headers=headers,
+    )
 
-    Args:
-        status_code (int): The HTTP status code to return when the exception is raised.
 
-    Returns:
-        Callable: A FastAPI exception handler function that returns a JSON response with the given status code
-    """
+def add_exception_handlers(app: FastAPI) -> None:
+    """Register one error contract for HTTP, validation and unexpected failures."""
 
-    def handler(request: Request, exc: Exception) -> JSONResponse:
-        """Handle exceptions by returning a JSON response with the specified status code.
+    async def http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+        detail = exc.detail
+        code = detail.get("code") if isinstance(detail, dict) else None
+        message = detail.get("message", "The request failed.") if isinstance(detail, dict) else str(detail)
+        return problem_response(exc.status_code, message, code=code, headers=exc.headers)
 
-        Args:
-            request (Request): The incoming HTTP request that caused the exception.
-            exc (Exception): The exception that was raised.
+    async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+        errors = [
+            {"field": ".".join(str(part) for part in error["loc"]), "message": error["msg"]} for error in exc.errors()
+        ]
+        return problem_response(422, "One or more request parameters are invalid.", errors=errors)
 
-        Returns:
-            JSONResponse: A JSON response containing the exception details and the specified HTTP status code.
-        """
-        logger.error(exc, exc_info=True)
-        return JSONResponse(content={"detail": str(exc)}, status_code=status_code)
+    async def internal_error(request: Request, exc: Exception) -> JSONResponse:
+        logger.exception("Unhandled API exception", exc_info=exc)
+        return problem_response(500, "An unexpected error occurred.")
 
-    return handler
-
-
-def add_exception_handlers(app: FastAPI, status_codes: dict[type[Exception], int]) -> None:
-    """Add exception handlers to the FastAPI app.
-
-    Args:
-        app (FastAPI): The FastAPI application instance to which the exception handlers will be added.
-        status_codes (dict[type[Exception], int]): A dictionary mapping exception types to HTTP status
-            codes. The keys should be exception classes, and the values should be the corresponding HTTP status codes.
-    """
-    for exc, code in status_codes.items():
-        app.add_exception_handler(exc, exception_handler_factory(code))
+    app.add_exception_handler(StarletteHTTPException, http_error)
+    app.add_exception_handler(RequestValidationError, validation_error)
+    app.add_exception_handler(Exception, internal_error)
 
 
 class AppException(HTTPException):
@@ -71,8 +93,3 @@ class ValueErrorException(AppException):
     def __init__(self, detail: str) -> None:
         """Initialize a value-error exception with a custom message."""
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
-
-
-DEFAULT_STATUS_CODES = {
-    Exception: status.HTTP_500_INTERNAL_SERVER_ERROR,
-}
