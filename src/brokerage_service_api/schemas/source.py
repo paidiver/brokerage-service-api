@@ -56,3 +56,12 @@ class SourceConfig(BaseModel):
             str: The normalised name.
         """
         return value.strip().lower()
+
+
+class SourceHealth(BaseModel):
+    """Public health status for a configured source."""
+
+    source_name: str
+    source_label: str
+    base_url: HttpUrl
+    status: str

@@ -6,8 +6,6 @@ import pytest
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.utilities.search_compiler import (
     InvalidPageNumberError,
-    construct_prev_and_next_response_fields,
-    construct_previous_and_next_urls,
     fetch_combined_results_from_annotation_apis,
 )
 from pytest_mock import MockerFixture
@@ -36,9 +34,10 @@ def test_search_compiler_pagination_with_page_size_1_to_10(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -48,7 +47,7 @@ def test_search_compiler_pagination_with_page_size_1_to_10(
         combined_results = fetch_combined_results_from_annotation_apis(
             params=AnnotationSearchRequest(aphia_ids=[588], page_size=page_size), request=mock_request_for_pagination
         )
-        assert len(combined_results.results.annotations) == page_size
+        assert len(combined_results.results) == page_size
 
 
 def test_search_compiler_pagination_with_invalid_page_number(
@@ -60,9 +59,10 @@ def test_search_compiler_pagination_with_invalid_page_number(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -87,9 +87,10 @@ def test_search_compiler_pagination_with_varying_page_numbers(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -100,64 +101,9 @@ def test_search_compiler_pagination_with_varying_page_numbers(
             params=AnnotationSearchRequest(aphia_ids=[588], page=page_number, page_size=1),
             request=mock_request_for_pagination,
         )
-        .results.annotations[0]
+        .results[0]
         .uuid
         for page_number in range(1, 11)
     ]
 
     assert len(uuids) == len(set(uuids)), "Duplicate UUID's detected!"
-
-
-def test_search_compiler_pagination_prev_and_next_fields() -> None:
-    """Call upon 'construct_prev_and_next_response_fields' with differing page sizes, and verify the response."""
-    # With the max page of 1, and current page set to 1. Previous=None, next=1
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=1"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=1)
-    assert response == (None, "1")
-
-    # With the max page of 5, and current page set to 2. Previous=2, next=3
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=2"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
-    assert response == ("1", "3")
-
-    # With the max page of 5, and current page set to 3. Previous=2, next=4
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=3"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
-    assert response == ("2", "4")
-
-    # With the max page of 5, and current page set to 4. Previous=3, next=5
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=4"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
-    assert response == ("3", "5")
-
-    # With the max page of 5, and current page set to 5. Previous=4, next=5
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=5"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
-    assert response == ("4", "5")
-
-
-def test_search_compiler_pagination_with_no_page_param_sets_first_page_next() -> None:
-    """Ensure missing page params default to page 1 and still return the next page."""
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=5)
-    assert response == (None, "2")
-
-
-def test_search_compiler_pagination_prev_and_next_fields_with_generic_exception() -> None:
-    """Request prev/next fields with an incorrect query string, and ensure the default of None is returned for both."""
-    url = "http://localhost:8080/api?aphia_ids=588&page_size=5&page=ten"
-    response = construct_prev_and_next_response_fields(request_url=url, maximum_allowed_page=1)
-    # In an error state, we expect None for both 'prev' and 'next'.
-    assert response == (None, None)
-
-
-def test_construct_previous_and_next_urls_adds_page_param_when_missing() -> None:
-    """Ensure the next URL is constructed correctly when the incoming URL has no page parameter."""
-    previous_url, next_url = construct_previous_and_next_urls(
-        incoming_url="http://localhost:8080/api?aphia_ids=588&page_size=5",
-        previous_value=None,
-        next_value="2",
-    )
-
-    assert previous_url is None
-    assert next_url == "http://localhost:8080/api?aphia_ids=588&page_size=5&page=2"

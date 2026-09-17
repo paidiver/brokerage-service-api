@@ -1,11 +1,10 @@
 """Schemas for the search API endpoints."""
 
-from pydantic import BaseModel
-
+from brokerage_service_api.schemas.response import CollectionResponse
 from brokerage_service_api.schemas.upstream import TaxonWormsLike
 
 
-class TaxaBulkResponse(BaseModel):
+class TaxaBulkResponse(CollectionResponse[TaxonWormsLike]):
     """Response model for bulk taxonomy search results."""
 
     results: list[TaxonWormsLike]

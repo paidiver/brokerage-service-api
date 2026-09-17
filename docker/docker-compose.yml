@@ -55,7 +55,7 @@ services:
       - shared_services
 
   annotations-api-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -78,7 +78,7 @@ services:
       - shared_services
 
   annotations-api-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -101,7 +101,7 @@ services:
       - shared_services
 
   annotations-migrate-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -116,7 +116,7 @@ services:
       - shared_services
 
   annotations-migrate-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -131,7 +131,7 @@ services:
       - shared_services
 
   annotations-seed-data-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -184,7 +184,7 @@ services:
       - shared_services
 
   annotations-seed-data-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
     env_file:
       - ../.env
     environment:
@@ -302,7 +302,7 @@ services:
       - shared_services
 
   worms-cache-migrate:
-    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test3
     env_file:
       - ../.env
     environment:
@@ -317,7 +317,7 @@ services:
       - shared_services
 
   worms-cache:
-    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test3
     env_file:
       - ../.env
     environment:
@@ -339,7 +339,7 @@ services:
       - shared_services
 
   worms-cache-seed:
-    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test3
     env_file:
       - ../.env
     environment:
@@ -368,7 +368,7 @@ services:
     networks:
       - shared_services
   taxamatch:
-    image: ghcr.io/paidiver/worms-cache:rb-v0.1.10-test2
+    image: ghcr.io/paidiver/worms-cache:rb-v0.1.10-test3
     environment:
       PORT: "8080"
       RACK_ENV: "development"

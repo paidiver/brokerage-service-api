@@ -92,7 +92,7 @@ class AnnotationSearchRequest(BaseModel):
         description="Partial name to search for in labels. Must contain at least 3 characters.",
     )
     page: int | None = Field(default=None, ge=1, description="A page number within the paginated result set.")
-    page_size: int | None = Field(default=100, description="Number of results to return per page.")
+    page_size: int = Field(default=100, ge=1, le=500, description="Number of results to return per page.")
     platform: str | None = Field(
         default=None,
         min_length=3,
@@ -143,6 +143,7 @@ class AnnotationSearchRequest(BaseModel):
 class AnnotationSearchParams(PaginationParams):
     """Query parameters for annotation search endpoints."""
 
+    disable_pagination: bool | None = None
     order_by: AnnotationOrderBy | None = None
     aphia_ids: list[int] | None = Field(default=None, alias="aphia_ids[]")
     add_summary: bool | None = None
@@ -190,12 +191,6 @@ class PaginatedResponse(UpstreamModel, Generic[ResultT]):
     results: list[ResultT]
 
 
-class SearchPaginatedResponse(PaginatedResponse[ResultT], Generic[ResultT]):
-    """Paginated upstream response for search endpoints."""
-
-    results: ResultT
-
-
 class SharedSearchResultItem(UpstreamModel):
     """Shared fields for search result items."""
 
@@ -238,20 +233,24 @@ class SearchResultInfo(UpstreamModel):
     aphia_ids: list[AphiaIdInfo]
 
 
-class SearchResultRow(UpstreamModel):
-    """Grouped annotation search response."""
+class SearchMetadata(UpstreamModel):
+    """Optional aggregates and filter choices for the full search."""
 
     summary: SearchResultSummary | None = None
     info: SearchResultInfo | None = None
-    annotations: list[SearchResultItem]
+
+
+class SearchPaginatedResponse(PaginatedResponse[ResultT], Generic[ResultT]):
+    """Flat search collection with optional metadata."""
+
+    meta: SearchMetadata = Field(default_factory=SearchMetadata)
 
 
 class GroupedSearchResultRow(UpstreamModel):
-    """Grouped annotation search response."""
+    """All matching rows for one annotation set."""
 
-    summary: SearchResultSummary | None = None
-    info: SearchResultInfo | None = None
-    annotations: dict[UUID, list[SharedSearchResultItem]]
+    annotation_set_uuid: UUID
+    annotations: list[SearchResultItem]
 
 
 class TaxonWormsLike(UpstreamModel):
@@ -354,9 +353,13 @@ class AnnotationExportData(BaseModel):
 
 
 type PaginatedGroupedSearchResultItemList = SearchPaginatedResponse[GroupedSearchResultRow]
-type PaginatedSearchResultItemList = SearchPaginatedResponse[SearchResultRow]
+type PaginatedSearchResultItemList = SearchPaginatedResponse[SearchResultItem]
 type PaginatedImageSetList = PaginatedResponse[ImageSet]
 type PaginatedImageList = PaginatedResponse[Image]
 type PaginatedAnnotationSetList = PaginatedResponse[AnnotationSet]
 type PaginatedAnnotationList = PaginatedResponse[Annotation]
 type PaginatedLabelList = PaginatedResponse[Label]
+
+
+class TaxaCollection(PaginatedResponse[TaxonWormsLike]):
+    """Complete taxonomy collection returned by annotations."""

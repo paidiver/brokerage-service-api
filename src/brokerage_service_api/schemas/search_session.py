@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from brokerage_service_api.models.search_model import Result, SearchResults, Summary
+from brokerage_service_api.models.search_model import Result, SearchMetadata, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationOrderBy, AnnotationSearchRequest, SearchResultInfo
 
@@ -56,25 +56,26 @@ class SearchSessionState(BaseModel):
         return (self.count + self.params.page_size - 1) // self.params.page_size
 
 
-class SearchSessionPage(SearchResults):
-    """Completed brokerage page and session metadata."""
+class SearchSessionMetadata(SearchMetadata):
+    """Session navigation and full-search metadata."""
 
     search_id: UUID
     page: int
     page_size: int
     total_pages: int
     generated_through_page: int
-    source_counts: dict[str, int]
     expires_at: datetime
+
+
+class SearchSessionPage(SearchResults):
+    """Completed page with session state in metadata."""
+
+    meta: SearchSessionMetadata
 
 
 class SearchSessionPending(BaseModel):
-    """Progress for a page that needs another bounded request."""
+    """A preparation status, not an empty successful result page."""
 
     status: Literal["preparing"] = "preparing"
-    search_id: UUID
-    page: int
     count: int
-    total_pages: int
-    generated_through_page: int
-    expires_at: datetime
+    meta: SearchSessionMetadata

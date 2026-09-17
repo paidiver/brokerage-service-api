@@ -394,23 +394,3 @@ A collection of example API requests and responses is available in the [API Exam
 ## Acknowledgements
 
 This project was supported by the UK Natural Environment Research Council (NERC) through the *Tools for automating image analysis for biodiversity monitoring (AIAB)* Funding Opportunity, reference code **UKRI052**.
-
-
-### Annotation search ordering
-
-Pass `order_by=label_aphia_id`, `order_by=annotation_creation_datetime`, or
-`order_by=label_name` to annotation search. These ascending ordering keys are
-forwarded to every upstream annotations API, which applies ordering before its
-pagination. Each fetcher also retains local sorting for older upstream versions.
-The existing brokerage merge/pagination behaviour is unchanged: this does not
-provide a global ordering across the complete datasets of all sources.
-
-### Cached search sessions
-
-The new `POST /api/annotations/search/sessions` endpoint creates a globally sorted,
-Redis-backed search. Retrieve numbered pages with
-`GET /api/annotations/search/sessions/{search_id}/pages/{page}`. Distant uncached pages
-return preparation progress until the merge reaches them. See
-[search sessions](docs/search-sessions.md) for the API contract, upstream ordering
-requirements, expiry, error handling and deployment settings. The existing search
-endpoint remains available; clients must adopt the session endpoints to use this behaviour.

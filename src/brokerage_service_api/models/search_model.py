@@ -3,8 +3,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from brokerage_service_api.schemas.response import CollectionResponse
 from brokerage_service_api.schemas.upstream import SearchResultInfo
 
 
@@ -99,26 +100,15 @@ class Results(BaseModel):
     annotations: list[Result]
 
 
-class ResultMetadata(BaseModel):
-    """A representation of the search result metadata."""
+class SearchMetadata(BaseModel):
+    """Full-search metadata, independent of the current results page."""
 
-    total_results: int = 0
-    results_from_individual_sources: dict[str, int] = {}
-
-    @classmethod
-    def construct_result_metadata_with_generic_sources(cls, raw_data: dict[str:int]) -> "ResultMetadata":
-        """Construct the instance using any, appending '_results' to the end."""
-        prepared_data = {f"{source}_results": count for source, count in raw_data.items()}
-        if prepared_data:
-            return cls(total_results=sum(prepared_data.values()), results_from_individual_sources=prepared_data)
-        return cls()
+    summary: Summary | None = None
+    info: SearchResultInfo | None = None
+    source_counts: dict[str, int] = Field(default_factory=dict)
 
 
-class SearchResults(BaseModel):
-    """A representation of an aggregation of individual results."""
+class SearchResults(CollectionResponse[Result]):
+    """A page of annotation-label rows."""
 
-    count: int
-    next: str | None = None
-    previous: str | None = None
-    result_metadata: ResultMetadata | None = None
-    results: Results
+    meta: SearchMetadata = Field(default_factory=SearchMetadata)

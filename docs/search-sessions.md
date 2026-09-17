@@ -1,9 +1,9 @@
 # Search sessions
 
 The session endpoints merge independently paginated upstream sources into one ascending
-result stream. Completed brokerage pages are cached in Redis. They are additive:
-`GET /api/annotations/search` retains its existing behaviour and pagination limitations.
-Clients must adopt the new endpoints to use session pagination. Export endpoints are
+result stream. Completed brokerage pages are cached in Redis. The separate
+`GET /api/annotations/search` fetches all matches before sorting and pagination;
+use session endpoints for bounded incremental fetching. Export endpoints are
 independent of sessions.
 
 ## Requests
@@ -29,15 +29,15 @@ annotation filters are accepted. `page` may only be 1. Page size is 1–500, def
 The default ordering is `annotation_creation_datetime`; `label_aphia_id` and `label_name`
 are also accepted subject to the upstream ordering contract below.
 
-A successful creation returns **201** with `search_id`, `page`, `page_size`, `count`,
-`total_pages`, `generated_through_page`, `source_counts`, `expires_at`, `results`,
-`result_metadata`, `next` and `previous`. `Location` identifies page 1.
-`results` contains `{ "summary": ..., "info": ..., "annotations": [...] }`.
+A successful creation returns **201** with `count`, `next`, `previous`, an array
+in `results`, and `meta`. `Location` identifies page 1. `meta` contains `search_id`,
+`page`, `page_size`, `total_pages`, `generated_through_page`, `source_counts`,
+`expires_at`, `summary` and `info`.
 Counts and summaries describe the initial full matches, not the current page.
 Records remain distinct across sources: identity is `(source, row UUID)`.
 An empty search has `count=0`, `total_pages=0` and an empty page 1.
 
-With `add_info: true`, `results.info` contains the available full-search filter options:
+With `add_info: true`, `meta.info` contains the available full-search filter options:
 
 ```json
 {
@@ -53,7 +53,7 @@ IDs. Rank may be null. No fields are inferred from the current page's annotation
 Info is requested on each source's first batch and persisted for subsequent and cached
 pages. If some sources omit Info, available sources still contribute; if all omit it,
 or `add_info` is false, `info` is null. Empty Info lists remain empty lists.
-The regular search endpoint also returns merged `results.info` when requested.
+The regular search endpoint also returns merged `meta.info` when requested.
 
 Retrieve a page:
 
@@ -69,12 +69,18 @@ If the requested page is not ready, the response is **202**, with `Retry-After: 
 ```json
 {
   "status": "preparing",
-  "search_id": "...",
-  "page": 68,
   "count": 1500,
-  "total_pages": 75,
-  "generated_through_page": 11,
-  "expires_at": "..."
+  "meta": {
+    "search_id": "...",
+    "page": 68,
+    "page_size": 20,
+    "total_pages": 75,
+    "generated_through_page": 11,
+    "expires_at": "...",
+    "source_counts": {"bodc": 750, "jncc": 750},
+    "summary": null,
+    "info": null
+  }
 }
 ```
 
@@ -134,7 +140,7 @@ State and each completed page are saved atomically. A per-session writer lease p
 concurrent advancement; Redis WATCH checks lease ownership and state existence before
 commit, so a stale worker cannot overwrite progress or resurrect a deleted session.
 
-Errors use `detail.code` and `detail.message`:
+Errors use RFC 9457 `application/problem+json` with top-level `code` and a string `detail`:
 
 | Status | Code | Client action |
 | --- | --- | --- |

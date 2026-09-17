@@ -176,7 +176,7 @@ async def test_live_source_search_returns_seeded_label(source: SourceConfig) -> 
     assert_live_response_ok(response)
     assert response.data is not None
     assert response.data.count > 0
-    assert any(annotation.label_name == expected.search_label for annotation in response.data.results.annotations)
+    assert any(annotation.label_name == expected.search_label for annotation in response.data.results)
 
 
 def assert_live_response_ok(response: UpstreamResponse[object]) -> None:

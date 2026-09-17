@@ -41,21 +41,15 @@ curl -X GET "http://localhost:8020/api/sources/" -H "accept: application/json"
 ```
 
 ```json
-[
-  {
-    "source_name": "bodc",
-    "source_label": "BRITISH OCEANOGRAPHIC DATA CENTRE",
-    "base_url": "http://bodc-source:80",
-    "status": "ok"
-  },
-  {
-    "source_name": "jncc",
-    "source_label": "JOINT NATURE CONSERVATION COMMITTEE",
-    "base_url": "http://jncc-source:80",
-    "status": "unhealthy",
-    "error": "Upstream returned 502: Bad Gateway"
-  }
-]
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {"source_name": "bodc", "source_label": "BODC", "base_url": "https://bodc.example/api", "status": "ok"},
+    {"source_name": "jncc", "source_label": "JNCC", "base_url": "https://jncc.example/api", "status": "unhealthy"}
+  ]
+}
 ```
 
 ## Accessing & Utilizing Source Configuration
@@ -78,10 +72,12 @@ async def fetch_upstream_data(source_id: str, request: Request):
     sources_config = request.app.state.sources
     
     # 2. Look up the specific source (e.g., 'bodc' or 'jncc')
-    source = sources_config.get(source_id)
+    source = next((source for source in sources_config if source.name == source_id), None)
     if not source or not source.enabled:
         raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found or is disabled.")
         
     # The 'source' object is an instance of your validated SourceConfig model
     return {"message": f"Successfully retrieved configuration for {source.label}"}
 ```
+
+See [the shared response contract](RESPONSE_CONTRACT.md) for search, session, and error examples.

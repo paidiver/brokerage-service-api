@@ -12,7 +12,7 @@ async def test_seach_route(mocker: MockerFixture, client: "httpx.AsyncClient") -
     """Test the seach route under normal conditions."""
     mocker.patch(
         "brokerage_service_api.api.routes.search.fetch_combined_results_from_annotation_apis",
-        return_value=SearchResults(next="next-url", count=1, previous="prev-url", results={"annotations": []}),
+        return_value=SearchResults(next="next-url", count=1, previous="prev-url", results=[]),
     )
     response = await client.get("/api/annotations/search", params={"aphia_ids": 123})
     expected_status_code = 200
@@ -21,8 +21,8 @@ async def test_seach_route(mocker: MockerFixture, client: "httpx.AsyncClient") -
         "count": 1,
         "next": "next-url",
         "previous": "prev-url",
-        "result_metadata": None,
-        "results": {"summary": None, "annotations": [], "info": None},
+        "results": [],
+        "meta": {"summary": None, "info": None, "source_counts": {}},
     }
 
 
@@ -36,9 +36,8 @@ async def test_search_router_with_exception_raised(mocker: MockerFixture, client
     response = await client.get("/api/annotations/search", params={"aphia_ids": 123})
     expected_status_code_with_error = 500
     assert response.status_code == expected_status_code_with_error
-    assert response.json() == {
-        "detail": "An error occured whilst fetching the search results. Some error being raised!"
-    }
+    assert response.json()["code"] == "internal_error"
+    assert "Some error being raised!" not in response.text
 
 
 @pytest.mark.anyio
@@ -49,6 +48,6 @@ async def test_search_router_with_invalid_page(mocker: MockerFixture, client: "h
         side_effect=InvalidPageNumberError("Some error being raised!"),
     )
     response = await client.get("/api/annotations/search", params={"aphia_ids": 123})
-    expected_status_code_with_error = 500
+    expected_status_code_with_error = 404
     assert response.status_code == expected_status_code_with_error
-    assert response.json() == {"detail": "Invalid page."}
+    assert response.json()["code"] == "invalid_page"

@@ -9,8 +9,9 @@ from uuid import UUID, uuid4
 from pydantic import ValidationError
 from redis.asyncio import Redis
 
-from brokerage_service_api.models.search_model import Result, ResultMetadata, Results, Summary
+from brokerage_service_api.models.search_model import Result, Results, Summary
 from brokerage_service_api.schemas.search_session import (
+    SearchSessionMetadata,
     SearchSessionPage,
     SearchSessionPending,
     SearchSessionRequest,
@@ -148,8 +149,7 @@ class SearchSessions:
             )
         try:
             records = [
-                AnnotationsAPIFetcher._construct_result_from_annotation(row, source.source.name)
-                for row in data.results.annotations
+                AnnotationsAPIFetcher._construct_result_from_annotation(row, source.source.name) for row in data.results
             ]
         except ValidationError as exc:
             raise SessionError(
@@ -178,9 +178,9 @@ class SearchSessions:
         source.buffer = records
         source.last_record = previous
         if initial and state.params.add_info:
-            source.info = data.results.info
-        if data.results.summary is not None and initial:
-            source.summary = Summary(**data.results.summary.model_dump())
+            source.info = data.meta.info
+        if data.meta.summary is not None and initial:
+            source.summary = Summary(**data.meta.summary.model_dump())
 
     async def advance(self, search_id: UUID, page: int) -> tuple[SearchSessionState, Results | None]:
         """Prepare up to the requested page, checkpointing bounded work.
@@ -254,27 +254,23 @@ class SearchSessions:
         Returns:
             SearchSessionPage | SearchSessionPending: The page data or preparation progress.
         """
-        if result is None:
-            return SearchSessionPending(
-                search_id=state.search_id,
-                page=page,
-                count=state.count,
-                total_pages=state.total_pages,
-                generated_through_page=state.generated_through_page,
-                expires_at=state.expires_at,
-            )
-        counts = {source.source.name: source.count for source in state.sources}
-        return SearchSessionPage(
+        meta = SearchSessionMetadata(
             search_id=state.search_id,
             page=page,
             page_size=state.params.page_size,
-            count=state.count,
             total_pages=state.total_pages,
             generated_through_page=state.generated_through_page,
-            source_counts=counts,
+            source_counts={source.source.name: source.count for source in state.sources},
             expires_at=state.expires_at,
-            results=result,
-            result_metadata=ResultMetadata(total_results=state.count, results_from_individual_sources=counts),
+            summary=result.summary if result else None,
+            info=result.info if result else None,
+        )
+        if result is None:
+            return SearchSessionPending(count=state.count, meta=meta)
+        return SearchSessionPage(
+            count=state.count,
+            meta=meta,
+            results=result.annotations,
             next=f"{base_url}/{page + 1}" if page < state.total_pages else None,
             previous=f"{base_url}/{page - 1}" if page > 1 else None,
         )

@@ -1,12 +1,13 @@
 """Test module for search routes."""
 
 from datetime import datetime
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from brokerage_service_api.schemas.source import SourceConfig
-from brokerage_service_api.schemas.upstream import TaxaNamePartParams, TaxonWormsLike
+from brokerage_service_api.schemas.upstream import TaxaCollection, TaxaNamePartParams, TaxonWormsLike
 from brokerage_service_api.upstream.annotations import UpstreamResponse
 from starlette import status
 
@@ -56,7 +57,7 @@ async def test_search_taxa_by_name_success(
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -67,7 +68,7 @@ async def test_search_taxa_by_name_success(
         url="http://jncc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -100,7 +101,7 @@ async def test_search_taxa_with_empty_results(client: "httpx_type.AsyncClient", 
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=nonexistent%20species",
         ok=True,
         status_code=200,
-        data=[],
+        data=TaxaCollection(count=0, results=[]),
         error=None,
     )
 
@@ -140,9 +141,9 @@ async def test_search_taxa_request_error_handling(client: "httpx_type.AsyncClien
     ):
         response = await client.get("/api/taxonomy/worms/taxa/crab")
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.BAD_GATEWAY
     data = response.json()
-    assert data["results"] == []
+    assert data["code"] == "upstream_failed"
 
 
 @pytest.mark.anyio
@@ -170,9 +171,9 @@ async def test_search_taxa_http_status_error_handling(
     ):
         response = await client.get("/api/taxonomy/worms/taxa/crab")
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.BAD_GATEWAY
     data = response.json()
-    assert data["results"] == []
+    assert data["code"] == "upstream_failed"
 
 
 @pytest.mark.anyio
@@ -185,7 +186,7 @@ async def test_search_taxa_passes_params(client: "httpx_type.AsyncClient", bodc_
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -218,7 +219,7 @@ async def test_search_taxa_response_structure(client: "httpx_type.AsyncClient", 
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -264,7 +265,7 @@ async def test_search_taxa_filter_by_single_source(
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -300,7 +301,7 @@ async def test_search_taxa_filter_by_multiple_sources(
         url="http://bodc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -311,7 +312,7 @@ async def test_search_taxa_filter_by_multiple_sources(
         url="http://jncc-api:8000/api/taxonomy/worms/taxa/?name_part=crab",
         ok=True,
         status_code=200,
-        data=SAMPLE_TAXA,
+        data=TaxaCollection(count=len(SAMPLE_TAXA), results=SAMPLE_TAXA),
         error=None,
     )
 
@@ -349,7 +350,7 @@ async def test_search_taxa_filter_by_invalid_source(
             params={"sources": "invalid_source"},
         )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     data = response.json()
-    assert data["results"] == []
+    assert data["code"] == "unknown_source"
     mock_search.assert_not_called()

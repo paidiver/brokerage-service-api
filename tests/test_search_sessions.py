@@ -81,8 +81,8 @@ async def setup(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SimpleNamespac
             {
                 "count": len(records),
                 "next": "https://unused.test/next" if start + len(batch) < len(records) else None,
-                "results": {
-                    "annotations": batch,
+                "results": batch,
+                "meta": {
                     "summary": summary if params.add_summary else None,
                     "info": info[name] if params.add_info else None,
                 },
@@ -281,7 +281,7 @@ async def test_http_lifecycle(setup: SimpleNamespace) -> None:
         body = response.json()
         location = response.headers["Location"]
         assert body["count"] == 1500
-        assert body["results"]["annotations"][0]["uuid"] == str(UUID(int=1))
+        assert body["results"][0]["uuid"] == str(UUID(int=1))
         distant = location.rsplit("/", 1)[0] + "/68"
         pending = await client.get(distant)
         assert pending.status_code == 202
@@ -289,7 +289,7 @@ async def test_http_lifecycle(setup: SimpleNamespace) -> None:
         assert pending.headers["Retry-After"] == "1"
         invalid = await client.get(location.rsplit("/", 1)[0] + "/999")
         assert invalid.status_code == 404
-        delete_url = "/api/annotations/search/sessions/" + body["search_id"]
+        delete_url = "/api/annotations/search/sessions/" + body["meta"]["search_id"]
         assert (await client.delete(delete_url)).status_code == 204
         assert (await client.delete(delete_url)).status_code == 204
         assert (await client.get(location)).status_code == 410
@@ -353,7 +353,7 @@ async def test_http_storage_failure(setup: SimpleNamespace, monkeypatch: pytest.
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get(f"/api/annotations/search/sessions/{UUID(int=1)}/pages/1")
     assert response.status_code == 503
-    assert response.json()["detail"]["code"] == "search_sessions_unavailable"
+    assert response.json()["code"] == "search_sessions_unavailable"
     assert "internal-host-secret" not in response.text
 
 
@@ -376,13 +376,7 @@ async def test_inconsistent_pagination(setup: SimpleNamespace, monkeypatch: pyte
     async def broken(client: object, params: object) -> SimpleNamespace:
         return SimpleNamespace(
             ok=True,
-            data=TypeAdapter(PaginatedSearchResultItemList).validate_python(
-                {
-                    "count": 10,
-                    "next": None,
-                    "results": {"annotations": []},
-                }
-            ),
+            data=TypeAdapter(PaginatedSearchResultItemList).validate_python({"count": 10, "next": None, "results": []}),
         )
 
     monkeypatch.setattr("brokerage_service_api.upstream.annotations.AnnotationApiClient.search_annotations", broken)
@@ -481,10 +475,10 @@ async def test_http_info_contract(setup: SimpleNamespace) -> None:
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/annotations/search/sessions", json={"name_part": "cod", "add_info": True})
         assert response.status_code == 201
-        info = response.json()["results"]["info"]
+        info = response.json()["meta"]["info"]
         assert set(info) == {"image_sets", "annotation_sets", "aphia_ids"}
         assert info["image_sets"][0] == setup.info["a"]["image_sets"][0]
         assert info["aphia_ids"] == setup.info["a"]["aphia_ids"]
         cached = await client.get(response.headers["Location"])
         assert cached.status_code == 200
-        assert cached.json()["results"]["info"] == info
+        assert cached.json()["meta"]["info"] == info

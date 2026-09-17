@@ -86,7 +86,14 @@ async def test_sources_cache(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("REDIS_ENABLED", "true")
     ttl = 42
     monkeypatch.setenv("REDIS_DEFAULT_TTL_SECONDS", str(ttl))
-    check = AsyncMock(return_value={"name": "test", "status": "ok"})
+    check = AsyncMock(
+        return_value={
+            "source_name": "test",
+            "source_label": "Test",
+            "base_url": "https://test.example/",
+            "status": "ok",
+        }
+    )
     monkeypatch.setattr("brokerage_service_api.api.routes.source.check_source_health", check)
     app = create_app()
     async with app.router.lifespan_context(app):
@@ -124,7 +131,14 @@ async def test_sources_redis_unavailable(monkeypatch: pytest.MonkeyPatch) -> Non
     redis.get.side_effect = RedisConnectionError("offline")
     redis.set.side_effect = RedisConnectionError("offline")
     monkeypatch.setattr("brokerage_service_api.api.app.create_redis_client", lambda: redis)
-    check = AsyncMock(return_value={"status": "ok"})
+    check = AsyncMock(
+        return_value={
+            "source_name": "test",
+            "source_label": "Test",
+            "base_url": "https://test.example/",
+            "status": "ok",
+        }
+    )
     monkeypatch.setattr("brokerage_service_api.api.routes.source.check_source_health", check)
     app = create_app()
     async with app.router.lifespan_context(app):
@@ -134,6 +148,18 @@ async def test_sources_redis_unavailable(monkeypatch: pytest.MonkeyPatch) -> Non
             for _ in range(requests):
                 response = await client.get("/api/sources")
                 assert response.status_code == HTTPStatus.OK
-                assert response.json() == {"sources": [{"status": "ok"}]}
+                assert response.json() == {
+                    "count": 1,
+                    "next": None,
+                    "previous": None,
+                    "results": [
+                        {
+                            "source_name": "test",
+                            "source_label": "Test",
+                            "base_url": "https://test.example/",
+                            "status": "ok",
+                        }
+                    ],
+                }
         assert check.await_count == requests
         redis.set.assert_awaited()

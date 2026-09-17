@@ -1,11 +1,11 @@
 """Tests for the JNCC/BODC search compiler."""
 
-import logging
+from http import HTTPStatus
 from types import SimpleNamespace
 
 import httpx
 import pytest
-from brokerage_service_api.models.search_model import Result, ResultMetadata, SearchResults, Summary
+from brokerage_service_api.models.search_model import Result, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
@@ -13,6 +13,7 @@ from brokerage_service_api.utilities.search_compiler import (
     AnnotationsAPIFetcher,
     fetch_combined_results_from_annotation_apis,
 )
+from fastapi import HTTPException
 from pydantic import HttpUrl
 from pytest_mock import MockerFixture
 from starlette.requests import Request
@@ -25,29 +26,27 @@ def mock_response_for_558() -> dict:
         "count": 1,
         "next": None,
         "previous": None,
-        "results": {
-            "annotations": [
-                {
-                    "creation_datetime": "2012-12-31T23:59:59Z",
-                    "uuid": "987ba073-fcca-4242-85c6-c8ae990a0480",
-                    "annotation_set_uuid": "36c33463-16fe-4ba4-bf1c-490a0b0c1653",
-                    "annotation_set_name": "Trial Data",
-                    "image_set_name": "some_image_nhame",
-                    "image_set_uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
-                    "image_filename": "M58_10441297_12987745240267.jpg",
-                    "image_handle": "image_url.jpg",
-                    "image_uuid": "1345c48a-d360-4d48-8737-2f94a1c9517b",
-                    "label_name": "porifera_03",
-                    "label_aphia_id": 558,
-                    "annotation_platform": "ImagePro",
-                    "annotation_creation_datetime": "2012-12-31T23:59:59Z",
-                    "annotation_shape": "single-pixel",
-                    "annotation_coordinates": [[1359.0, 2909.0]],
-                    "annotation_dimension_pixels": 366.9346,
-                    "annotator_name": "Jane Doe",
-                }
-            ]
-        },
+        "results": [
+            {
+                "creation_datetime": "2012-12-31T23:59:59Z",
+                "uuid": "987ba073-fcca-4242-85c6-c8ae990a0480",
+                "annotation_set_uuid": "36c33463-16fe-4ba4-bf1c-490a0b0c1653",
+                "annotation_set_name": "Trial Data",
+                "image_set_name": "some_image_nhame",
+                "image_set_uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
+                "image_filename": "M58_10441297_12987745240267.jpg",
+                "image_handle": "image_url.jpg",
+                "image_uuid": "1345c48a-d360-4d48-8737-2f94a1c9517b",
+                "label_name": "porifera_03",
+                "label_aphia_id": 558,
+                "annotation_platform": "ImagePro",
+                "annotation_creation_datetime": "2012-12-31T23:59:59Z",
+                "annotation_shape": "single-pixel",
+                "annotation_coordinates": [[1359.0, 2909.0]],
+                "annotation_dimension_pixels": 366.9346,
+                "annotator_name": "Jane Doe",
+            }
+        ],
     }
 
 
@@ -58,35 +57,28 @@ def mock_response_for_558_with_summary() -> dict:
         "count": 1,
         "next": None,
         "previous": None,
-        "results": {
-            "summary": {
-                "n_annotations": 1,
-                "n_images": 1,
-                "n_annotation_sets": 1,
-                "n_image_sets": 1,
-            },
-            "annotations": [
-                {
-                    "creation_datetime": "2012-12-31T23:59:59Z",
-                    "uuid": "987ba073-fcca-4242-85c6-c8ae990a0480",
-                    "annotation_set_uuid": "36c33463-16fe-4ba4-bf1c-490a0b0c1653",
-                    "annotation_set_name": "Trial Data",
-                    "image_set_name": "some_image_nhame",
-                    "image_set_uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
-                    "image_filename": "M58_10441297_12987745240267.jpg",
-                    "image_handle": "image_url.jpg",
-                    "image_uuid": "1345c48a-d360-4d48-8737-2f94a1c9517b",
-                    "label_name": "porifera_03",
-                    "label_aphia_id": 558,
-                    "annotation_platform": "ImagePro",
-                    "annotation_creation_datetime": "2012-12-31T23:59:59Z",
-                    "annotation_shape": "single-pixel",
-                    "annotation_coordinates": [[1359.0, 2909.0]],
-                    "annotation_dimension_pixels": 366.9346,
-                    "annotator_name": "Jane Doe",
-                }
-            ],
-        },
+        "results": [
+            {
+                "creation_datetime": "2012-12-31T23:59:59Z",
+                "uuid": "987ba073-fcca-4242-85c6-c8ae990a0480",
+                "annotation_set_uuid": "36c33463-16fe-4ba4-bf1c-490a0b0c1653",
+                "annotation_set_name": "Trial Data",
+                "image_set_name": "some_image_nhame",
+                "image_set_uuid": "822731b4-a6b7-476f-887e-debf00bfa6ba",
+                "image_filename": "M58_10441297_12987745240267.jpg",
+                "image_handle": "image_url.jpg",
+                "image_uuid": "1345c48a-d360-4d48-8737-2f94a1c9517b",
+                "label_name": "porifera_03",
+                "label_aphia_id": 558,
+                "annotation_platform": "ImagePro",
+                "annotation_creation_datetime": "2012-12-31T23:59:59Z",
+                "annotation_shape": "single-pixel",
+                "annotation_coordinates": [[1359.0, 2909.0]],
+                "annotation_dimension_pixels": 366.9346,
+                "annotator_name": "Jane Doe",
+            }
+        ],
+        "meta": {"summary": {"n_annotations": 1, "n_images": 1, "n_annotation_sets": 1, "n_image_sets": 1}},
     }
 
 
@@ -107,7 +99,10 @@ def test_annotations_api_fetcher_with_single_aphia_id(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])
+            results=[mock_response_for_558["results"][0]],
+            count=len([mock_response_for_558["results"][0]]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -122,7 +117,7 @@ def test_annotations_api_fetcher_with_single_aphia_id(
 
     assert instance.results == [
         Result.construct_instance_from_raw_response(
-            raw_response=mock_response_for_558["results"]["annotations"][0],
+            raw_response=mock_response_for_558["results"][0],
             source="some_source",
         )
     ]
@@ -137,10 +132,10 @@ def test_annotations_api_fetcher_with_summary(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=Summary(**mock_response_for_558_with_summary["results"]["summary"]),
-                annotations=[mock_response_for_558_with_summary["results"]["annotations"][0]],
-            )
+            results=[mock_response_for_558_with_summary["results"][0]],
+            count=len([mock_response_for_558_with_summary["results"][0]]),
+            next=None,
+            meta=SimpleNamespace(summary=Summary(**mock_response_for_558_with_summary["meta"]["summary"]), info=None),
         ),
         error=None,
     )
@@ -181,11 +176,11 @@ def test_annotations_api_fetcher_with_failed_request(
             add_summary=True,
         ),
     )
-    with caplog.at_level(logging.ERROR):
+    with pytest.raises(HTTPException) as exc:
         instance._make_request()
 
     assert instance.results == []
-    assert "Something went wrong 500 Server Error" in caplog.text
+    assert exc.value.status_code == HTTPStatus.BAD_GATEWAY
 
 
 def test_annotations_api_fetcher_with_failed_request_and_missing_error(
@@ -207,11 +202,11 @@ def test_annotations_api_fetcher_with_failed_request_and_missing_error(
             add_summary=True,
         ),
     )
-    with caplog.at_level(logging.ERROR):
+    with pytest.raises(HTTPException) as exc:
         instance._make_request()
 
     assert instance.results == []
-    assert "Something went wrong" in caplog.text
+    assert exc.value.status_code == HTTPStatus.BAD_GATEWAY
 
 
 def test_annotations_api_fetcher_with_response_data_none_returns_no_results(
@@ -229,7 +224,9 @@ def test_annotations_api_fetcher_with_response_data_none_returns_no_results(
         source=mock_source_config,
         params=AnnotationSearchRequest(aphia_ids=[588]),
     )
-    instance._make_request()
+    with pytest.raises(HTTPException) as exc:
+        instance._make_request()
+    assert exc.value.status_code == HTTPStatus.BAD_GATEWAY
 
     assert instance.results == []
     assert instance.summary is None
@@ -250,7 +247,9 @@ def test_annotations_api_fetcher_with_response_results_none_returns_no_results(
         source=mock_source_config,
         params=AnnotationSearchRequest(aphia_ids=[588]),
     )
-    instance._make_request()
+    with pytest.raises(HTTPException) as exc:
+        instance._make_request()
+    assert exc.value.status_code == HTTPStatus.BAD_GATEWAY
 
     assert instance.results == []
     assert instance.summary is None
@@ -262,7 +261,7 @@ def test_fetch_combined_results_with_empty_annotations_returns_empty_search_resu
     """Test that pagination handles empty upstream results without crashing."""
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
-        data=SimpleNamespace(results=SimpleNamespace(summary=None, annotations=[])),
+        data=SimpleNamespace(results=[], count=len([]), next=None, meta=SimpleNamespace(summary=None, info=None)),
         error=None,
     )
 
@@ -281,11 +280,11 @@ def test_fetch_combined_results_with_empty_annotations_returns_empty_search_resu
 
     assert isinstance(combined_results, SearchResults)
     assert combined_results.count == 0
-    assert combined_results.results.annotations == []
-    assert combined_results.results.summary is None
+    assert combined_results.results == []
+    assert combined_results.meta.summary is None
     assert combined_results.previous is None
     assert combined_results.next is None
-    assert combined_results.result_metadata.total_results == 0
+    assert combined_results.count == 0
 
 
 def test_aggregation_of_both_upstream_apis(
@@ -296,7 +295,10 @@ def test_aggregation_of_both_upstream_apis(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(summary=None, annotations=[mock_response_for_558["results"]["annotations"][0]])
+            results=[mock_response_for_558["results"][0]],
+            count=len([mock_response_for_558["results"][0]]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -320,7 +322,10 @@ def test_fetch_combined_results_appends_source_summaries(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(summary=summary, annotations=[mock_response_for_558["results"]["annotations"][0]])
+            results=[mock_response_for_558["results"][0]],
+            count=len([mock_response_for_558["results"][0]]),
+            next=None,
+            meta=SimpleNamespace(summary=summary, info=None),
         ),
         error=None,
     )
@@ -336,7 +341,7 @@ def test_fetch_combined_results_appends_source_summaries(
         params=AnnotationSearchRequest(aphia_ids=[588]), request=mock_request_for_pagination
     )
     expected_result = 2
-    assert combined_results.results.summary == Summary(
+    assert combined_results.meta.summary == Summary(
         n_annotations=expected_result,
         n_images=expected_result,
         n_annotation_sets=expected_result,
@@ -354,9 +359,10 @@ def test_search_compiler_with_ordering_by_aphia_id(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -383,9 +389,10 @@ def test_search_compiler_with_ordering_by_annotation_creation_datetime(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -411,9 +418,10 @@ def test_search_compiler_with_ordering_by_label_name(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -439,9 +447,10 @@ def test_search_compiler_result_metadata(
     mock_annotation_client.search_annotations.return_value = SimpleNamespace(
         ok=True,
         data=SimpleNamespace(
-            results=SimpleNamespace(
-                summary=None, annotations=mock_assorted_aphia_ids_response["results"]["annotations"]
-            )
+            results=mock_assorted_aphia_ids_response["results"],
+            count=len(mock_assorted_aphia_ids_response["results"]),
+            next=None,
+            meta=SimpleNamespace(summary=None, info=None),
         ),
         error=None,
     )
@@ -454,19 +463,13 @@ def test_search_compiler_result_metadata(
     # The mocker is set to return 10 results, so this is whats expected in the outputted model.
     expected_individual_result_count = 10
 
-    assert isinstance(combined_results.result_metadata, ResultMetadata)
+    assert isinstance(combined_results.meta.source_counts, dict)
 
-    assert (
-        combined_results.result_metadata.results_from_individual_sources["bodc_results"]
-        == expected_individual_result_count
-    )
-    assert (
-        combined_results.result_metadata.results_from_individual_sources["jncc_results"]
-        == expected_individual_result_count
-    )
+    assert combined_results.meta.source_counts["bodc"] == expected_individual_result_count
+    assert combined_results.meta.source_counts["jncc"] == expected_individual_result_count
 
     # Check that the overall count is the combination of the two.
-    assert combined_results.result_metadata.total_results == expected_individual_result_count * 2
+    assert combined_results.count == expected_individual_result_count * 2
 
 
 @pytest.mark.parametrize("order_by", [None, "label_aphia_id", "annotation_creation_datetime", "label_name"])
@@ -478,7 +481,7 @@ def test_fetcher_forwards_ordering_to_each_upstream(
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
-        return httpx.Response(200, json={"count": 0, "results": {"annotations": []}})
+        return httpx.Response(200, json={"count": 0, "results": []})
 
     sources = [SourceConfig(name=name, label=name, base_url=f"http://{name}-api:8000/api") for name in ("bodc", "jncc")]
     mocker.patch(
@@ -517,7 +520,8 @@ def test_compiler_carries_info_through_empty_pagination(
     async def fetch(self: object, source: object, params: object) -> SimpleNamespace:
         assert params.add_info is add_info
         return SimpleNamespace(
-            ok=True, data=SimpleNamespace(results=SimpleNamespace(annotations=[], summary=None, info=info))
+            ok=True,
+            data=SimpleNamespace(results=[], count=len([]), next=None, meta=SimpleNamespace(summary=None, info=info)),
         )
 
     monkeypatch.setattr(AnnotationsAPIFetcher, "_request_annotations", fetch)
@@ -529,7 +533,7 @@ def test_compiler_carries_info_through_empty_pagination(
     result = fetch_combined_results_from_annotation_apis(
         AnnotationSearchRequest(name_part="cod", add_info=add_info), request
     )
-    assert result.results.info == (info if add_info else None)
+    assert result.meta.info == (info if add_info else None)
 
 
 def test_merge_info_deduplicates_identifiers_and_preserves_first_source() -> None:

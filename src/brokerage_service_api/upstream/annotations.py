@@ -28,8 +28,8 @@ from brokerage_service_api.schemas.upstream import (
     PaginatedSearchResultItemList,
     PaginationParams,
     QueryParamModel,
+    TaxaCollection,
     TaxaNamePartParams,
-    TaxonWormsLike,
 )
 
 ResponseDataT = TypeVar("ResponseDataT")
@@ -142,7 +142,7 @@ class AnnotationApiClient:
         self,
         name_part: str,
         params: TaxaNamePartParams | None = None,
-    ) -> UpstreamResponse[list[TaxonWormsLike]]:
+    ) -> UpstreamResponse[TaxaCollection]:
         """Search WoRMS cache taxa by a partial name.
 
         Args:
@@ -155,7 +155,7 @@ class AnnotationApiClient:
         query = (params or TaxaNamePartParams()).model_copy(update={"name_part": name_part})
         return await self._get(
             "/taxonomy/worms/taxa/",
-            response_schema=list[TaxonWormsLike],
+            response_schema=TaxaCollection,
             params=query,
         )
 
