@@ -58,9 +58,11 @@ def sort_key(record: Result, order_by: str) -> tuple[bool, int | str | datetime 
 
 class SearchSessions:
     """Advance a session within bounded time and page budgets.
+
     Args:
         redis (Redis | None): The Redis client instance for session storage.
     """
+
     def __init__(self, redis: Redis | None):
         if redis is None:
             raise SessionError(503, "search_sessions_unavailable", "Search sessions require Redis.")
@@ -188,7 +190,8 @@ class SearchSessions:
             page (int): The page number to advance to.
 
         Returns:
-            tuple[SearchSessionState, Results | None]: The updated search session state and the results for the requested page, if available.
+            tuple[SearchSessionState, Results | None]: The updated search session state and the results
+        for the requested page, if available.
         """
         state = await self.store.load(search_id)
         if page < 1 or page > max(1, state.total_pages):

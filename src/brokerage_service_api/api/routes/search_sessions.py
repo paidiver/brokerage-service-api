@@ -52,7 +52,7 @@ async def service(request: Request) -> AsyncIterator[SearchSessions]:
 SessionService = Annotated[SearchSessions, Depends(service)]
 
 
-def page_response(
+def page_response(  # noqa: PLR0913
     request: Request,
     response: Response,
     sessions: SearchSessions,

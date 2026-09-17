@@ -27,10 +27,7 @@ def test_model_as_query_string_with_aphia_ids() -> None:
 
     # A more complex case with some additional fields prepared.
     complex_instance = AnnotationSearchRequest(aphia_ids=[123, 456], add_summary=True, deployment="sampling")
-    assert (
-        complex_instance.to_query_string()
-        == "?aphia_ids[]=123&aphia_ids[]=456&add_summary=true&deployment=sampling"
-    )
+    assert complex_instance.to_query_string() == "?aphia_ids[]=123&aphia_ids[]=456&add_summary=true&deployment=sampling"
 
 
 def test_model_as_query_string_with_name_parts() -> None:
