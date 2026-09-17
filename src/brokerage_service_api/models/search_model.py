@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from brokerage_service_api.schemas.upstream import SearchResultInfo
+
 
 class Result(BaseModel):
     """A representation of an individual result."""
@@ -13,15 +15,17 @@ class Result(BaseModel):
     uuid: UUID
     image_filename: str
     image_handle: str
+    image_latitude: float | None = None
+    image_longitude: float | None = None
     image_uuid: UUID
     label_name: str
-    label_aphia_id: int
-    annotation_platform: str
+    label_aphia_id: int | None
+    annotation_platform: str | None
     annotation_creation_datetime: datetime
     annotation_shape: str
     annotation_coordinates: list[list[int | float]]
     annotation_dimension_pixels: float | int | None
-    annotator_name: str
+    annotator_name: str | None
     annotation_set_uuid: UUID
     annotation_set_name: str
     image_set_uuid: UUID
@@ -44,6 +48,8 @@ class Result(BaseModel):
             image_filename=raw_response.get("image_filename"),
             image_handle=raw_response.get("image_handle"),
             image_uuid=raw_response.get("image_uuid"),
+            image_latitude=raw_response.get("image_latitude"),
+            image_longitude=raw_response.get("image_longitude"),
             label_name=raw_response.get("label_name"),
             label_aphia_id=raw_response.get("label_aphia_id"),
             annotation_platform=raw_response.get("annotation_platform"),
@@ -89,6 +95,7 @@ class Results(BaseModel):
     """A representation of the aggregated summary and annotations."""
 
     summary: Summary | None = None
+    info: SearchResultInfo | None = None
     annotations: list[Result]
 
 

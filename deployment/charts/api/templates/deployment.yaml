@@ -35,6 +35,18 @@ spec:
               value: {{ .Values.redis.backend | quote }}
             - name: REDIS_URL
               value: {{ include "brokerage-service-api.redisUrl" . | quote }}
+            - name: SEARCH_SESSION_TTL_SECONDS
+              value: {{ .Values.searchSessions.ttlSeconds | quote }}
+            - name: SEARCH_SESSION_BATCH_SIZE
+              value: {{ .Values.searchSessions.batchSize | quote }}
+            - name: SEARCH_SESSION_PAGES_PER_REQUEST
+              value: {{ .Values.searchSessions.pagesPerRequest | quote }}
+            - name: SEARCH_SESSION_REQUEST_SECONDS
+              value: {{ .Values.searchSessions.requestSeconds | quote }}
+            - name: SEARCH_SESSION_MAX_BYTES
+              value: {{ .Values.searchSessions.maxBytes | quote }}
+            - name: SEARCH_SESSION_CREATIONS_PER_MINUTE
+              value: {{ .Values.searchSessions.creationsPerMinute | quote }}
             - name: BODC_ANNOTATIONS_API_URL
               value: {{ .Values.env.bodcAnnotationsApiUrl | quote }}
             - name: JNCC_ANNOTATIONS_API_URL

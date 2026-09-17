@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 import pytest
 from brokerage_service_api.schemas.source import SourceConfig
+from brokerage_service_api.schemas.upstream import AnnotationOrderBy
 from brokerage_service_api.upstream import (
     AnnotationApiClient,
     AnnotationSearchParams,
@@ -69,7 +70,7 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
                     name_part="cod",
                     page=2,
                     aphia_ids=[COD_APHIA_ID, 141433],
-                    calculate_summary=True,
+                    add_summary=True,
                     deployment="survey",
                 ),
             )
@@ -86,7 +87,7 @@ def test_client_sends_query_params_and_returns_success_metadata(bodc_source: Sou
         assert response.path == "/annotations/search/"
         assert seen_requests[0].url == (
             "http://bodc-api:8000/api/annotations/search/"
-            "?page=2&aphia_ids%5B%5D=126436&aphia_ids%5B%5D=141433&calculate_summary=true"
+            "?page=2&aphia_ids%5B%5D=126436&aphia_ids%5B%5D=141433&add_summary=true"
             "&deployment=survey&name_part=cod"
         )
 
@@ -306,5 +307,42 @@ def test_client_taxonomy_lookup_without_optional_params(jncc_source: SourceConfi
         async with AnnotationApiClient(jncc_source, transport=httpx.MockTransport(handler)) as client:
             response = await client.search_taxa_by_name_part("Abra / alba & test")
         assert response.ok is True
+
+    run(exercise())
+
+
+@pytest.mark.parametrize("order_by", ["", "-label_name", "label__name", "uuid"])
+def test_search_params_reject_unsupported_ordering(order_by: AnnotationOrderBy) -> None:
+    """The shared client accepts only the same public keys as the brokerage API."""
+    with pytest.raises(ValidationError):
+        AnnotationSearchParams(order_by=order_by)
+
+
+def test_search_accepts_info_annotation_sets(bodc_source: SourceConfig) -> None:
+    """A successful upstream Info response must not become a brokerage validation failure."""
+    annotation_set = {"uuid": "33333333-3333-3333-3333-333333333333", "name": "Survey annotations"}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            status.HTTP_200_OK,
+            json={
+                "count": 0,
+                "results": {
+                    "annotations": [],
+                    "info": {
+                        "image_sets": [],
+                        "annotation_sets": [annotation_set],
+                        "aphia_ids": [{"aphia_id": COD_APHIA_ID, "scientific_name": "Gadus morhua", "rank": "Species"}],
+                    },
+                },
+            },
+            request=request,
+        )
+
+    async def exercise() -> None:
+        async with AnnotationApiClient(bodc_source, transport=httpx.MockTransport(handler)) as client:
+            response = await client.search_annotations(AnnotationSearchParams(name_part="act", add_info=True))
+            assert response.ok, response.error
+            assert response.data.results.info.model_dump(mode="json")["annotation_sets"] == [annotation_set]
 
     run(exercise())

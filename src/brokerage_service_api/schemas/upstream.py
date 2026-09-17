@@ -14,6 +14,7 @@ type JsonValue = JsonScalar | list[JsonValue] | dict[str, JsonValue]
 
 Deployment = Literal["experiment", "exploration", "mapping", "sampling", "stationary", "survey"]
 FaunaAttraction = Literal["baited", "light", "none"]
+AnnotationOrderBy = Literal["label_aphia_id", "annotation_creation_datetime", "label_name"]
 MarineZone = Literal["atmosphere", "laboratory", "sea surface", "seafloor", "water column"]
 
 
@@ -38,12 +39,10 @@ class AnnotationSearchRequest(BaseModel):
     """A representation of the request to search to forward to the BODC/JNCC API's."""
 
     aphia_ids: list[int] | None = Field(default=None, description="A list of Aphia ID's to search for.")
-    order_by: Literal["label_aphia_id", "annotation_creation_datetime", "label_name"] | None = Field(
+    order_by: AnnotationOrderBy | None = Field(
         default=None, description="The field upon which to order the results by."
     )
-    calculate_summary: bool | None = Field(
-        default=None, description="If true, include a summary of the search results."
-    )
+    add_summary: bool | None = Field(default=None, description="If true, include a summary of the search results.")
     deployment: (
         Literal[
             "experiment",
@@ -104,7 +103,7 @@ class AnnotationSearchRequest(BaseModel):
         min_length=3,
         description="Partial project name to filter results. Must contain at least 3 characters.",
     )
-    return_image_annotation_name_info: bool | None = Field(
+    add_info: bool | None = Field(
         default=None, description="If true, include image and annotation set information in the response."
     )
 
@@ -144,12 +143,13 @@ class AnnotationSearchRequest(BaseModel):
 class AnnotationSearchParams(PaginationParams):
     """Query parameters for annotation search endpoints."""
 
+    order_by: AnnotationOrderBy | None = None
     aphia_ids: list[int] | None = Field(default=None, alias="aphia_ids[]")
-    calculate_summary: bool | None = None
+    add_summary: bool | None = None
     deployment: Deployment | None = None
-    exclude_annotation_set: list[float] | None = Field(default=None, alias="exclude_annotation_set[]")
+    exclude_annotation_set: list[UUID] | None = Field(default=None, alias="exclude_annotation_set[]")
     exclude_aphia_ids: list[float] | None = Field(default=None, alias="exclude_aphia_ids[]")
-    exclude_image_set: list[float] | None = Field(default=None, alias="exclude_image_set[]")
+    exclude_image_set: list[UUID] | None = Field(default=None, alias="exclude_image_set[]")
     fauna_attraction: FaunaAttraction | None = None
     image_set_name: str | None = Field(default=None, min_length=3)
     include_descendants: bool | None = None
@@ -161,7 +161,7 @@ class AnnotationSearchParams(PaginationParams):
     name_part: str | None = Field(default=None, min_length=3)
     platform: str | None = Field(default=None, min_length=3)
     project: str | None = Field(default=None, min_length=3)
-    return_image_annotation_name_info: bool | None = None
+    add_info: bool | None = None
 
 
 class TaxaNamePartParams(QueryParamModel):
@@ -207,7 +207,7 @@ class SharedSearchResultItem(UpstreamModel):
     image_filename: str
     image_uuid: UUID
     label_name: str
-    label_aphia_id: int
+    label_aphia_id: int | None
     annotation_platform: str | None
     annotation_shape: str
     annotation_coordinates: list[JsonValue]
@@ -234,7 +234,7 @@ class SearchResultInfo(UpstreamModel):
     """Info block returned by annotation search."""
 
     image_sets: list[ImageSetInfo]
-    annotations_sets: list[AnnotationSetInfo]
+    annotation_sets: list[AnnotationSetInfo]
     aphia_ids: list[AphiaIdInfo]
 
 
