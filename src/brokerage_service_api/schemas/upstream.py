@@ -149,7 +149,7 @@ class AnnotationSearchParams(PaginationParams):
     add_summary: bool | None = None
     deployment: Deployment | None = None
     exclude_annotation_set: list[UUID] | None = Field(default=None, alias="exclude_annotation_set[]")
-    exclude_aphia_ids: list[float] | None = Field(default=None, alias="exclude_aphia_ids[]")
+    exclude_aphia_ids: list[int] | None = Field(default=None, alias="exclude_aphia_ids[]")
     exclude_image_set: list[UUID] | None = Field(default=None, alias="exclude_image_set[]")
     fauna_attraction: FaunaAttraction | None = None
     image_set_name: str | None = Field(default=None, min_length=3)

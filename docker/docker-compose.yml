@@ -55,7 +55,7 @@ services:
       - shared_services
 
   annotations-api-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:
@@ -78,7 +78,7 @@ services:
       - shared_services
 
   annotations-api-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:
@@ -101,7 +101,7 @@ services:
       - shared_services
 
   annotations-migrate-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:
@@ -116,7 +116,7 @@ services:
       - shared_services
 
   annotations-migrate-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:
@@ -131,7 +131,7 @@ services:
       - shared_services
 
   annotations-seed-data-jncc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:
@@ -184,7 +184,7 @@ services:
       - shared_services
 
   annotations-seed-data-bodc:
-    image: ghcr.io/paidiver/annotations-api:v1.0.19-test4
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test5
     env_file:
       - ../.env
     environment:

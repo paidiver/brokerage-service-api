@@ -494,13 +494,15 @@ def test_fetcher_forwards_ordering_to_each_upstream(
     )
 
     fetch_combined_results_from_annotation_apis(
-        AnnotationSearchRequest(aphia_ids=[588], order_by=order_by), mock_request_for_pagination
+        AnnotationSearchRequest(aphia_ids=[588], exclude_aphia_ids=[123, 456], order_by=order_by),
+        mock_request_for_pagination,
     )
 
     assert {request.url.host for request in requests} == {"bodc-api", "jncc-api"}
     for request in requests:
         assert request.url.params.get("order_by") == order_by
         assert request.url.params.get_list("aphia_ids[]") == ["588"]
+        assert request.url.params.get_list("exclude_aphia_ids[]") == ["123", "456"]
 
 
 @pytest.mark.parametrize("add_info", [True, False])
