@@ -16,8 +16,8 @@ The app is available in these links:
 
 ### Local development (without Docker)
 
-* Python ≥ 3.13
-* Poetry
+* Python 3.13
+* [uv](https://docs.astral.sh/uv/getting-started/installation/) (CI and Docker use 0.9.22)
 
 ## Project Structure
 
@@ -27,7 +27,7 @@ The app is available in these links:
 │   ├── docker-compose.yml # Docker compose file for local development
 │   └── Dockerfile      # Dockerfile for the API service
 ├── LICENSE
-├── pyproject.toml      # Project metadata & dependencies (Poetry)
+├── pyproject.toml      # Project metadata & dependencies
 ├── README.md
 ├── ruff.toml           # Ruff configuration
 ├── src
@@ -48,13 +48,44 @@ The app is available in these links:
 
 ## Dependency Management
 
-This project uses **Poetry** for dependency management and packaging.
+This project uses **uv** for dependency management, environments and building packages.
 
 Key points:
 
 * Dependencies are defined in `pyproject.toml`
-* Locked versions live in `poetry.lock`
-* Development tools (linting, formatting, testing) are installed via Poetry groups
+* Locked versions live in `uv.lock`
+* Development tools (linting, formatting, testing) are installed via dependency groups
+
+### Local development
+
+```bash
+uv sync --python 3.13 --locked --group test --group lint
+uv run --locked uvicorn brokerage_service_api.api.app:app --reload --port 8020
+uv run --locked --group test tox -e lint
+uv run --locked --group test tox -e py313
+uv run --locked --group test tox -e build
+```
+
+If an existing `.python-version` contains a pyenv environment name, replace it
+with `3.13` (`uv python pin 3.13`) before using uv. The `dev` group includes
+JupyterLab and is installed by default; use `--no-default-groups` for a minimal
+environment. Tox synchronizes each isolated environment from `uv.lock`.
+
+Use `uv add PACKAGE` to add runtime dependencies, `uv add --group test PACKAGE`
+for test dependencies, and `uv lock --upgrade` for an intentional dependency
+upgrade. Commit both `pyproject.toml` and `uv.lock`. CI uses `--locked` to reject
+an outdated lockfile.
+
+Package builds retain the Poetry Core/dynamic-versioning backend to preserve
+Git-derived release versions; the Poetry CLI is not required. Build releases
+from a checkout with Git tags (`uv build`). Container builds use version `0.1.0`
+without requiring Git history, as the previous runtime package did.
+
+Docker builds the runtime target by default, with only runtime dependencies.
+Compose selects the development target with JupyterLab, test and lint tools.
+The container environment lives at `/opt/venv` so the source bind mount does not
+hide it. Dependency installation is cached separately from application code.
+
 
 ## Quick Start (Docker)
 
@@ -363,3 +394,23 @@ A collection of example API requests and responses is available in the [API Exam
 ## Acknowledgements
 
 This project was supported by the UK Natural Environment Research Council (NERC) through the *Tools for automating image analysis for biodiversity monitoring (AIAB)* Funding Opportunity, reference code **UKRI052**.
+
+
+### Annotation search ordering
+
+Pass `order_by=label_aphia_id`, `order_by=annotation_creation_datetime`, or
+`order_by=label_name` to annotation search. These ascending ordering keys are
+forwarded to every upstream annotations API, which applies ordering before its
+pagination. Each fetcher also retains local sorting for older upstream versions.
+The existing brokerage merge/pagination behaviour is unchanged: this does not
+provide a global ordering across the complete datasets of all sources.
+
+### Cached search sessions
+
+The new `POST /api/annotations/search/sessions` endpoint creates a globally sorted,
+Redis-backed search. Retrieve numbered pages with
+`GET /api/annotations/search/sessions/{search_id}/pages/{page}`. Distant uncached pages
+return preparation progress until the merge reaches them. See
+[search sessions](docs/search-sessions.md) for the API contract, upstream ordering
+requirements, expiry, error handling and deployment settings. The existing search
+endpoint remains available; clients must adopt the session endpoints to use this behaviour.

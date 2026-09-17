@@ -46,7 +46,7 @@ def flatten_unique(results: list[UpstreamResponse[list[TaxonWormsLike]]], key_fu
 
 
 @router.get(
-    "/taxa/ajax_by_name_part/{name_part}",
+    "/taxonomy/worms/taxa/{name_part}",
     summary="Search for taxonomies by name part",
     description="Search for taxonomies by a partial name match.",
     response_model=TaxaBulkResponse,

@@ -79,7 +79,7 @@ async def test_search_taxa_by_name_success(
         side_effect=[upstream_response_1, upstream_response_2],
     ):
         response = await client.get(
-            "/api/taxa/ajax_by_name_part/crab",
+            "/api/taxonomy/worms/taxa/crab",
             params={"combine_vernaculars": "true"},
         )
 
@@ -111,7 +111,7 @@ async def test_search_taxa_with_empty_results(client: "httpx_type.AsyncClient", 
         new_callable=AsyncMock,
         return_value=upstream_response,
     ):
-        response = await client.get("/api/taxa/ajax_by_name_part/nonexistent%20species")
+        response = await client.get("/api/taxonomy/worms/taxa/nonexistent%20species")
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -138,7 +138,7 @@ async def test_search_taxa_request_error_handling(client: "httpx_type.AsyncClien
         new_callable=AsyncMock,
         return_value=upstream_response,
     ):
-        response = await client.get("/api/taxa/ajax_by_name_part/crab")
+        response = await client.get("/api/taxonomy/worms/taxa/crab")
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -168,7 +168,7 @@ async def test_search_taxa_http_status_error_handling(
         new_callable=AsyncMock,
         return_value=upstream_response,
     ):
-        response = await client.get("/api/taxa/ajax_by_name_part/crab")
+        response = await client.get("/api/taxonomy/worms/taxa/crab")
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -197,7 +197,7 @@ async def test_search_taxa_passes_params(client: "httpx_type.AsyncClient", bodc_
         new_callable=lambda: mock_search,
     ):
         await client.get(
-            "/api/taxa/ajax_by_name_part/crab",
+            "/api/taxonomy/worms/taxa/crab",
             params={"combine_vernaculars": "true"},
         )
 
@@ -229,7 +229,7 @@ async def test_search_taxa_response_structure(client: "httpx_type.AsyncClient", 
         new_callable=AsyncMock,
         return_value=upstream_response,
     ):
-        response = await client.get("/api/taxa/ajax_by_name_part/crab")
+        response = await client.get("/api/taxonomy/worms/taxa/crab")
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -276,7 +276,7 @@ async def test_search_taxa_filter_by_single_source(
         new_callable=lambda: mock_search,
     ):
         response = await client.get(
-            "/api/taxa/ajax_by_name_part/crab",
+            "/api/taxonomy/worms/taxa/crab",
             params={"sources": "bodc"},
         )
 
@@ -323,7 +323,7 @@ async def test_search_taxa_filter_by_multiple_sources(
         side_effect=[upstream_response_bodc, upstream_response_jncc],
     ):
         response = await client.get(
-            "/api/taxa/ajax_by_name_part/crab",
+            "/api/taxonomy/worms/taxa/crab",
             params={"sources": ["bodc", "jncc"]},
         )
 
@@ -345,7 +345,7 @@ async def test_search_taxa_filter_by_invalid_source(
         new_callable=AsyncMock,
     ) as mock_search:
         response = await client.get(
-            "/api/taxa/ajax_by_name_part/crab",
+            "/api/taxonomy/worms/taxa/crab",
             params={"sources": "invalid_source"},
         )
 

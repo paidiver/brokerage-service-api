@@ -62,3 +62,12 @@ redis:
     limits:
       cpu: 100m
       memory: 128Mi
+
+# Search state is shared by all API replicas using the configured Redis instance.
+searchSessions:
+  ttlSeconds: 1800
+  batchSize: 100
+  pagesPerRequest: 10
+  requestSeconds: 5
+  maxBytes: 16000000
+  creationsPerMinute: 60

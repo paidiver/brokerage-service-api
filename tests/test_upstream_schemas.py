@@ -26,11 +26,8 @@ def test_model_as_query_string_with_aphia_ids() -> None:
     assert instance.to_query_string() == "?aphia_ids[]=123&aphia_ids[]=456&"
 
     # A more complex case with some additional fields prepared.
-    complex_instance = AnnotationSearchRequest(aphia_ids=[123, 456], calculate_summary=True, deployment="sampling")
-    assert (
-        complex_instance.to_query_string()
-        == "?aphia_ids[]=123&aphia_ids[]=456&calculate_summary=true&deployment=sampling"
-    )
+    complex_instance = AnnotationSearchRequest(aphia_ids=[123, 456], add_summary=True, deployment="sampling")
+    assert complex_instance.to_query_string() == "?aphia_ids[]=123&aphia_ids[]=456&add_summary=true&deployment=sampling"
 
 
 def test_model_as_query_string_with_name_parts() -> None:
@@ -40,5 +37,5 @@ def test_model_as_query_string_with_name_parts() -> None:
     assert instance.to_query_string() == "?name_part=abc"
 
     # A more complex case with some additional fields prepared.
-    complex_instance = AnnotationSearchRequest(name_part="abc", calculate_summary=True, deployment="sampling")
-    assert complex_instance.to_query_string() == "?calculate_summary=true&deployment=sampling&name_part=abc"
+    complex_instance = AnnotationSearchRequest(name_part="abc", add_summary=True, deployment="sampling")
+    assert complex_instance.to_query_string() == "?add_summary=true&deployment=sampling&name_part=abc"

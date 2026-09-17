@@ -3,10 +3,12 @@
 import logging
 from types import SimpleNamespace
 
+import httpx
 import pytest
 from brokerage_service_api.models.search_model import Result, ResultMetadata, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
 from brokerage_service_api.schemas.upstream import AnnotationSearchRequest
+from brokerage_service_api.upstream.annotations import AnnotationApiClient
 from brokerage_service_api.utilities.search_compiler import (
     AnnotationsAPIFetcher,
     fetch_combined_results_from_annotation_apis,
@@ -147,7 +149,7 @@ def test_annotations_api_fetcher_with_summary(
         source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[588],
-            calculate_summary=True,
+            add_summary=True,
         ),
     )
     instance._make_request()
@@ -176,7 +178,7 @@ def test_annotations_api_fetcher_with_failed_request(
         source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[588],
-            calculate_summary=True,
+            add_summary=True,
         ),
     )
     with caplog.at_level(logging.ERROR):
@@ -202,7 +204,7 @@ def test_annotations_api_fetcher_with_failed_request_and_missing_error(
         source=mock_source_config,
         params=AnnotationSearchRequest(
             aphia_ids=[588],
-            calculate_summary=True,
+            add_summary=True,
         ),
     )
     with caplog.at_level(logging.ERROR):
@@ -465,3 +467,88 @@ def test_search_compiler_result_metadata(
 
     # Check that the overall count is the combination of the two.
     assert combined_results.result_metadata.total_results == expected_individual_result_count * 2
+
+
+@pytest.mark.parametrize("order_by", [None, "label_aphia_id", "annotation_creation_datetime", "label_name"])
+def test_fetcher_forwards_ordering_to_each_upstream(
+    mocker: MockerFixture, mock_request_for_pagination: Request, order_by: str | None
+) -> None:
+    """Ordering survives brokerage conversion and reaches both upstream HTTP requests."""
+    requests = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"count": 0, "results": {"annotations": []}})
+
+    sources = [SourceConfig(name=name, label=name, base_url=f"http://{name}-api:8000/api") for name in ("bodc", "jncc")]
+    mocker.patch(
+        "brokerage_service_api.utilities.search_compiler.get_source_registry",
+        return_value=SimpleNamespace(list=lambda: sources),
+    )
+    mocker.patch(
+        "brokerage_service_api.utilities.search_compiler.AnnotationApiClient",
+        side_effect=lambda source: AnnotationApiClient(source, transport=httpx.MockTransport(handler)),
+    )
+
+    fetch_combined_results_from_annotation_apis(
+        AnnotationSearchRequest(aphia_ids=[588], order_by=order_by), mock_request_for_pagination
+    )
+
+    assert {request.url.host for request in requests} == {"bodc-api", "jncc-api"}
+    for request in requests:
+        assert request.url.params.get("order_by") == order_by
+        assert request.url.params.get_list("aphia_ids[]") == ["588"]
+
+
+@pytest.mark.parametrize("add_info", [True, False])
+def test_compiler_carries_info_through_empty_pagination(
+    monkeypatch: pytest.MonkeyPatch, mock_source_config: SourceConfig, add_info: bool
+) -> None:
+    """The regular search keeps the upstream Info contract when requested."""
+    from brokerage_service_api.schemas.upstream import SearchResultInfo
+    from brokerage_service_api.utilities.source import SourceRegistry
+
+    info = SearchResultInfo(
+        image_sets=[{"uuid": "00000000-0000-0000-0000-000000000001", "name": "Images"}],
+        annotation_sets=[],
+        aphia_ids=[{"aphia_id": 558, "scientific_name": "Porifera", "rank": "Phylum"}],
+    )
+
+    async def fetch(self: object, source: object, params: object) -> SimpleNamespace:
+        assert params.add_info is add_info
+        return SimpleNamespace(
+            ok=True, data=SimpleNamespace(results=SimpleNamespace(annotations=[], summary=None, info=info))
+        )
+
+    monkeypatch.setattr(AnnotationsAPIFetcher, "_request_annotations", fetch)
+    monkeypatch.setattr(
+        "brokerage_service_api.utilities.search_compiler.get_source_registry",
+        lambda: SourceRegistry([mock_source_config]),
+    )
+    request = Request({"type": "http", "query_string": b"name_part=cod"})
+    result = fetch_combined_results_from_annotation_apis(
+        AnnotationSearchRequest(name_part="cod", add_info=add_info), request
+    )
+    assert result.results.info == (info if add_info else None)
+
+
+def test_merge_info_deduplicates_identifiers_and_preserves_first_source() -> None:
+    """Shared IDs yield one stable option, distinct IDs with the same name remain distinct."""
+    from brokerage_service_api.schemas.upstream import SearchResultInfo
+    from brokerage_service_api.utilities.search_compiler import merge_search_info
+
+    first = SearchResultInfo(
+        image_sets=[{"uuid": "00000000-0000-0000-0000-000000000001", "name": "Images"}],
+        annotation_sets=[{"uuid": "00000000-0000-0000-0000-000000000002", "name": "Annotations"}],
+        aphia_ids=[{"aphia_id": 558, "scientific_name": "Porifera", "rank": "Phylum"}],
+    )
+    second = first.model_copy(deep=True)
+    second.aphia_ids[0] = second.aphia_ids[0].model_copy(update={"scientific_name": "Other name"})
+    second.image_sets[0] = second.image_sets[0].model_copy(update={"uuid": second.annotation_sets[0].uuid})
+    merged = merge_search_info([None, first, second])
+    assert [item.name for item in merged.image_sets] == ["Images", "Images"]
+    assert merged.annotation_sets == first.annotation_sets
+    assert merged.aphia_ids == first.aphia_ids
+    assert merge_search_info([None]) is None
+    empty = SearchResultInfo(image_sets=[], annotation_sets=[], aphia_ids=[])
+    assert merge_search_info([empty]) == empty

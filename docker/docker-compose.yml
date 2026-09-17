@@ -3,9 +3,10 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
+      target: development
     image: api:latest
     command: >
-      bash -c "poetry run uvicorn brokerage_service_api.api.app:app
+      bash -c "uvicorn brokerage_service_api.api.app:app
       --host 0.0.0.0
       --port 8020
       --reload"
@@ -15,6 +16,12 @@ services:
     environment:
       REDIS_BACKEND: redis
       REDIS_URL: redis://redis:6379/0
+      SEARCH_SESSION_TTL_SECONDS: ${SEARCH_SESSION_TTL_SECONDS:-1800}
+      SEARCH_SESSION_BATCH_SIZE: ${SEARCH_SESSION_BATCH_SIZE:-100}
+      SEARCH_SESSION_PAGES_PER_REQUEST: ${SEARCH_SESSION_PAGES_PER_REQUEST:-10}
+      SEARCH_SESSION_REQUEST_SECONDS: ${SEARCH_SESSION_REQUEST_SECONDS:-5}
+      SEARCH_SESSION_MAX_BYTES: ${SEARCH_SESSION_MAX_BYTES:-16000000}
+      SEARCH_SESSION_CREATIONS_PER_MINUTE: ${SEARCH_SESSION_CREATIONS_PER_MINUTE:-60}
     volumes:
       - ../:/code:Z
     ports:
@@ -48,7 +55,7 @@ services:
       - shared_services
 
   annotations-api-jncc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -71,7 +78,7 @@ services:
       - shared_services
 
   annotations-api-bodc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -94,7 +101,7 @@ services:
       - shared_services
 
   annotations-migrate-jncc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -109,7 +116,7 @@ services:
       - shared_services
 
   annotations-migrate-bodc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -124,7 +131,7 @@ services:
       - shared_services
 
   annotations-seed-data-jncc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -177,7 +184,7 @@ services:
       - shared_services
 
   annotations-seed-data-bodc:
-    image: ghcr.io/paidiver/annotations-api:latest
+    image: ghcr.io/paidiver/annotations-api:v1.0.19-test2
     env_file:
       - ../.env
     environment:
@@ -295,7 +302,7 @@ services:
       - shared_services
 
   worms-cache-migrate:
-    image: ghcr.io/paidiver/worms-cache:latest
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
     env_file:
       - ../.env
     environment:
@@ -310,7 +317,7 @@ services:
       - shared_services
 
   worms-cache:
-    image: ghcr.io/paidiver/worms-cache:latest
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
     env_file:
       - ../.env
     environment:
@@ -332,7 +339,7 @@ services:
       - shared_services
 
   worms-cache-seed:
-    image: ghcr.io/paidiver/worms-cache:latest
+    image: ghcr.io/paidiver/worms-cache:v0.1.10-test2
     env_file:
       - ../.env
     environment:
@@ -361,7 +368,7 @@ services:
     networks:
       - shared_services
   taxamatch:
-    image: ghcr.io/paidiver/worms-cache:rb-latest
+    image: ghcr.io/paidiver/worms-cache:rb-v0.1.10-test2
     environment:
       PORT: "8080"
       RACK_ENV: "development"

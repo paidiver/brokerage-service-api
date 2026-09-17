@@ -13,11 +13,33 @@ from fastapi import Request
 
 from brokerage_service_api.models.search_model import Result, ResultMetadata, Results, SearchResults, Summary
 from brokerage_service_api.schemas.source import SourceConfig
-from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest
+from brokerage_service_api.schemas.upstream import AnnotationSearchParams, AnnotationSearchRequest, SearchResultInfo
 from brokerage_service_api.upstream.annotations import AnnotationApiClient
 from brokerage_service_api.utilities.source import get_source_registry
 
 logger = logging.getLogger(__name__)
+
+
+def merge_search_info(blocks: list[SearchResultInfo | None]) -> SearchResultInfo | None:
+    """Merge available source Info in source order; the first entry wins for duplicate IDs."""
+    available = [block for block in blocks if block is not None]
+    if not available:
+        return None
+    image_sets = {}
+    annotation_sets = {}
+    aphia_ids = {}
+    for block in available:
+        for item in block.image_sets:
+            image_sets.setdefault(item.uuid, item)
+        for item in block.annotation_sets:
+            annotation_sets.setdefault(item.uuid, item)
+        for item in block.aphia_ids:
+            aphia_ids.setdefault(item.aphia_id, item)
+    return SearchResultInfo(
+        image_sets=list(image_sets.values()),
+        annotation_sets=list(annotation_sets.values()),
+        aphia_ids=list(aphia_ids.values()),
+    )
 
 
 class InvalidPageNumberError(Exception):
@@ -33,6 +55,7 @@ class AnnotationsAPIFetcher:
         self.params: AnnotationSearchRequest = params
         self._results: list[Result] = []
         self._summary: Summary | None = None
+        self._info: SearchResultInfo | None = None
 
     def order_results(self) -> None:
         """Perform an in-place sort of the internal _results list."""
@@ -70,6 +93,9 @@ class AnnotationsAPIFetcher:
         if results is None:
             return
 
+        if self.params.add_info:
+            self._info = getattr(results, "info", None)
+
         summary = getattr(results, "summary", None)
         if summary is not None:
             self._summary = Summary(**summary.model_dump())
@@ -94,9 +120,10 @@ class AnnotationsAPIFetcher:
         """Convert the brokerage search request into upstream client parameters."""
         return AnnotationSearchParams(
             aphia_ids=params.aphia_ids,
+            order_by=params.order_by,
             page=params.page,
             page_size=params.page_size,
-            calculate_summary=params.calculate_summary,
+            add_summary=params.add_summary,
             deployment=params.deployment,
             exclude_annotation_set=params.exclude_annotation_set,
             exclude_aphia_ids=params.exclude_aphia_ids,
@@ -112,7 +139,7 @@ class AnnotationsAPIFetcher:
             name_part=params.name_part,
             platform=params.platform,
             project=params.project,
-            return_image_annotation_name_info=params.return_image_annotation_name_info,
+            add_info=params.add_info,
         )
 
     @staticmethod
@@ -127,6 +154,11 @@ class AnnotationsAPIFetcher:
     def results(self) -> list[Result]:
         """Return the fetched results or an empty list."""
         return self._results
+
+    @property
+    def info(self) -> SearchResultInfo | None:
+        """Return the full-search filter information, when requested and available."""
+        return self._info
 
     @property
     def summary(self) -> Summary | None:
@@ -249,7 +281,7 @@ def results_with_pagination_applied(
                 previous=previous_url,
                 next=next_url,
                 count=count,
-                results=Results(summary=all_results.summary, annotations=[]),
+                results=Results(summary=all_results.summary, info=all_results.info, annotations=[]),
                 result_metadata=result_metadata,
             )
         raise InvalidPageNumberError from None
@@ -261,7 +293,7 @@ def results_with_pagination_applied(
             previous=previous_url,
             next=next_url,
             count=count,
-            results=Results(summary=all_results.summary, annotations=batched_annotations[0]),
+            results=Results(summary=all_results.summary, info=all_results.info, annotations=batched_annotations[0]),
             result_metadata=result_metadata,
         )
 
@@ -271,7 +303,9 @@ def results_with_pagination_applied(
     except IndexError:
         raise InvalidPageNumberError from None
 
-    paginated_results = Results(summary=all_results.summary, annotations=specified_annotation_batch)
+    paginated_results = Results(
+        summary=all_results.summary, info=all_results.info, annotations=specified_annotation_batch
+    )
     return SearchResults(
         previous=previous_url, next=next_url, count=count, results=paginated_results, result_metadata=result_metadata
     )
@@ -310,7 +344,11 @@ def fetch_combined_results_from_annotation_apis(params: AnnotationSearchRequest,
         for result in fetcher.results:
             all_annotations.append(result)
 
-    all_results = Results(summary=sum(all_summaries) if all_summaries else None, annotations=all_annotations)
+    all_results = Results(
+        summary=sum(all_summaries) if all_summaries else None,
+        info=merge_search_info([fetcher.info for fetcher in api_fetchers]) if params.add_info else None,
+        annotations=all_annotations,
+    )
 
     # Perform any pagination that is required
     return results_with_pagination_applied(

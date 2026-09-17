@@ -2,7 +2,7 @@
 
 import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -15,6 +15,7 @@ from redis.exceptions import RedisError
 
 from brokerage_service_api.api.exceptions import DEFAULT_STATUS_CODES, AppException, add_exception_handlers
 from brokerage_service_api.api.routes import brokerage_search_router, export_router, source_health_router
+from brokerage_service_api.api.routes.search_sessions import router as search_sessions_router
 from brokerage_service_api.utilities.redis import create_redis_client, redis_enabled, redis_ttl
 from brokerage_service_api.utilities.source import get_source_registry
 
@@ -33,7 +34,7 @@ def create_app() -> FastAPI:
     """
 
     @asynccontextmanager
-    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         """Lifespan context manager for the FastAPI application to load sources."""
         try:
             app.state.sources = get_source_registry().list()
@@ -72,6 +73,7 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE"],
         allow_headers=["Access-Control-Allow-Headers", "Content-Type", "Authorization", "Access-Control-Allow-Origin"],
         allow_credentials=True,
+        expose_headers=["Location", "Retry-After"],
     )
 
     @app.exception_handler(AppException)
@@ -150,6 +152,8 @@ def create_app() -> FastAPI:
         prefix="/api",
         tags=["Brokerage Search Endpoints"],
     )
+
+    app.include_router(search_sessions_router, prefix="/api", tags=["Search Sessions"])
 
     app.include_router(
         export_router,
