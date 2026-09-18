@@ -4,8 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_LINK_MODE=copy \
-    PATH="/opt/venv/bin:$PATH" \
-    POETRY_DYNAMIC_VERSIONING_BYPASS=0.1.0
+    PATH="/opt/venv/bin:$PATH"
 WORKDIR /code
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \

@@ -1,13 +1,13 @@
 [build-system]
-requires = ["poetry-core>=2.0,<3", "poetry-dynamic-versioning>=1.0,<2"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["uv_build>=0.9.22,<0.10.0"]
+build-backend = "uv_build"
 
 [project]
 name = "brokerage_service_api"
+version = "0.1.0"
 description = "Brokerage Service API"
 readme = "README.md"
 keywords = ["fastapi", "brokerage service"]
-dynamic = ["version"]
 requires-python = ">=3.13,<3.14"
 authors = [{ name = "Tobias Ferreira", email = "tobias.ferreira@noc.ac.uk" }]
 license = { file = "LICENSE" }
@@ -49,23 +49,10 @@ build = [
 ]
 types = ["pyright>=1.1,<2"]
 
-# Retain the existing package layout and Git-based release versioning.
-[tool.poetry]
-packages = [{ include = "brokerage_service_api", from = "src" }]
-version = "0.1.0"
-
 [tool.pytest.ini_options]
 markers = [
   "integration: tests that call live upstream services",
 ]
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
-
-[tool.poetry-dynamic-versioning.substitution]
-files = ["config/__init__.py"]
 
 [tool.ruff]
 line-length = 88

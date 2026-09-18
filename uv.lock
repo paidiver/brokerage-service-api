@@ -155,6 +155,7 @@ css = [
 
 [[package]]
 name = "brokerage-service-api"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fakeredis" },
