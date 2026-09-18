@@ -16,6 +16,8 @@ image:
   pullPolicy: IfNotPresent
   imagePullSecret: brokerage-service-api-ghcr-pull-secret
 
+searchSessions:
+  maxBytes: "16000000"
 
 resources:
   limits:

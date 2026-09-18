@@ -9,7 +9,7 @@ environments:
       - namespace: "paidiver-st3"
       - clusterIssuerName: {{ env "CLUSTER_ISSUER_NAME" | default "letsencrypt-brokerage-service-api" | quote }}
       - ghcrSecretName: {{ env "GHCR_SECRET_NAME" | default "brokerage-service-api-ghcr-pull-secret" | quote }}
-      - chartVersion: "0.0.1-a9"
+      - chartVersion: "0.0.1-test3"
 
   live:
     values:
@@ -21,7 +21,7 @@ environments:
       - namespace: "paidiver-st3"
       - clusterIssuerName: {{ env "CLUSTER_ISSUER_NAME" | default "letsencrypt-brokerage-service-api" | quote }}
       - ghcrSecretName: {{ env "GHCR_SECRET_NAME" | default "brokerage-service-api-ghcr-pull-secret" | quote }}
-      - chartVersion: "0.0.1-a9"
+      - chartVersion: "0.0.1-test3"
 
   local:
     values:
@@ -60,7 +60,7 @@ releases:
 {{ if ne $env.mode "local" }}
       - image:
           imagePullSecret: {{ $env.ghcrSecretName | quote }}
-          tag: latest
+          tag: "v0.0.1-test3"
 {{ end }}
 {{ if ne $env.mode "local" }}
     hooks:
