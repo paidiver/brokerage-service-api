@@ -1,5 +1,7 @@
 # API Examples
 
+## Setup
+
 Set your API base URL once:
 
 ```bash
@@ -80,4 +82,4 @@ async def fetch_upstream_data(source_id: str, request: Request):
     return {"message": f"Successfully retrieved configuration for {source.label}"}
 ```
 
-See [the shared response contract](RESPONSE_CONTRACT.md) for search, session, and error examples.
+See the [search-session contract](search-sessions.md) for session and error examples.

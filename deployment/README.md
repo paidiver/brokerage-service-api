@@ -119,7 +119,7 @@ To list available chart versions:
 helm search repo -l brokerage-service-api
 ```
 
-Set the required `chartVersion` in [helmfile.yaml.gotmpl](helmfile.yaml.gotmpl).
+Set the required `chartVersion` in [helmfile/helmfile.yaml.gotmpl](helmfile/helmfile.yaml.gotmpl).
 
 Also set the `image.tag` in the releases values to the correct version.
 

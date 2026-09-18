@@ -1,5 +1,7 @@
 # Search sessions
 
+## Overview
+
 The session endpoints merge independently paginated upstream sources into one ascending
 result stream. Completed brokerage pages are cached in Redis. The separate
 `GET /api/annotations/search` fetches all matches before sorting and pagination;

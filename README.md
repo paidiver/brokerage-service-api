@@ -1,11 +1,22 @@
 # Brokerage Service API
 
-Brokerage Service API provides a federated api access to multiple services.
+Brokerage Service API provides a federated api access to multiple sources related to image annotations.
+
+## Overview
 
 The app is available in these links:
 
-- Development: [https://brokerage-service-api-dev.paidiver.site](https://brokerage-service-api-dev.paidiver.site)
-- Live: [https://brokerage-service-api.paidiver.site](https://brokerage-service-api.paidiver.site)
+- Development: [https://paidiver-brokerage-service-dev.noc.ac.uk](https://paidiver-brokerage-service.noc.ac.uk)
+- Live: [https://paidiver-brokerage-service.noc.ac.uk](https://paidiver-brokerage-service.noc.ac.uk)
+
+The service provides one API over multiple annotation sources, including source discovery, federated searches, cached search sessions, and health reporting.
+
+## Documentation
+
+* [API examples](docs/API_EXAMPLES.md)
+* [Search sessions](docs/search-sessions.md)
+* [Deployment guide](docs/DEPLOYMENT.md)
+* [Detailed Helmfile deployment](deployment/README.md)
 
 ## Requirements
 
@@ -19,7 +30,9 @@ The app is available in these links:
 * Python 3.13
 * [uv](https://docs.astral.sh/uv/getting-started/installation/) (CI and Docker use 0.9.22)
 
-## Project Structure
+## Architecture
+
+### Project Structure
 
 ```text
 .
@@ -46,7 +59,7 @@ The app is available in these links:
 └── tox.ini
 ```
 
-## Dependency Management
+### Dependency Management
 
 This project uses **uv** for dependency management, environments and building packages.
 
@@ -56,38 +69,92 @@ Key points:
 * Locked versions live in `uv.lock`
 * Development tools (linting, formatting, testing) are installed via dependency groups
 
-### Local development
+### Deployment
 
-```bash
-uv sync --python 3.13 --locked --group test --group lint
-uv run --locked uvicorn brokerage_service_api.api.app:app --reload --port 8020
-uv run --locked --group test tox -e lint
-uv run --locked --group test tox -e py313
-uv run --locked --group test tox -e build
+The [deployment](deployment) directory contains the Helm chart and Helmfile configuration used to deploy this app. For information about deployment, configuration options, usage instructions, and Docker images, see the [deployment guide](docs/DEPLOYMENT.md).
+
+### Upstream Services (External APIs)
+
+The Brokerage Service API interacts with several upstream services, called **sources**. In this implementation, the primary sources are the JNCC Annotations API and the BODC Annotations API.
+
+Upstream API sources are managed within the configuration file located at [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). This file is parsed and loaded into the application's memory during initialization (startup) and remains immutable throughout the application's lifespan.
+
+#### Example source:
+
+```yaml
+sources:
+  bodc:
+    source_name: "bodc"
+    label: "BRITISH OCEANOGRAPHIC DATA CENTRE"
+    base_url: "BODC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
+  jncc:
+    source_name: "jncc"
+    label: "JOINT NATURE CONSERVATION COMMITTEE"
+    base_url: "JNCC_ANNOTATIONS_API_URL"
+    enabled: true
+    kind: "annotations_v1"
+    timeout:
+      connect: 5.0
+      read: 30.0
+      write: 30.0
+      pool: 5.0
 ```
 
-If an existing `.python-version` contains a pyenv environment name, replace it
-with `3.13` (`uv python pin 3.13`) before using uv. The `dev` group includes
-JupyterLab and is installed by default; use `--no-default-groups` for a minimal
-environment. Tox synchronizes each isolated environment from `uv.lock`.
+#### Configuring new source
 
-Use `uv add PACKAGE` to add runtime dependencies, `uv add --group test PACKAGE`
-for test dependencies, and `uv lock --upgrade` for an intentional dependency
-upgrade. Commit both `pyproject.toml` and `uv.lock`. CI uses `--locked` to reject
-an outdated lockfile.
+To onboard a new upstream source, follow these steps:
 
-Package builds retain the Poetry Core/dynamic-versioning backend to preserve
-Git-derived release versions; the Poetry CLI is not required. Build releases
-from a checkout with Git tags (`uv build`). Container builds use version `0.1.0`
-without requiring Git history, as the previous runtime package did.
+1. Update the YAML Configuration:
 
-Docker builds the runtime target by default, with only runtime dependencies.
-Compose selects the development target with JupyterLab, test and lint tools.
-The container environment lives at `/opt/venv` so the source bind mount does not
-hide it. Dependency installation is cached separately from application code.
+Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name.
 
+2. Define Environment Variables:
 
-## Quick Start (Docker)
+Declare the environment variable name and its value in your locally managed [.env] file.
+
+3. Register the Environment Mapping:
+
+Add a new key-value entry to the `ENV_SOURCE_URL_MAP` dictionary inside [*fixtures/constants.py*](./src/brokerage_service_api/fixtures/constants.py). This maps the source identifier to its environment variable name and an isolated container fallback URL.
+
+```python
+ENV_SOURCE_URL_MAP = {
+    # Existing mappings...
+    "new_source_name": ("EXAMPLE_ANNOTATIONS_API_URL", "http://example-api:8000/api/"),
+}
+```
+
+### Cache Layer (Redis)
+
+The API creates one async Redis client at startup, checks it with `PING`, and
+closes it at shutdown. Routes can inject it with `Depends(get_redis)` from
+`brokerage_service_api.utilities.redis`, or access `request.app.state.redis`.
+The client returns decoded strings. `/api/sources` responses are cached using keys
+that include query parameters and source configuration. Set `REDIS_ENABLED=false`
+to disable caching, or `REDIS_DEFAULT_TTL_SECONDS=300` to configure the lifetime.
+
+Local runs default to `REDIS_BACKEND=fake`, using `fakeredis` without a server.
+Fake data is isolated per application process and lost on restart, so use real
+Redis when multiple workers need shared state.
+
+To connect to a server, set `REDIS_BACKEND=redis` and
+`REDIS_URL=redis://localhost:6379/0`. Export these variables in your shell, or
+start Uvicorn with `--env-file .env` to load them from a file. If real Redis is unreachable, the API starts and cache failures fall back to
+normal upstream calls. Subsequent requests can use Redis when it recovers.
+
+Docker Compose explicitly selects real Redis at `redis://redis:6379/0`, waits
+for its health check, and persists data in the `redis_data` volume. Redis is
+accessible within the Compose network, with no host port exposed.
+
+## Quick Start
+
+### Docker (Recommended)
 
 In this quick start, it will run all the services locally using Docker Compose. This includes:
 
@@ -98,7 +165,7 @@ In this quick start, it will run all the services locally using Docker Compose. 
 
 In production, you would typically run the Brokerage Service API service only, and point it to the real JNCC and BODC API services.
 
-### 1. Create environment file
+1. Create environment file
 
 Configuration is provided via environment variables defined in `.env`.
 
@@ -141,7 +208,7 @@ REDIS_ENABLED=true
 REDIS_DEFAULT_TTL_SECONDS=300
 ```
 
-### 2. Build and run the stack
+2. Build and run the stack
 
 First, ensure you have a shared Docker network named `shared_services` (used for inter-container communication with the WoRMS cache API if necessary):
 
@@ -163,7 +230,7 @@ This will:
 * Run the migrations and the seed command for both annotations API services
 * Start the Brokerage Service API service
 
-### 3. Test the API
+3. Test the API
 
 Health endpoint:
 
@@ -183,158 +250,20 @@ API schema and documentation:
 http://localhost:8020/docs/
 ```
 
-## Deployment
+### Running Locally Without Docker
 
-The repository includes two release workflows:
+To run the application without Docker, you need to have a Python environment set up and `uv` installed. You also need to have the credentials for the various services configured in your environment.
 
-* **Docker image releases**, published to GitHub Container Registry
-* **Helm chart releases**, published from the [`deployment/charts/`](deployment/charts/) directory
-
-### Docker images
-
-Docker images are published to:
-
-`ghcr.io/paidiver/brokerage-service-api`
-
-#### Latest image
-
-A new `latest` Docker image is built and published automatically on every push to `main`.
-
-#### Versioned development images
-
-Versioned Docker images can be released manually using Git tags.
-
-To release a new Docker image, create a tag using the following format:
-
-```text
-docker-vMAJOR.MINOR.PATCH[-PRERELEASE]
-```
-
-Examples:
-
-```text
-docker-v1.2.3
-docker-v1.3.0-alpha.1
-```
-
-When the tag is pushed, the CI workflow:
-
-1. Reads the version from the tag, for example `1.2.3` from `docker-v1.2.3`
-2. Builds a new Docker image
-3. Tags the image with the version and the commit SHA
-4. Pushes the image to GitHub Container Registry
-
-To create and push a Docker release tag:
+1. Install dependencies
 
 ```bash
-git tag docker-vX.X.X
-git push origin docker-vX.X.X
+uv sync --locked
 ```
 
-### Helm charts
-
-The [`deployment/charts/`](deployment/charts/) directory contains the Helm chart used to deploy this application.
-
-After following the steps below, go to the [deployment/README.md](deployment/README.md) file for deployment instructions.
-
-
-Helm chart releases are automated and driven by Git tags.
-
-To release a new Helm chart version, create a tag using the following format:
-
-```text
-vMAJOR.MINOR.PATCH[-PRERELEASE]
-```
-
-Examples:
-
-```text
-v1.2.3
-v1.3.0-alpha.1
-```
-
-When the tag is pushed, the CI workflow:
-
-1. Reads the version from the tag, for example `1.2.3` from `v1.2.3`
-2. Patches `deployment/charts/api/Chart.yaml` at package time
-3. Packages the Helm chart with the correct version
-4. Publishes the chart using [`helm/chart-releaser-action`](https://github.com/helm/chart-releaser-action)
-
-To create and push a Helm chart release tag:
+2. Run the application
 
 ```bash
-git tag vX.X.X
-git push origin vX.X.X
-```
-
-### Helm chart versioning
-
-Whenever you change the Helm chart, update the `version` field in `Chart.yaml`.
-
-For example:
-
-```text
-0.0.0-dev → 0.0.1-dev
-```
-
-This is required because the lint process checks that the new chart version is greater than the previous one. If the chart version is not increased, linting will fail and the release will not run.
-
-> Note: The `Chart.yaml` version does not need to match the Git tag, but it must always be higher than the previous chart version.
-
-
-## Upstream Sources
-
-Upstream API sources are managed within the configuration file located at [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). This file is parsed and loaded into the application's memory during initialization (startup) and remains immutable throughout the application's lifespan.
-
-### Example source:
-
-```yaml
-sources:
-  bodc:
-    source_name: "bodc"
-    label: "BRITISH OCEANOGRAPHIC DATA CENTRE"
-    base_url: "BODC_ANNOTATIONS_API_URL"
-    enabled: true
-    kind: "annotations_v1"
-    timeout:
-      connect: 5.0
-      read: 30.0
-      write: 30.0
-      pool: 5.0
-  jncc:
-    source_name: "jncc"
-    label: "JOINT NATURE CONSERVATION COMMITTEE"
-    base_url: "JNCC_ANNOTATIONS_API_URL"
-    enabled: true
-    kind: "annotations_v1"
-    timeout:
-      connect: 5.0
-      read: 30.0
-      write: 30.0
-      pool: 5.0
-```
-
-### Configuring new source
-
-To onboard a new upstream source, follow these steps:
-
-#### 1. Update the YAML Configuration:
-
-Add the new source block under the `sources` key in [*fixtures/source.yaml*](./src/brokerage_service_api/fixtures/source.yaml). Set the `base_url` value to match the corresponding environment variable name.
-
-#### 2. Define Environment Variables:
-
-Declare the environment variable name and its value in your locally managed [.env] file.
-
-#### 3. Register the Environment Mapping:
-
-Add a new key-value entry to the `ENV_SOURCE_URL_MAP` dictionary inside [*fixtures/constants.py*](./src/brokerage_service_api/fixtures/constants.py). This maps the source identifier to its environment variable name and an isolated container fallback URL.
-
-```python
-ENV_SOURCE_URL_MAP = {
-    # Existing mappings...
-    "new_source_name": ("EXAMPLE_ANNOTATIONS_API_URL", "http://example-api:8000/api/"),
-}
+uv run --locked uvicorn brokerage_service_api.api.app:app --reload --port 8020
 ```
 
 ## Development Workflow
@@ -365,27 +294,6 @@ docker compose -f docker/docker-compose.yml run --rm app tox -e py313
 
 Coverage reports are written to `coverage_reports/`.
 
-## Redis
-
-The API creates one async Redis client at startup, checks it with `PING`, and
-closes it at shutdown. Routes can inject it with `Depends(get_redis)` from
-`brokerage_service_api.utilities.redis`, or access `request.app.state.redis`.
-The client returns decoded strings. `/api/sources` responses are cached using keys
-that include query parameters and source configuration. Set `REDIS_ENABLED=false`
-to disable caching, or `REDIS_DEFAULT_TTL_SECONDS=300` to configure the lifetime.
-
-Local runs default to `REDIS_BACKEND=fake`, using `fakeredis` without a server.
-Fake data is isolated per application process and lost on restart, so use real
-Redis when multiple workers need shared state.
-
-To connect to a server, set `REDIS_BACKEND=redis` and
-`REDIS_URL=redis://localhost:6379/0`. Export these variables in your shell, or
-start Uvicorn with `--env-file .env` to load them from a file. If real Redis is unreachable, the API starts and cache failures fall back to
-normal upstream calls. Subsequent requests can use Redis when it recovers.
-
-Docker Compose explicitly selects real Redis at `redis://redis:6379/0`, waits
-for its health check, and persists data in the `redis_data` volume. Redis is
-accessible within the Compose network, with no host port exposed.
 
 ## API Examples
 

@@ -9,22 +9,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
-    name: ${{ matrix.environment }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [lint, py313, build]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          version: "0.9.22"
-          enable-cache: true
-          python-version: "3.13"
-      - name: Run checks
-        run: uv run --locked --no-default-groups --group test tox -e ${{ matrix.environment }}
+  ci:
+    permissions:
+      contents: read
+    uses: paidiver/brokerage-service/.github/workflows/reusable-python-tox-ci.yml@main
+    with:
+      environments: '["lint", "py313", "build"]'
