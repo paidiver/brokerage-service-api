@@ -1,12 +1,12 @@
 ingress:
   enabled: true
-  host: brokerage-service-api-dev.paidiver.site
+  host: api.paidiver-brokerage-service.noc.ac.uk
   path: ""
   ingressClassName: "nginx"
   tls:
     - secretName: letsencrypt-brokerage-service-api-dev
       hosts:
-        - brokerage-service-api-dev.paidiver.site
+        - api.paidiver-brokerage-service.noc.ac.uk
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-brokerage-service-api-dev
 
@@ -22,5 +22,5 @@ image:
   tag: latest
 
 env:
-  bodcAnnotationsApiUrl: "https://annotationsdev.bodc.ac.uk/api"
-  jnccAnnotationsApiUrl: "https://annotations-api.paidiver.site/api"
+  bodcAnnotationsApiUrl: "https://annotations-api1.atlantis-viz.online/api"
+  jnccAnnotationsApiUrl: "https://annotations-api2.atlantis-viz.online/api"
