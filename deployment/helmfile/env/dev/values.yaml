@@ -2,7 +2,7 @@ ingress:
   enabled: true
   host: api.paidiver-brokerage-service.noc.ac.uk
   path: ""
-  ingressClassName: "nginx"
+  ingressClassName: "traefik"
   tls:
     - secretName: letsencrypt-brokerage-service-api-dev
       hosts:
@@ -22,5 +22,5 @@ image:
   tag: latest
 
 env:
-  bodcAnnotationsApiUrl: "https://annotations-api1.atlantis-viz.online/api"
-  jnccAnnotationsApiUrl: "https://annotations-api2.atlantis-viz.online/api"
+  bodcAnnotationsApiUrl: "https://annotations.bodc.ac.uk/api"
+  jnccAnnotationsApiUrl: "https://annotations-api-jncc.atlantis-viz.online/api"

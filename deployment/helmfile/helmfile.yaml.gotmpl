@@ -37,8 +37,8 @@ environments:
 {{ $namespace := $env.namespace }}
 {{ $clusterIssuerName := index $env "clusterIssuerName" | default "" }}
 {{ if eq $env.mode "dev" }}
-{{ $namespace = printf "%s-dev" $namespace }}
-{{ $clusterIssuerName = printf "%s-dev" $clusterIssuerName }}
+{{ $namespace = printf "%s" $namespace }}
+{{ $clusterIssuerName = printf "%s" $clusterIssuerName }}
 {{ end }}
 
 helmDefaults:

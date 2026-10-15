@@ -2,7 +2,7 @@ ingress:
   enabled: true
   host: brokerage-service-api.paidiver.site
   path: ""
-  ingressClassName: "nginx"
+  ingressClassName: "traefik"
   tls:
     - secretName: letsencrypt-brokerage-service-api
       hosts:
