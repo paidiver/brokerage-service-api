@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   brokerage-service-api:
   - apiVersion: v2
+    appVersion: 0.0.2
+    created: "2026-10-15T09:33:20.406971591Z"
+    description: A Helm chart for the Brokerage Service API (A FastAPI Service)
+    digest: 6f2116432df32be5122ef1b36d4334210fe7ad9f0fa64454dbdb8c4d122a8ff2
+    maintainers:
+    - email: tobias.ferreira@noc.ac.uk
+      name: soutobias
+      url: bodc.ac.uk
+    name: brokerage-service-api
+    type: application
+    urls:
+    - https://github.com/paidiver/brokerage-service-api/releases/download/brokerage-service-api-0.0.2/brokerage-service-api-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 0.0.1-test3
     created: "2026-09-18T15:16:58.106619682Z"
     description: A Helm chart for the Brokerage Service API (A FastAPI Service)
@@ -99,4 +113,4 @@ entries:
     urls:
     - https://github.com/paidiver/brokerage-service-api/releases/download/docker-v0.0.1-a10/brokerage-service-api-0.0.1-a10.tgz
     version: 0.0.1-a10
-generated: "2026-09-18T15:16:58.1066669Z"
+generated: "2026-10-15T09:33:20.407019911Z"
